@@ -898,7 +898,7 @@ void photo::led_init(){
 }
 
 void photo::sen_init(){
-	//GPIO側でアナログモードに設定
+//GPIO側でアナログモードに設定
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_AHB1PeriphClockCmd(SEN_RCC_AHB1Periph, ENABLE);
 	GPIO_StructInit(&GPIO_InitStructure);
@@ -906,8 +906,8 @@ void photo::sen_init(){
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	for(int i=0; i<PHOTO_N; i++){		//photo_typeの順番　right,  left, front_right, front_left, front
-		GPIO_InitStructure.GPIO_Pin = LED_GPIO_PIN.at(i);
-		GPIO_Init(LED_GPIO.at(i), &GPIO_InitStructure);	//設定
+		GPIO_InitStructure.GPIO_Pin = SEN_GPIO_PIN.at(i);
+		GPIO_Init(SEN_GPIO.at(i), &GPIO_InitStructure);	//設定
 	}
 
 
@@ -945,43 +945,6 @@ void photo::sen_init(){
 
 
 void photo::switch_led(PHOTO_TYPE sensor_type, bool is_light) {
-//	GPIO_TypeDef* GPIOx;
-//	uint16_t GPIO_Pin;
-//
-//	//どのIOをいじるか設定
-//	switch (sensor_type) {
-//
-//	//左右は同時発行
-//	case PHOTO_TYPE::right:
-//	case PHOTO_TYPE::left:
-//		GPIOx = GPIOD;
-//		GPIO_Pin = GPIO_Pin_2;
-//		break;
-//
-//	case PHOTO_TYPE::front_right:
-//		GPIOx = GPIOC;
-//		GPIO_Pin = GPIO_Pin_11;
-//		break;
-//
-//	case PHOTO_TYPE::front_left:
-//		GPIOx = GPIOC;
-//		GPIO_Pin = GPIO_Pin_10;
-//		break;
-//
-//	case PHOTO_TYPE::front:
-//		GPIOx = GPIOC;
-//		GPIO_Pin = GPIO_Pin_12;
-//		break;
-//
-//	default:
-//		break;
-//	}
-//	//光らせる
-//	if (is_light)
-//		GPIO_SetBits(GPIOx, GPIO_Pin);
-//	else
-//		GPIO_ResetBits(GPIOx, GPIO_Pin);
-
 	uint32_t i = CAST_UI(sensor_type);		//操作するものが何番目か（PHOTO_TYPEのenumで）を管理
 	//光らせる
 	if (is_light)
@@ -998,41 +961,6 @@ void photo::init(){
 
 
 uint16_t photo::get_ad(PHOTO_TYPE sensor_type) {
-//	uint8_t ADC_CH;
-//	ADC_TypeDef* ADCx;
-//
-//	//どのIOをいじるか設定
-//	switch (sensor_type) {
-//	case PHOTO_TYPE::right:
-//		ADCx = SEN_RIGHT_ADC;
-//		ADC_CH = SEN_RIGHT_ADC_CH;
-//		break;
-//
-//	case PHOTO_TYPE::left:
-//		ADCx = SEN_LEFT_ADC;
-//		ADC_CH = SEN_LEFT_ADC_CH;
-//		break;
-//
-//	case PHOTO_TYPE::front_right:
-//		ADCx = SEN_F_RIGHT_ADC;
-//		ADC_CH = SEN_F_RIGHT_ADC_CH;
-//		break;
-//
-//	case PHOTO_TYPE::front_left:
-//		ADCx = SEN_F_LEFT_ADC;
-//		ADC_CH = SEN_F_LEFT_ADC_CH;
-//		break;
-//
-//	case PHOTO_TYPE::front:
-//		ADCx = SEN_FRONT_ADC;
-//		//ADC_CH = ADC_Channel_14;
-//		ADC_CH = SEN_FRONT_ADC_CH;
-//		break;
-//
-//	default:
-//		break;
-//	}
-
 	uint32_t i = CAST_UI(sensor_type);		//操作するものが何番目か（PHOTO_TYPEのenumで）を管理
 
 	//ad変換

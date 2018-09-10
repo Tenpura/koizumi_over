@@ -122,11 +122,6 @@ int main(void) {
 
 		switch (select) {
 		case 0:		//•Ç‚Ì’l‚ð“Ç‚Þ‚¾‚¯	Ž–ŒÌ–hŽ~‚Ì‚½‚ß‚Éƒ‚[ƒh0‚ÍŽÀŠQ‚È‚¢“z‚É‚µ‚Æ‚­
-
-			mouse::set_position(20, 25);
-			myprintf("x->%d, y%d\n\r", mouse::get_x_position(),
-					mouse::get_y_position());
-
 			while (1) {
 				myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
 				myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));

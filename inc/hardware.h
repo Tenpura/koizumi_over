@@ -225,12 +225,12 @@ static const uint8_t PHOTO_N = CAST_UI(PHOTO_TYPE::element_count);		//センサの個
 		static const std::array<uint16_t,PHOTO_N> LED_GPIO_PIN = {GPIO_Pin_2,GPIO_Pin_2,GPIO_Pin_11,GPIO_Pin_10,GPIO_Pin_12};
 
 	//受光側の設定
-		#define SEN_RCC_AHB1Periph (RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC)	//センサーとして使っているGPIO　|を使って複数指定
+		#define SEN_RCC_AHB1Periph (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC)	//センサーとして使っているGPIO　|を使って複数指定
 		#define SEN_ADC_CMD (ADC1)			//センサーとして使っているADC　|を使って複数指定
 		#define SEN_RCC_APB2Periph_ADC (RCC_APB2Periph_ADC1)	//センサーとして使っているADC　|を使って複数指定
 		//photo_typeの順番　right,  left, front_right, front_left, front
-		static const std::array<GPIO_TypeDef*,PHOTO_N> SEN_GPIO = {GPIOC,GPIOC,GPIOB,GPIOC,GPIOC};
-		static const std::array<uint16_t,PHOTO_N> SEN_GPIO_PIN = {GPIO_Pin_5,GPIO_Pin_1,GPIO_Pin_0,GPIO_Pin_0,GPIO_Pin_4};
+		static const std::array<GPIO_TypeDef*,PHOTO_N> SEN_GPIO = {GPIOC,GPIOC,GPIOB,GPIOC,GPIOA};
+		static const std::array<uint16_t,PHOTO_N> SEN_GPIO_PIN = {GPIO_Pin_5,GPIO_Pin_1,GPIO_Pin_0,GPIO_Pin_0,GPIO_Pin_3};
 		static const std::array<ADC_TypeDef*,PHOTO_N> SEN_ADC = {ADC1,ADC1,ADC1,ADC1,ADC1};
 		static const std::array<uint16_t,PHOTO_N> SEN_ADC_CH = {ADC_Channel_15,ADC_Channel_11,ADC_Channel_8,ADC_Channel_10,ADC_Channel_3};
 #elif (MOUSE_NAME == KOIZUMI_OVER)
