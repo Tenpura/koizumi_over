@@ -7,6 +7,7 @@
 
 #include "init.h"
 
+#if (MOUSE_NAME == KOIZUMI_FISH)
 void init_all(void) {
 	init_system();
 	//init_tim();
@@ -17,6 +18,18 @@ void init_all(void) {
 	init_pwm();
 	init_enc();
 }
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void init_all(void) {
+	init_system();
+	//init_tim();
+	//init_gpio();
+	init_adc();
+	init_usart();
+	init_spi();
+	//init_pwm();
+	//init_enc();
+}
+#endif
 
 void init_system() {
 	//‚±‚Ì•ÓŠ®‘S‚É—‰ğ‚Í‚Å‚«‚Ä‚È‚¢

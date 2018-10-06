@@ -162,22 +162,7 @@ bool mode::search_mode() {
 	case 0:		//0はメニューに戻る
 		break;
 
-	case 1:		//1は普通の足立法
-		mouse::set_position(0, 0);
-		mouse::set_direction(north);
-		if (adachi::adachi_method(GOAL_x, GOAL_y, false)) {		//足立方が成功したら
-			wait::ms(300);
-			motor::sleep_motor();
-			flash_maze flash_l;
-			MAP_DATA temp;
-			map::output_map_data(&temp);
-			flash_l.save_maze(0, &temp);
-			//	flash_l.save_maze(1, &temp);
-
-		}
-		break;
-
-	case 2:		//2は帰りもあるよ
+	case 1:		//帰りもあるよ
 		mouse::set_position(0, 0);
 		mouse::set_direction(north);
 		if (adachi::adachi_method(GOAL_x, GOAL_y, false)) {	//足立法が成功したら
@@ -199,6 +184,121 @@ bool mode::search_mode() {
 			control::start_wall_control();
 			wait::ms(500);
 
+			if (adachi::adachi_method(0, 0, false)) {
+				wait::ms(300);
+				map::output_map_data(&temp);
+				flash_l.save_maze(0, &temp);
+				//flash_l.save_maze(1, &temp);
+				motor::sleep_motor();
+
+			}
+
+		}
+		break;
+
+	case 2:		//普通の足立法
+		mouse::set_position(0, 0);
+		mouse::set_direction(north);
+		if (adachi::adachi_method(GOAL_x, GOAL_y, false)) {		//足立方が成功したら
+			wait::ms(300);
+			motor::sleep_motor();
+			flash_maze flash_l;
+			MAP_DATA temp;
+			map::output_map_data(&temp);
+			flash_l.save_maze(0, &temp);
+			//	flash_l.save_maze(1, &temp);
+
+		}
+		break;
+
+	case 3:
+		mouse::set_position(0, 0);
+		mouse::set_direction(north);
+		if (adachi::adachi_method(GOAL_x, GOAL_y, true)) {	//足立法が成功したら
+			flash_maze flash_l;
+			MAP_DATA temp;
+			map::output_map_data(&temp);
+			flash_l.save_maze(0, &temp);
+			flash_l.save_maze(1, &temp);
+
+			mouse::set_position(GOAL_x, GOAL_y);
+			run::spin_turn(180);
+			mouse::turn_90_dir(MUKI_RIGHT);
+			mouse::turn_90_dir(MUKI_RIGHT);
+			wait::ms(500);
+
+			adachi::adachi_method(0, 0, false);
+		}
+		break;
+
+	case 4: {		//迷路中央に置いた前提で壁補正を自動で直して足立法
+		my7seg::count_down(3, 500);
+		bool front = false;
+		float correct = 0;		//距離推定の補正値修正
+		float min_wall = 0;		//壁の閾値修正
+		static const int n = 100;	//平均とる回数
+		//左の調整
+		for (int i = 0; i < n; i++) {
+			correct += (0 - photo::get_displa_from_center(PHOTO_TYPE::left));//現在の左壁との推定距離のズレ
+			min_wall += (photo::get_value(PHOTO_TYPE::left));
+			wait::ms(1);
+		}
+		correct /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+		min_wall /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+		correct *= 1000.0;	//単位変換　m->mm
+		correct += parameter::get_correct_photo(PHOTO_TYPE::left);		//修正値は現在の補正値に対するものなので足し合わせる
+		parameter::set_correct_photo(correct, PHOTO_TYPE::left);
+		min_wall *= 0.5;	//理想状態の半分くらいを閾値に
+		parameter::set_min_wall_photo(min_wall, PHOTO_TYPE::left);
+		//1区画前進し反転して右も行う
+		mouse::run_init(true, true);
+		run::accel_run((0.045 * MOUSE_MODE), SEARCH_VELOCITY, 0);
+		front = photo::check_wall(PHOTO_TYPE::front);	//前壁があるかを把握しておく
+		run::accel_run((0.045 * MOUSE_MODE), 0, 0);
+		run::spin_turn(180);
+		wait::ms(100);
+		//右の調整
+		for (int i = 0; i < n; i++) {
+			correct += (0 - photo::get_displa_from_center(PHOTO_TYPE::right));//現在の左壁との推定距離のズレ
+			min_wall += (photo::get_value(PHOTO_TYPE::right));
+			wait::ms(1);
+		}
+		correct /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+		min_wall /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+		correct *= 1000.0;	//単位変換　m->mm
+		correct += parameter::get_correct_photo(PHOTO_TYPE::right);		//修正値は現在の補正値に対するものなので足し合わせる
+		parameter::set_correct_photo(correct, PHOTO_TYPE::right);
+		min_wall *= 0.3;	//理想状態の半分くらいを閾値に
+		parameter::set_min_wall_photo(min_wall, PHOTO_TYPE::right);
+
+		if(!front){	//前壁なければ北に進む
+			run::spin_turn(180);
+			mouse::set_direction(north);
+		}else{	//前壁あれば東に進む
+			run::spin_turn(-90);
+			mouse::set_direction(east);
+		}
+		mouse::set_position(0, 1);
+
+		//以下は普通の足立法
+		if (adachi::adachi_method(GOAL_x, GOAL_y, false)) {	//足立法が成功したら
+			wait::ms(300);
+			flash_maze flash_l;
+			MAP_DATA temp;
+			map::output_map_data(&temp);
+			flash_l.save_maze(0, &temp);
+			//flash_l.save_maze(1, &temp);
+
+			mouse::set_position(GOAL_x, GOAL_y);
+			run::spin_turn(180);
+			mouse::turn_90_dir(MUKI_RIGHT);
+			mouse::turn_90_dir(MUKI_RIGHT);
+			wait::ms(500);
+
+			control::stop_wall_control();
+			run::accel_run((-0.02 * MOUSE_MODE), 0, 0);
+			control::start_wall_control();
+			wait::ms(500);
 
 			if (adachi::adachi_method(0, 0, false)) {
 				wait::ms(300);
@@ -212,22 +312,80 @@ bool mode::search_mode() {
 		}
 		break;
 
-	case 3:			//ノード型足立法
-		mouse::set_position(0, 0);
-		mouse::set_direction(north);
-		if (adachi::adachi_method(GOAL_x, GOAL_y, true)) {		//足立方が成功したら
-			wait::ms(300);
-			motor::sleep_motor();
-			flash_maze flash_l;
-			MAP_DATA temp;
-			map::output_map_data(&temp);
-			flash_l.save_maze(0, &temp);
-			//	flash_l.save_maze(1, &temp);
-
-		}
 		break;
+	}
+	case 5: {		//迷路中央に置いた前提で壁補正を自動で直して足立法 閾値だけ修正
+			my7seg::count_down(3, 500);
+			bool front = false;
+			float min_wall = 0;		//壁の閾値修正
+			static const int n = 100;	//平均とる回数
+			//左の調整
+			for (int i = 0; i < n; i++) {
+				min_wall += (photo::get_value(PHOTO_TYPE::left));
+				wait::ms(1);
+			}
+			min_wall /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+			min_wall *= 0.5;	//理想状態の半分くらいを閾値に
+			parameter::set_min_wall_photo(min_wall, PHOTO_TYPE::left);
+			//1区画前進し反転して右も行う
+			mouse::run_init(true, true);
+			run::accel_run((0.045 * MOUSE_MODE), SEARCH_VELOCITY, 0);
+			front = photo::check_wall(PHOTO_TYPE::front);	//前壁があるかを把握しておく
+			run::accel_run((0.045 * MOUSE_MODE), 0, 0);
+			run::spin_turn(180);
+			wait::ms(100);
+			//右の調整
+			for (int i = 0; i < n; i++) {
+				min_wall += (photo::get_value(PHOTO_TYPE::right));
+				wait::ms(1);
+			}
+			min_wall /= n;	//1回だと飛び値等ある可能性があるので平均をとる
+			min_wall *= 0.3;	//理想状態の半分くらいを閾値に
+			parameter::set_min_wall_photo(min_wall, PHOTO_TYPE::right);
 
-	case 4:
+			if(!front){	//前壁なければ北に進む
+				run::spin_turn(180);
+				mouse::set_direction(north);
+			}else{	//前壁あれば東に進む
+				run::spin_turn(-90);
+				mouse::set_direction(east);
+			}
+			mouse::set_position(0, 1);
+
+			//以下は普通の足立法
+			if (adachi::adachi_method(GOAL_x, GOAL_y, false)) {	//足立法が成功したら
+				wait::ms(300);
+				flash_maze flash_l;
+				MAP_DATA temp;
+				map::output_map_data(&temp);
+				flash_l.save_maze(0, &temp);
+				//flash_l.save_maze(1, &temp);
+
+				mouse::set_position(GOAL_x, GOAL_y);
+				run::spin_turn(180);
+				mouse::turn_90_dir(MUKI_RIGHT);
+				mouse::turn_90_dir(MUKI_RIGHT);
+				wait::ms(500);
+
+				control::stop_wall_control();
+				run::accel_run((-0.02 * MOUSE_MODE), 0, 0);
+				control::start_wall_control();
+				wait::ms(500);
+
+				if (adachi::adachi_method(0, 0, false)) {
+					wait::ms(300);
+					map::output_map_data(&temp);
+					flash_l.save_maze(0, &temp);
+					//flash_l.save_maze(1, &temp);
+					motor::sleep_motor();
+
+				}
+
+			}
+			break;
+
+	}
+	case 6:
 		mouse::set_position(0, 0);
 		mouse::set_direction(north);
 		if (adachi::adachi_method(15, 0, false)) {	//足立法が成功したら
@@ -261,42 +419,6 @@ bool mode::search_mode() {
 
 		}
 		break;
-
-	case 5:
-		mouse::set_position(0, 0);
-		mouse::set_direction(north);
-		if (adachi::adachi_method(GOAL_x, GOAL_y, true)) {	//足立法が成功したら
-			flash_maze flash_l;
-			MAP_DATA temp;
-			map::output_map_data(&temp);
-			flash_l.save_maze(0, &temp);
-			flash_l.save_maze(1, &temp);
-
-			mouse::set_position(GOAL_x, GOAL_y);
-			run::spin_turn(180);
-			mouse::turn_90_dir(MUKI_RIGHT);
-			mouse::turn_90_dir(MUKI_RIGHT);
-			wait::ms(500);
-
-			adachi::adachi_method(0, 0, false);
-		}
-		break;
-
-	case 6:
-		mouse::set_position(0, 0);
-		mouse::set_direction(north);
-		if (adachi::adachi_method(GOAL_x, GOAL_y, true)) {	//古川式足立法（櫛無視）が成功したら
-			wait::ms(100);
-			mouse::set_position(GOAL_x, GOAL_y);
-			run::spin_turn(180);
-			mouse::turn_90_dir(MUKI_RIGHT);
-			mouse::turn_90_dir(MUKI_RIGHT);
-			wait::ms(100);
-
-			adachi::adachi_method(0, 0, true);
-		}
-		break;
-
 	}
 
 	return false;

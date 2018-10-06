@@ -10,7 +10,11 @@
 
 #include <stdint.h>
 
-#define MOUSE_NAME (KOIZUMI_FISH)		//‚Ç‚Ì‹@‘Ì‚É‘‚«ž‚Þ‚©
+#define MOUSE_NAME KOIZUMI_FISH		//‚Ç‚Ì‹@‘Ì‚É‘‚«ž‚Þ‚©
+//#define MOUSE_NAME KOIZUMI_OVER		//‚Ç‚Ì‹@‘Ì‚É‘‚«ž‚Þ‚©
+
+#define KOIZUMI_FISH 0
+#define KOIZUMI_OVER 1
 
 #define CONTROL_PERIOD 0.001		//§ŒäŽüŠú[sec]
 

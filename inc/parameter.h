@@ -37,13 +37,15 @@
 
 class parameter {
 private:
-	const static float ideal_photo[2][5];			//ideal_photo[クラシックorハーフ][光学センサの向き]
-	const static int16_t min_wall_photo[2][5];			//壁がある時の最小値[クラシックorハーフ][光学センサの向き]
+	static float correct_photo[2][5];			//ideal_photo[クラシックorハーフ][光学センサの向き]
+	static int16_t min_wall_photo[2][5];			//壁がある時の最小値[クラシックorハーフ][光学センサの向き]
 	const static TRAPEZOID straight_run[RUN_MODE_NUMBER];
 
 public:
-	static float get_ideal_photo(PHOTO_TYPE _type);
+	static float get_correct_photo(PHOTO_TYPE _type);
+	static void set_correct_photo(float val, PHOTO_TYPE _type);		//補正の修正等でcorrect_photoを書き換える　使用注意
 	static int16_t get_min_wall_photo(PHOTO_TYPE _type);
+	static void set_min_wall_photo(float val, PHOTO_TYPE _type);		//補正の修正等でmin_photoを書き換える　使用注意
 
 	static float get_run_acceleration(uint8_t _select_mode);
 	static float get_run_max_velocity(uint8_t _select_mode);

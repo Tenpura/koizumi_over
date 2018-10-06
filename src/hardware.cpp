@@ -1216,7 +1216,7 @@ float photo::get_displa_from_center(PHOTO_TYPE sensor_type, float val) {
 	reent = true;
 	float a0, a1, a2, alog;	//小島近似の係数	x^0,x,x^2,logの係数
 	float f = val;		//対称のセンサ値
-	float f_c = (parameter::get_ideal_photo(sensor_type));	//中心位置におけるセンサ値
+	float f_c = (parameter::get_correct_photo(sensor_type));	//オフセット
 	float ans = 0;
 
 	if (f <= 0) {
@@ -1251,10 +1251,10 @@ float photo::get_displa_from_center(PHOTO_TYPE sensor_type, float val) {
 		break;
 
 	case PHOTO_TYPE::front: {
-		a0 = -300 + f_c;
-		a1 = -0.03;
-		a2 = 3.5 * 0.000001;
-		alog = 47.7675;
+		a0 = -333 + f_c;
+		a1 = -0.013;
+		a2 = 0.6 * 0.000001;
+		alog = 49.5;
 		break;
 	}
 

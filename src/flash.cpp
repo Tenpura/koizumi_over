@@ -68,6 +68,28 @@ bool flash::write_block() {
 	return (result == FLASH_COMPLETE);
 
 }
+
+void flash::init(){
+	/* Unlock the Flash *********************************************************/
+	  /* Enable the flash control register access */
+	  FLASH_Unlock();
+
+	  /* Erase the user Flash area ************************************************/
+	  /* area defined by FLASH_USER_START_ADDR and FLASH_USER_END_ADDR */
+
+	  /* Clear pending flags (if any) */
+	  FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |
+	                  FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR|FLASH_FLAG_PGSERR);
+
+	  //Reference manual Table 11. Number of wait states according to CPU clock (HCLK) frequencyéQè∆
+	  FLASH_SetLatency(FLASH_Latency_5);
+
+	  /* Lock the Flash to disable the flash control register access (recommended
+	     to protect the FLASH memory against possible unwanted operation) */
+	  FLASH_Lock();
+}
+
+
 MAP_DATA size;
 const size_t flash_maze::maze_size = sizeof(MAP_DATA);//sizeof(size.x_wall)*4;
 

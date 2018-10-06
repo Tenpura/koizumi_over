@@ -1896,7 +1896,7 @@ void run::fit_run(const unsigned char select_mode) {
 		//frontの値だけのほうがブレがなくて信用できる
 		diff_front = 1
 				- static_cast<float>(photo::get_value(PHOTO_TYPE::front))
-						/ parameter::get_ideal_photo(PHOTO_TYPE::front);
+						/ parameter::get_correct_photo(PHOTO_TYPE::front);
 
 		//	diff_front_left = 1
 		//		- static_cast<float>(photo::get_value(PHOTO_TYPE::front_left))
@@ -1934,7 +1934,7 @@ void run::fit_run(const unsigned char select_mode) {
 		//frontの値だけのほうがブレがなくて信用できる
 		diff_front = 1
 				- static_cast<float>(photo::get_value(PHOTO_TYPE::front))
-						/ parameter::get_ideal_photo(PHOTO_TYPE::front);
+						/ parameter::get_correct_photo(PHOTO_TYPE::front);
 
 		//	diff_front_left = 1
 		//		- static_cast<float>(photo::get_value(PHOTO_TYPE::front_left))
@@ -2607,13 +2607,13 @@ void adachi::run_next_action(const ACTION_TYPE next_action, bool slalom) {
 //				* (mouse::get_relative_go() - 0.045 * MOUSE_MODE);		//relative_go からずれた分だけ補正
 		distance += 0.090 * MOUSE_MODE;
 		//FIXME 両壁あり直線が連続すると何故か距離が延びるので適当にへらす
-		str_score++;
-		if (str_score >= 5) {
-			distance -= 0.025;
-			check_l = distance - 0.020;
-			str_score = 0;
-
-		}
+//		str_score++;
+//		if (str_score >= 5) {
+//			distance -= 0.025;
+//			check_l = distance - 0.020;
+//			str_score = 0;
+//
+//		}
 		if (run::wall_edge_run_for_search(distance, SEARCH_VELOCITY, 0,
 				check_l)) {
 			str_score = 0;		//壁キレ見れたらリセット
@@ -2929,7 +2929,7 @@ bool adachi::adachi_method(unsigned char target_x, unsigned char target_y,
 		}
 
 //next_dirrctionから次行く方向を選び、行動する
-		next_action = get_next_action(next_direction,
+		next_action = adachi::get_next_action(next_direction,
 				compas_to_muki(mouse::get_compas()));
 		run_next_action(next_action, true);
 		my7seg::turn_off();
@@ -3233,7 +3233,7 @@ bool adachi::node_adachi(std::vector<std::pair<uint8_t, uint8_t> > finish,
 		}
 
 		//next_dirrctionから次行く方向を選び、行動する
-		next_action = get_next_action(next_compas, mouse::get_compas());
+		next_action = adachi::get_next_action(next_compas, mouse::get_compas());
 		run_next_action(next_action, true);
 
 		//もし止まるべきと出たならココで足立法をやめる

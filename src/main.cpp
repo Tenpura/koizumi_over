@@ -42,19 +42,34 @@ int main(void) {
 	//初期設定
 	init_all();
 	photo::init();
+	flash::init();
 	mouse::reset_count();
 
+#if (MOUSE_NAME == KOIZUMI_OVER)
+	photo::light(PHOTO_TYPE::right);
+	photo::light(PHOTO_TYPE::left);
+	photo::light(PHOTO_TYPE::front_right);
+	photo::light(PHOTO_TYPE::front_left);
+	photo::light(PHOTO_TYPE::front);
+
+	while (1) {
+		myprintf("right %4.3f  ", photo::get_ad(PHOTO_TYPE::right));
+		myprintf("left %4.3f  ", photo::get_ad(PHOTO_TYPE::left));
+//		myprintf("f_r %4.3f  ",
+//				photo::get_ad(PHOTO_TYPE::front_right));
+//		myprintf("f_l %4.3f  ",
+//				photo::get_ad(PHOTO_TYPE::front_left));
+//		myprintf("front %4.3f  ", photo::get_ad(PHOTO_TYPE::front));
+		myprintf("batt %4.3f  ", get_battery());
+		myprintf("\n\r");
+
+	}
+#endif
 
 	my7seg::blink(8, 200, 5);
 
 	mpu6000::init();
 
-//	myprintf("START!!\n\r");
-//	while(1){
-//		myprintf("omega = %4f",gyro::get_angular_velocity());
-//		myprintf("angle = %4f",gyro::get_angle_radian());
-//		myprintf("accel = %f\n\r",accelmeter::get_accel(axis_z));
-//	}
 
 	my7seg::turn_off();
 
@@ -180,10 +195,10 @@ int main(void) {
 			}
 			my7seg::count_down(3, 500);
 			mouse::run_init(true, true);
-			//mouse::set_place(0,0);
+//			mouse::set_place(0,0);
 			flog[0][0] = -1;
 
-			run::accel_run(0.09,SEARCH_VELOCITY,0);
+//			run::accel_run(0.09*5,SEARCH_VELOCITY,0);
 //			run::wall_edge_run_for_search(0.09, SEARCH_VELOCITY, 0,0.09);
 			run::accel_run(0.09,0,0);
 
@@ -329,7 +344,7 @@ int main(void) {
 }
 
 void interrupt_timer() {
-
+#if (MOUSE_NAME == KOIZUMI_FISH)
 	GPIO_SetBits(GPIOA, GPIO_Pin_14);
 
 	wait_counter++;	//ms(ミリ秒)のカウントを1増加
@@ -355,8 +370,10 @@ void interrupt_timer() {
 		}
 	} else if (i < flog_number) {
 		flog[0][i] = mouse::get_place().y;
-		flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
-		flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
+		flog[1][i] = photo::get_value(PHOTO_TYPE::front);
+		flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::front);
+		//flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
+		//flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
 		i++;
 	} else if (i == flog_number) {
 		flog[0][0] = 0;
@@ -364,7 +381,12 @@ void interrupt_timer() {
 	}
 
 	GPIO_ResetBits(GPIOA, GPIO_Pin_14);
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	wait_counter++;	//ms(ミリ秒)のカウントを1増加
+	mouse::add_one_count_ms();
+	wait::set_count(wait_counter);
 
+#endif
 }
 
 #ifdef __cplusplus

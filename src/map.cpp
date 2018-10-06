@@ -11,7 +11,7 @@
 MAZE_WALL map::x_maze_wall[MAZE_SIZE], map::y_maze_wall[MAZE_SIZE];
 MAZE_WALL map::x_wall_exist[MAZE_SIZE], map::y_wall_exist[MAZE_SIZE];
 
-//target_wallのedit_number目にset_numberを代入する関数
+//target_wall縺ｮedit_number逶ｮ縺ｫset_number繧剃ｻ｣蜈･縺吶ｋ髢｢謨ｰ
 void map::set_maze_wall(MAZE_WALL* const maze_wall, unsigned char edit_number,
 		bool is_wall) {
 	int8_t set_number;
@@ -121,7 +121,7 @@ void map::set_maze_wall(MAZE_WALL* const maze_wall, unsigned char edit_number,
 	}
 }
 bool map::get_maze_wall(MAZE_WALL maze_wall, unsigned char edit_number) {
-	unsigned char maze_check = 0;		//元FALSE
+	unsigned char maze_check = 0;		//蜈ェALSE
 
 	switch (edit_number) {
 	case 0:
@@ -232,43 +232,43 @@ void map::remember_exist(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char set_x = wall_x, set_y = wall_y;
 
-	//x座標方向を変更するとき
+	//x蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_x = wall_x - 1;	//必ず右壁を更新するように、座標を変える
+				set_x = wall_x - 1;	//蠢�縺壼承螢√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_x < MAZE_SIZE) {
-			set_maze_wall(&x_wall_exist[set_y], set_x, true);//x_maze_wall[y]のx番目の右壁に1を代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&x_wall_exist[set_y], set_x, true);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標に壁の存在を作ろうとしています\n\r");
-			myprintf("remember_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶↓螢√�ｮ蟄伜惠繧剃ｽ懊ｍ縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("remember_exist髢｢謨ｰ蜀�\n\r");
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は管理しない
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				set_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_y < MAZE_SIZE) {
-			set_maze_wall(&y_wall_exist[set_x], set_y, true);//x_maze_wall[y]のx番目の右壁に1を代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&y_wall_exist[set_x], set_y, true);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標に壁の存在を作ろうとしています\n\r");
-			myprintf("remember_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶↓螢√�ｮ蟄伜惠繧剃ｽ懊ｍ縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("remember_exist髢｢謨ｰ蜀�\n\r");
 		}
 
 	}
@@ -278,42 +278,42 @@ void map::forget_exist(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char set_x = wall_x, set_y = wall_y;
 
-	//x座標方向を変更するとき
+	//x蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_x = wall_x - 1;	//必ず右壁を更新するように、座標を変える
+				set_x = wall_x - 1;	//蠢�縺壼承螢√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_x < MAZE_SIZE) {
-			set_maze_wall(&x_wall_exist[set_y], set_x, false);//x_maze_wall[y]のx番目の右壁にfalseを代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&x_wall_exist[set_y], set_x, false);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓false繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標の壁の存在を消そうとしています\n\r");
-			myprintf("forget_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧呈ｶ医◎縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("forget_exist髢｢謨ｰ蜀�\n\r");
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は管理しない
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				set_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_y < MAZE_SIZE) {
-			set_maze_wall(&y_wall_exist[set_x], set_y, false);//x_maze_wall[y]のx番目の上壁に1false代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&y_wall_exist[set_x], set_y, false);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ荳雁｣√↓1false莉｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標の壁の存在を消そうとしています\n\r");
-			myprintf("forget_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧呈ｶ医◎縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("forget_exist髢｢謨ｰ蜀�\n\r");
 		}
 
 	}
@@ -323,43 +323,43 @@ bool map::check_exist(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char target_x = wall_x, target_y = wall_y;
 
-	//x座標方向を見るするとき
+	//x蠎ｧ讓呎婿蜷代ｒ隕九ｋ縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return true;
 			} else {
-				target_x = wall_x - 1;	//必ず右壁を見るように、座標を変える
+				target_x = wall_x - 1;	//蠢�縺壼承螢√ｒ隕九ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_x < MAZE_SIZE) {
 			return get_maze_wall(x_wall_exist[target_y], target_x);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標の壁の存在を読もうとしています\n\r");
-			myprintf("check_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧定ｪｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("check_exist髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は常に壁が存在
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ蟶ｸ縺ｫ螢√′蟄伜惠
 				return true;
 			} else {
-				target_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				target_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_y < MAZE_SIZE) {
 			return get_maze_wall(y_wall_exist[target_x], target_y);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標の壁の存在を読もうとしています\n\r");
-			myprintf("check_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧定ｪｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("check_exist髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 	}
@@ -370,41 +370,41 @@ bool map::check_exist(unsigned char wall_x, unsigned char wall_y,
 bool map::check_exist(unsigned char wall_x, unsigned char wall_y, compas dir) {
 	unsigned char target_x = wall_x, target_y = wall_y;
 
-	//x座標方向を見るするとき
+	//x蠎ｧ讓呎婿蜷代ｒ隕九ｋ縺吶ｋ縺ｨ縺�
 	if ((dir == east) || (dir == west)) {
 		if (dir == west) {
-			if (wall_x == 0) {		//一番西壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ隘ｿ螢√�ｯ邂｡逅�縺励↑縺�
 				return true;
 			} else {
-				target_x = wall_x - 1;	//必ず東壁を見るように、座標を変える
+				target_x = wall_x - 1;	//蠢�縺壽擲螢√ｒ隕九ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_x < MAZE_SIZE) {
 			return get_maze_wall(x_wall_exist[target_y], target_x);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標の壁の存在を読もうとしています\n\r");
-			myprintf("check_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧定ｪｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("check_exist髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((dir == north) || (dir == south)) {
 		if (dir == south) {
-			if (wall_y == 0) {		//一番南壁は常に壁が存在
+			if (wall_y == 0) {		//荳�逡ｪ蜊怜｣√�ｯ蟶ｸ縺ｫ螢√′蟄伜惠
 				return true;
 			} else {
-				target_y = wall_y - 1;	//必ず北壁を更新するように、座標を変える
+				target_y = wall_y - 1;	//蠢�縺壼圏螢√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_y < MAZE_SIZE) {
 			return get_maze_wall(y_wall_exist[target_x], target_y);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標の壁の存在を読もうとしています\n\r");
-			myprintf("check_exist関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶�ｮ螢√�ｮ蟄伜惠繧定ｪｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("check_exist髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 	}
@@ -416,42 +416,42 @@ void map::create_wall(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char set_x = wall_x, set_y = wall_y;
 
-	//x座標方向を変更するとき
+	//x蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_x = wall_x - 1;	//必ず右壁を更新するように、座標を変える
+				set_x = wall_x - 1;	//蠢�縺壼承螢√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_x < MAZE_SIZE) {
-			set_maze_wall(&x_maze_wall[set_y], set_x, true);//x_maze_wall[y]のx番目の右壁に1を代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&x_maze_wall[set_y], set_x, true);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標に壁を作ろうとしています\n\r");
-			myprintf("create_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶↓螢√ｒ菴懊ｍ縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("create_wall髢｢謨ｰ蜀�\n\r");
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は管理しない
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				set_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_y < MAZE_SIZE) {
-			set_maze_wall(&y_maze_wall[set_x], set_y, true);//x_maze_wall[y]のx番目の右壁に1を代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&y_maze_wall[set_x], set_y, true);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標に壁を作ろうとしています\n\r");
-			myprintf("create_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶↓螢√ｒ菴懊ｍ縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("create_wall髢｢謨ｰ蜀�\n\r");
 		}
 
 	}
@@ -461,42 +461,42 @@ void map::destroy_wall(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char set_x = wall_x, set_y = wall_y;
 
-	//x座標方向を変更するとき
+	//x蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_x = wall_x - 1;	//必ず右壁を更新するように、座標を変える
+				set_x = wall_x - 1;	//蠢�縺壼承螢√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_x < MAZE_SIZE) {
-			set_maze_wall(&x_maze_wall[set_y], set_x, false);//x_maze_wall[y]のx番目の右壁にfalseを代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&x_maze_wall[set_y], set_x, false);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓false繧剃ｻ｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標の壁を壊そうとしています\n\r");
-			myprintf("destroy_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶�ｮ螢√ｒ螢翫◎縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("destroy_wall髢｢謨ｰ蜀�\n\r");
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は管理しない
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 				return;
 			} else {
-				set_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				set_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (set_y < MAZE_SIZE) {
-			set_maze_wall(&y_maze_wall[set_x], set_y, false);//x_maze_wall[y]のx番目の上壁に1false代入
-		} else {		//適切でない値が入ってる
+			set_maze_wall(&y_maze_wall[set_x], set_y, false);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ荳雁｣√↓1false莉｣蜈･
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標の壁を壊そうとしています\n\r");
-			myprintf("destroy_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶�ｮ螢√ｒ螢翫◎縺�縺ｨ縺励※縺�縺ｾ縺兔n\r");
+			myprintf("destroy_wall髢｢謨ｰ蜀�\n\r");
 		}
 
 	}
@@ -506,43 +506,43 @@ bool map::get_wall(unsigned char wall_x, unsigned char wall_y,
 		unsigned char muki) {
 	unsigned char target_x = wall_x, target_y = wall_y;
 
-	//x座標方向を見るするとき
+	//x蠎ｧ讓呎婿蜷代ｒ隕九ｋ縺吶ｋ縺ｨ縺�
 	if ((muki == MUKI_RIGHT) || (muki == MUKI_LEFT)) {
 		if (muki == MUKI_RIGHT) {
 		} else if (muki == MUKI_LEFT) {
-			if (wall_x == 0) {		//一番左壁は管理しない
+			if (wall_x == 0) {		//荳�逡ｪ蟾ｦ螢√�ｯ邂｡逅�縺励↑縺�
 				return true;
 			} else {
-				target_x = wall_x - 1;	//必ず右壁を見るように、座標を変える
+				target_x = wall_x - 1;	//蠢�縺壼承螢√ｒ隕九ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_x < MAZE_SIZE) {
 			return get_maze_wall(x_maze_wall[target_y], target_x);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないx座標の壁を読もうとしています->%d\n\r", target_x);
-			myprintf("get_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺з蠎ｧ讓吶�ｮ螢√ｒ隱ｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺�->%d\n\r", target_x);
+			myprintf("get_wall髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 
-		//y座標方向を変更するとき
+		//y蠎ｧ讓呎婿蜷代ｒ螟画峩縺吶ｋ縺ｨ縺�
 	} else if ((muki == MUKI_UP) || (muki == MUKI_DOWN)) {
 		if (muki == MUKI_UP) {
 		} else if (muki == MUKI_DOWN) {
-			if (wall_y == 0) {		//一番下壁は常に壁が存在
+			if (wall_y == 0) {		//荳�逡ｪ荳句｣√�ｯ蟶ｸ縺ｫ螢√′蟄伜惠
 				return true;
 			} else {
-				target_y = wall_y - 1;	//必ず上壁を更新するように、座標を変える
+				target_y = wall_y - 1;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 			}
 		}
 		if (target_y < MAZE_SIZE) {
 			return get_maze_wall(y_maze_wall[target_x], target_y);
-		} else {		//適切でない値が入ってる
+		} else {		//驕ｩ蛻�縺ｧ縺ｪ縺�蛟､縺悟�･縺｣縺ｦ繧�
 			mouse::error();
 			myprintf("\n\r!!!ERROR!!!\n\r");
-			myprintf("存在しないy座標の壁を読もうとしています->%d\n\r", target_y);
-			myprintf("get_wall関数内\n\r");
+			myprintf("蟄伜惠縺励↑縺и蠎ｧ讓吶�ｮ螢√ｒ隱ｭ繧ゅ≧縺ｨ縺励※縺�縺ｾ縺�->%d\n\r", target_y);
+			myprintf("get_wall髢｢謨ｰ蜀�\n\r");
 			return false;
 		}
 	}
@@ -551,14 +551,14 @@ bool map::get_wall(unsigned char wall_x, unsigned char wall_y,
 }
 
 void map::reset_maze() {
-	//壁を消す
+	//螢√ｒ豸医☆
 	for (int i = 0; i < MAZE_SIZE; i++) {
 		x_maze_wall[i].all = 0;
 		y_maze_wall[i].all = 0;
 		x_wall_exist[i].all = 0;
 		y_wall_exist[i].all = 0;
 	}
-	//外壁は入れる
+	//螟門｣√�ｯ蜈･繧後ｋ
 	for (int i = 0; i < MAZE_SIZE; i++) {
 		create_wall(0, i, MUKI_LEFT);
 		remember_exist(0, i, MUKI_LEFT);
@@ -569,7 +569,7 @@ void map::reset_maze() {
 		create_wall(i, MAZE_SIZE - 1, MUKI_UP);
 		remember_exist(i, MAZE_SIZE - 1, MUKI_UP);
 	}
-	//(0，0)はわかってる
+	//(0�ｼ�0)縺ｯ繧上°縺｣縺ｦ繧�
 	create_wall(0, 0, MUKI_RIGHT);
 	remember_exist(0, 0, MUKI_RIGHT);
 	destroy_wall(0, 0, MUKI_UP);
@@ -581,12 +581,12 @@ void map::draw_map(bool write_step) {
 
 	myprintf("\n-----start draw_map-------\n\r");
 
-	//上辺
+	//荳願ｾｺ
 	for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++)
 		myprintf("+---");
 	myprintf("+\n\r");
 
-	myprintf("|");	//左端の壁
+	myprintf("|");	//蟾ｦ遶ｯ縺ｮ螢�
 	for (tekitou_x = 0; tekitou_x < MAZE_SIZE - 1; tekitou_x++) {
 
 		if (write_step)
@@ -595,10 +595,10 @@ void map::draw_map(bool write_step) {
 			myprintf("   ");
 
 		if ((get_wall(tekitou_x, tekitou_y, MUKI_RIGHT) == true)
-				|| (get_wall(tekitou_x + 1, tekitou_y, MUKI_LEFT) == true)) {//今書いたマスの右の壁があれば壁を書く
+				|| (get_wall(tekitou_x + 1, tekitou_y, MUKI_LEFT) == true)) {//莉頑嶌縺�縺溘�槭せ縺ｮ蜿ｳ縺ｮ螢√′縺ゅｌ縺ｰ螢√ｒ譖ｸ縺�
 			myprintf("|");
 		} else {
-			myprintf(" ");	//なければ壁は書かない
+			myprintf(" ");	//縺ｪ縺代ｌ縺ｰ螢√�ｯ譖ｸ縺九↑縺�
 		}
 	}
 
@@ -607,14 +607,14 @@ void map::draw_map(bool write_step) {
 	else
 		myprintf("   ");
 
-	myprintf("|\n\r");	//右端の壁
+	myprintf("|\n\r");	//蜿ｳ遶ｯ縺ｮ螢�
 
 	for (tekitou_y = MAZE_SIZE - 2; tekitou_y >= 0; tekitou_y--) {
-		//////////////////////////////////////////迷路の壁の行
+		//////////////////////////////////////////霑ｷ霍ｯ縺ｮ螢√�ｮ陦�
 		for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++) {
-			myprintf("+");	//柱
+			myprintf("+");	//譟ｱ
 			if ((get_wall(tekitou_x, tekitou_y, MUKI_UP) == true)
-					|| (get_wall(tekitou_x, tekitou_y + 1, MUKI_DOWN) == true)) {//壁があるなら
+					|| (get_wall(tekitou_x, tekitou_y + 1, MUKI_DOWN) == true)) {//螢√′縺ゅｋ縺ｪ繧�
 				myprintf("---");
 			} else {
 				myprintf("   ");
@@ -622,8 +622,8 @@ void map::draw_map(bool write_step) {
 		}
 		myprintf("+\n\r");
 
-		/////////////////////////////////////////迷路のマス目の行
-		myprintf("|");	//左端の壁
+		/////////////////////////////////////////霑ｷ霍ｯ縺ｮ繝槭せ逶ｮ縺ｮ陦�
+		myprintf("|");	//蟾ｦ遶ｯ縺ｮ螢�
 		for (tekitou_x = 0; tekitou_x < MAZE_SIZE - 1; tekitou_x++) {
 
 			if (write_step)
@@ -632,10 +632,10 @@ void map::draw_map(bool write_step) {
 				myprintf("   ");
 
 			if ((get_wall(tekitou_x, tekitou_y, MUKI_RIGHT) == true)
-					|| (get_wall(tekitou_x + 1, tekitou_y, MUKI_LEFT) == true)) {//今書いたマスの右の壁があれば壁を書く
+					|| (get_wall(tekitou_x + 1, tekitou_y, MUKI_LEFT) == true)) {//莉頑嶌縺�縺溘�槭せ縺ｮ蜿ｳ縺ｮ螢√′縺ゅｌ縺ｰ螢√ｒ譖ｸ縺�
 				myprintf("|");
 			} else {
-				myprintf(" ");	//なければ壁は書かない
+				myprintf(" ");	//縺ｪ縺代ｌ縺ｰ螢√�ｯ譖ｸ縺九↑縺�
 			}
 		}
 		if (write_step)
@@ -643,10 +643,10 @@ void map::draw_map(bool write_step) {
 		else
 			myprintf("   ");
 
-		myprintf("|\n\r");	//右端の壁
+		myprintf("|\n\r");	//蜿ｳ遶ｯ縺ｮ螢�
 	}
 
-	//下辺
+	//荳玖ｾｺ
 	for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++)
 		myprintf("+---");
 	myprintf("+\n\r");
@@ -657,12 +657,12 @@ void map::draw_map(bool write_step) {
  void map::convert_mapdata(unsigned char (*hiramatu_data)[16]){
  for(char x=0;x<16;x++){
  for(char y=0;y<16;y++){
- if((hiramatu_data[x][y] & 2) == 2){		//東壁があれば
+ if((hiramatu_data[x][y] & 2) == 2){		//譚ｱ螢√′縺ゅｌ縺ｰ
  create_wall(x,y,MUKI_RIGHT);
  }else{
  destroy_wall(x,y,MUKI_RIGHT);
  }
- if((hiramatu_data[x][y] & 1) == 1){		//南壁があれば
+ if((hiramatu_data[x][y] & 1) == 1){		//蜊怜｣√′縺ゅｌ縺ｰ
  create_wall(x,y,MUKI_UP);
  }else{
  destroy_wall(x,y,MUKI_UP);
@@ -673,7 +673,7 @@ void map::draw_map(bool write_step) {
  */
 
 void map::input_map_data(const MAP_DATA *input_data) {
-	//データ入力
+	//繝�繝ｼ繧ｿ蜈･蜉�
 	for (int i = 0; i < MAZE_SIZE; i++) {
 		x_maze_wall[i].all = input_data->x_wall[i].all;
 		y_maze_wall[i].all = input_data->y_wall[i].all;
@@ -683,7 +683,7 @@ void map::input_map_data(const MAP_DATA *input_data) {
 }
 
 void map::output_map_data(MAP_DATA* output_data) {
-	//データ出力
+	//繝�繝ｼ繧ｿ蜃ｺ蜉�
 	for (int i = 0; i < MAZE_SIZE; i++) {
 		output_data->x_wall[i].all = x_maze_wall[i].all;
 		output_data->y_wall[i].all = y_maze_wall[i].all;
@@ -712,17 +712,17 @@ void step::step_reset() {
 }
 /*
  void step::set_step(unsigned char target_x, unsigned char target_y) {
- //座標を管理するための配列
+ //蠎ｧ讓吶ｒ邂｡逅�縺吶ｋ縺溘ａ縺ｮ驟榊��
  unsigned char x_coordinate[965];
  unsigned char y_coordinate[965];
 
- //array[x]={0};ってやるとメモリ食うらしいのでForで初期化
+ //array[x]={0};縺｣縺ｦ繧�繧九→繝｡繝｢繝ｪ鬟溘≧繧峨＠縺�縺ｮ縺ｧFor縺ｧ蛻晄悄蛹�
  for (int16_t i = 0; i < 965; i++) {
  x_coordinate[i] = 0;
  y_coordinate[i] = 0;
  }
 
- unsigned char x_count = 0, y_count = 0;	//一時的に座標をもっとくよう
+ unsigned char x_count = 0, y_count = 0;	//荳�譎ら噪縺ｫ蠎ｧ讓吶ｒ繧ゅ▲縺ｨ縺上ｈ縺�
  unsigned char head, tail;		//
  uint16_t now_step;
 
@@ -734,52 +734,52 @@ void step::step_reset() {
  head = 1;
  tail = 0;
 
- //Qの最初には目標の座標を入れとく
+ //Q縺ｮ譛�蛻昴↓縺ｯ逶ｮ讓吶�ｮ蠎ｧ讓吶ｒ蜈･繧後→縺�
  x_coordinate[tail] = target_x;
  y_coordinate[tail] = target_y;
 
  while (head != tail) {
- //座標を代入
+ //蠎ｧ讓吶ｒ莉｣蜈･
  x_count = x_coordinate[tail];
  y_count = y_coordinate[tail];
  now_step = maze_step[x_count][y_count];
 
  tail++;
 
- //左マス
+ //蟾ｦ繝槭せ
  if (set_step(x_count, y_count, MUKI_LEFT, now_step + 1, false)) {
- //この座標を保持
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = (x_count - 1);
  y_coordinate[head] = y_count;
  head++;
  }
 
- //右マス
+ //蜿ｳ繝槭せ
  if (set_step(x_count, y_count, MUKI_RIGHT, now_step + 1, false)) {
- //この座標を保持
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = (x_count + 1);
  y_coordinate[head] = y_count;
  head++;
  }
 
- //下マス
+ //荳九�槭せ
  if (set_step(x_count, y_count, MUKI_DOWN, now_step + 1, false)) {
- //この座標を保持
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = x_count;
  y_coordinate[head] = y_count - 1;
  head++;
  }
 
- //上マス
+ //荳翫�槭せ
  if (set_step(x_count, y_count, MUKI_UP, now_step + 1, false)) {
- //この座標を保持
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = x_count;
  y_coordinate[head] = y_count + 1;
  head++;
  }
 
- if (head > 965) {		//配列越えたらエラー
- myprintf("エラー!\n\radachi::set_step()内\n\r");
+ if (head > 965) {		//驟榊�苓ｶ翫∴縺溘ｉ繧ｨ繝ｩ繝ｼ
+ myprintf("繧ｨ繝ｩ繝ｼ!\n\radachi::set_step()蜀�\n\r");
  break;
  }
 
@@ -789,17 +789,17 @@ void step::step_reset() {
 
 
  void step::set_step_by_known(unsigned char target_x, unsigned char target_y) {
- //座標を管理するための配列
+ //蠎ｧ讓吶ｒ邂｡逅�縺吶ｋ縺溘ａ縺ｮ驟榊��
  unsigned char x_coordinate[965];
  unsigned char y_coordinate[965];
 
- //array[x]={0};ってやるとメモリ食うらしいのでForで初期化
+ //array[x]={0};縺｣縺ｦ繧�繧九→繝｡繝｢繝ｪ鬟溘≧繧峨＠縺�縺ｮ縺ｧFor縺ｧ蛻晄悄蛹�
  for (int16_t i = 0; i < 965; i++) {
  x_coordinate[i] = 0;
  y_coordinate[i] = 0;
  }
 
- unsigned char x_count = 0, y_count = 0;	//一時的に座標をもっとくよう
+ unsigned char x_count = 0, y_count = 0;	//荳�譎ら噪縺ｫ蠎ｧ讓吶ｒ繧ゅ▲縺ｨ縺上ｈ縺�
  unsigned char head, tail;		//
 
  step_reset();
@@ -810,26 +810,26 @@ void step::step_reset() {
  head = 1;
  tail = 0;
 
- //Qの最初には目標の座標を入れとく
+ //Q縺ｮ譛�蛻昴↓縺ｯ逶ｮ讓吶�ｮ蠎ｧ讓吶ｒ蜈･繧後→縺�
  x_coordinate[tail] = target_x;
  y_coordinate[tail] = target_y;
 
  while (head != tail) {
- //座標を代入
+ //蠎ｧ讓吶ｒ莉｣蜈･
  x_count = x_coordinate[tail];
  y_count = y_coordinate[tail];
 
  tail++;
 
- //左マス
- if ((x_count - 1) >= 0) {		//座標が迷路内(x-1が0以上)にあり
- if ((maze_step[x_count - 1][y_count] == STEP_INIT)) {//歩数を入れてない（入ってる歩数がSTEP_INIT）
- if (map::get_wall(x_count, y_count, MUKI_LEFT) == false) {//元のマスの左壁がないなら
+ //蟾ｦ繝槭せ
+ if ((x_count - 1) >= 0) {		//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(x-1縺�0莉･荳�)縺ｫ縺ゅｊ
+ if ((maze_step[x_count - 1][y_count] == STEP_INIT)) {//豁ｩ謨ｰ繧貞�･繧後※縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺郡TEP_INIT�ｼ�
+ if (map::get_wall(x_count, y_count, MUKI_LEFT) == false) {//蜈�縺ｮ繝槭せ縺ｮ蟾ｦ螢√′縺ｪ縺�縺ｪ繧�
  if (map::check_exist(x_count, y_count,
- MUKI_LEFT)) {		//左壁を見ているなら
+ MUKI_LEFT)) {		//蟾ｦ螢√ｒ隕九※縺�繧九↑繧�
  maze_step[x_count - 1][y_count] =
- maze_step[x_count][y_count] + 1;		//歩数を代入
- //この座標を保持
+ maze_step[x_count][y_count] + 1;		//豁ｩ謨ｰ繧剃ｻ｣蜈･
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = (x_count - 1);
  y_coordinate[head] = y_count;
  head++;
@@ -838,15 +838,15 @@ void step::step_reset() {
  }
  }
 
- //右マス
- if ((x_count + 1) < MAZE_SIZE) {	//座標が迷路内(x+1がMAZE_SIZE未満)にあり
- if ((maze_step[x_count + 1][y_count] == STEP_INIT)) {//歩数を入れてない（入ってる歩数がSTEP_INIT）
- if (map::get_wall(x_count, y_count, MUKI_RIGHT) == false) {	//元のマスの右壁がない
+ //蜿ｳ繝槭せ
+ if ((x_count + 1) < MAZE_SIZE) {	//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(x+1縺勲AZE_SIZE譛ｪ貅�)縺ｫ縺ゅｊ
+ if ((maze_step[x_count + 1][y_count] == STEP_INIT)) {//豁ｩ謨ｰ繧貞�･繧後※縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺郡TEP_INIT�ｼ�
+ if (map::get_wall(x_count, y_count, MUKI_RIGHT) == false) {	//蜈�縺ｮ繝槭せ縺ｮ蜿ｳ螢√′縺ｪ縺�
  if (map::check_exist(x_count, y_count,
- MUKI_RIGHT)) {	//右壁を見ているなら
+ MUKI_RIGHT)) {	//蜿ｳ螢√ｒ隕九※縺�繧九↑繧�
  maze_step[x_count + 1][y_count] =
- maze_step[x_count][y_count] + 1;	//歩数を代入
- //この座標を保持
+ maze_step[x_count][y_count] + 1;	//豁ｩ謨ｰ繧剃ｻ｣蜈･
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = (x_count + 1);
  y_coordinate[head] = y_count;
  head++;
@@ -855,15 +855,15 @@ void step::step_reset() {
  }
  }
 
- //下マス
- if ((y_count - 1) >= 0) {		//座標が迷路内(y-1が0以上)にあり
- if ((maze_step[x_count][y_count - 1] == STEP_INIT)) {//歩数を入れてない（入ってる歩数がSTEP_INIT）
- if (map::get_wall(x_count, y_count, MUKI_DOWN) == false) {//元のマスの下壁がない
+ //荳九�槭せ
+ if ((y_count - 1) >= 0) {		//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(y-1縺�0莉･荳�)縺ｫ縺ゅｊ
+ if ((maze_step[x_count][y_count - 1] == STEP_INIT)) {//豁ｩ謨ｰ繧貞�･繧後※縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺郡TEP_INIT�ｼ�
+ if (map::get_wall(x_count, y_count, MUKI_DOWN) == false) {//蜈�縺ｮ繝槭せ縺ｮ荳句｣√′縺ｪ縺�
  if (map::check_exist(x_count, y_count,
- MUKI_DOWN)) {		//下壁が既知なら
+ MUKI_DOWN)) {		//荳句｣√′譌｢遏･縺ｪ繧�
  maze_step[x_count][y_count - 1] =
- maze_step[x_count][y_count] + 1;	//歩数を代入
- //この座標を保持
+ maze_step[x_count][y_count] + 1;	//豁ｩ謨ｰ繧剃ｻ｣蜈･
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = x_count;
  y_coordinate[head] = (y_count - 1);
  head++;
@@ -872,15 +872,15 @@ void step::step_reset() {
  }
  }
 
- //上マス
- if ((y_count + 1) < MAZE_SIZE) {	//x,y+1の座標が迷路内(MAZE_SIZE未満)である
- if ((maze_step[x_count][y_count + 1] == STEP_INIT)) {//歩数を入れてない（入ってる歩数がSTEP_INIT）
- if (map::get_wall(x_count, y_count, MUKI_UP) == false) {//元のマスの上壁がない
+ //荳翫�槭せ
+ if ((y_count + 1) < MAZE_SIZE) {	//x,y+1縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�(MAZE_SIZE譛ｪ貅�)縺ｧ縺ゅｋ
+ if ((maze_step[x_count][y_count + 1] == STEP_INIT)) {//豁ｩ謨ｰ繧貞�･繧後※縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺郡TEP_INIT�ｼ�
+ if (map::get_wall(x_count, y_count, MUKI_UP) == false) {//蜈�縺ｮ繝槭せ縺ｮ荳雁｣√′縺ｪ縺�
  if (map::check_exist(x_count, y_count,
- MUKI_UP)) {		//上壁が既知なら
+ MUKI_UP)) {		//荳雁｣√′譌｢遏･縺ｪ繧�
  maze_step[x_count][y_count + 1] =
- maze_step[x_count][y_count] + 1;	//歩数を代入
- //この座標を保持
+ maze_step[x_count][y_count] + 1;	//豁ｩ謨ｰ繧剃ｻ｣蜈･
+ //縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
  x_coordinate[head] = x_count;
  y_coordinate[head] = (y_count + 1);
  head++;
@@ -889,8 +889,8 @@ void step::step_reset() {
  }
  }
 
- if (head > 965) {		//配列越えたらエラー
- myprintf("エラー!\n\radachi::set_step()内\n\r");
+ if (head > 965) {		//驟榊�苓ｶ翫∴縺溘ｉ繧ｨ繝ｩ繝ｼ
+ myprintf("繧ｨ繝ｩ繝ｼ!\n\radachi::set_step()蜀�\n\r");
  break;
  }
 
@@ -899,49 +899,49 @@ void step::step_reset() {
  }
  */
 void step::spread_step(uint8_t tar_x, uint8_t tar_y, bool by_known) {
-	uint8_t x, y;	//一時的に座標をもっとくよう
+	uint8_t x, y;	//荳�譎ら噪縺ｫ蠎ｧ讓吶ｒ繧ゅ▲縺ｨ縺上ｈ縺�
 	uint16_t now_step;
 	loop = 0;
 
-	//座標保存用Queue
+	//蠎ｧ讓吩ｿ晏ｭ倡畑Queue
 	static my_queue x_que;
 	static my_queue y_que;
 
 	step_reset();
-	maze_step[tar_x][tar_y] = 0;
 
-	//Qの最初には目標の座標を入れとく
+	maze_step[tar_x][tar_y] = 0;
+	//Q縺ｮ譛�蛻昴↓縺ｯ逶ｮ讓吶�ｮ蠎ｧ讓吶ｒ蜈･繧後→縺�
 	x_que.push(tar_x);
 	y_que.push(tar_y);
 
-	while (x_que.size() != 0) {		//xもyもサイズは同じなので代表してxを使う
+	while (x_que.size() != 0) {		//x繧Ｚ繧ゅし繧､繧ｺ縺ｯ蜷後§縺ｪ縺ｮ縺ｧ莉｣陦ｨ縺励※x繧剃ｽｿ縺�
 		loop++;
-		//座標を代入
+		//蠎ｧ讓吶ｒ莉｣蜈･
 		x = x_que.front();
 		y = y_que.front();
-		x_que.pop();		//取り出したので消去
-		y_que.pop();		//取り出したので消去
+		x_que.pop();		//蜿悶ｊ蜃ｺ縺励◆縺ｮ縺ｧ豸亥悉
+		y_que.pop();		//蜿悶ｊ蜃ｺ縺励◆縺ｮ縺ｧ豸亥悉
 		now_step = maze_step[x][y];
 
-		//左マス
-		if (set_step(x, y, MUKI_LEFT, now_step + 1, by_known)) {	//書き込めたなら
-			x_que.push(x - 1);		//この座標を保持
-			y_que.push(y);		//この座標を保持
+		//蟾ｦ繝槭せ
+		if (set_step(x, y, MUKI_LEFT, now_step + 1, by_known)) {	//譖ｸ縺崎ｾｼ繧√◆縺ｪ繧�
+			x_que.push(x - 1);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
+			y_que.push(y);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
 		}
-		//右マス
-		if (set_step(x, y, MUKI_RIGHT, now_step + 1, by_known)) {	//書き込めたなら
-			x_que.push(x + 1);		//この座標を保持
-			y_que.push(y);		//この座標を保持
+		//蜿ｳ繝槭せ
+		if (set_step(x, y, MUKI_RIGHT, now_step + 1, by_known)) {	//譖ｸ縺崎ｾｼ繧√◆縺ｪ繧�
+			x_que.push(x + 1);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
+			y_que.push(y);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
 		}
-		//北マス
-		if (set_step(x, y, MUKI_UP, now_step + 1, by_known)) {	//書き込めたなら
-			x_que.push(x);		//この座標を保持
-			y_que.push(y + 1);		//この座標を保持
+		//蛹励�槭せ
+		if (set_step(x, y, MUKI_UP, now_step + 1, by_known)) {	//譖ｸ縺崎ｾｼ繧√◆縺ｪ繧�
+			x_que.push(x);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
+			y_que.push(y + 1);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
 		}
-		//南マス
-		if (set_step(x, y, MUKI_DOWN, now_step + 1, by_known)) {	//書き込めたなら
-			x_que.push(x);		//この座標を保持
-			y_que.push(y - 1);		//この座標を保持
+		//蜊励�槭せ
+		if (set_step(x, y, MUKI_DOWN, now_step + 1, by_known)) {	//譖ｸ縺崎ｾｼ繧√◆縺ｪ繧�
+			x_que.push(x);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
+			y_que.push(y - 1);		//縺薙�ｮ蠎ｧ讓吶ｒ菫晄戟
 		}
 	}
 
@@ -970,7 +970,7 @@ bool step::set_step(uint8_t _x, uint8_t _y, uint8_t _muki, uint8_t _set_step,
 		break;
 	}
 
-//配列外に出るパターンを除外
+//驟榊�怜､悶↓蜃ｺ繧九ヱ繧ｿ繝ｼ繝ｳ繧帝勁螟�
 	if (static_cast<int16_t>(_x) + dx < 0)
 		return false;
 	if (static_cast<int16_t>(_x) + dx >= MAZE_SIZE)
@@ -980,11 +980,11 @@ bool step::set_step(uint8_t _x, uint8_t _y, uint8_t _muki, uint8_t _set_step,
 	if (static_cast<int16_t>(_y) + dy >= MAZE_SIZE)
 		return false;
 
-	if ((maze_step[_x + dx][_y + dy] > _set_step)) {	//入ってる歩数が入れようとする歩数より大きい
-		if (!map::get_wall(_x, _y, _muki)) {	//壁がない
-			if (!_by_known || map::check_exist(_x, _y, _muki)) {	//右壁を見ているなら
-				maze_step[_x + dx][_y + dy] = _set_step;	//歩数を代入
-				return true;	//歩数を書き込めたのでtrueを返す
+	if ((maze_step[_x + dx][_y + dy] > _set_step)) {	//蜈･縺｣縺ｦ繧区ｭｩ謨ｰ縺悟�･繧後ｈ縺�縺ｨ縺吶ｋ豁ｩ謨ｰ繧医ｊ螟ｧ縺阪＞
+		if (!map::get_wall(_x, _y, _muki)) {	//螢√′縺ｪ縺�
+			if (!_by_known || map::check_exist(_x, _y, _muki)) {	//蜿ｳ螢√ｒ隕九※縺�繧九↑繧�
+				maze_step[_x + dx][_y + dy] = _set_step;	//豁ｩ謨ｰ繧剃ｻ｣蜈･
+				return true;	//豁ｩ謨ｰ繧呈嶌縺崎ｾｼ繧√◆縺ｮ縺ｧtrue繧定ｿ斐☆
 			}
 		}
 	}
@@ -998,73 +998,73 @@ unsigned int step::get_step(unsigned char target_x, unsigned char target_y) {
 
 void step::close_one_dead_end(unsigned char target_x, unsigned char target_y) {
 	union {
-		unsigned char all;				//一括
+		unsigned char all;				//荳�諡ｬ
 		struct {
-			unsigned char count :4;		//		行けない方向の個数
-			unsigned char up :1;		//↑	x=0,y=1の方向
-			unsigned char down :1;		//↓	x=0,y=-1の方向
-			unsigned char left :1;		//←	x=-1,y=0の方向
-			unsigned char right :1;		//→	x=1,y=0の方向
+			unsigned char count :4;		//		陦後￠縺ｪ縺�譁ｹ蜷代�ｮ蛟区焚
+			unsigned char up :1;		//竊�	x=0,y=1縺ｮ譁ｹ蜷�
+			unsigned char down :1;		//竊�	x=0,y=-1縺ｮ譁ｹ蜷�
+			unsigned char left :1;		//竊�	x=-1,y=0縺ｮ譁ｹ蜷�
+			unsigned char right :1;		//竊�	x=1,y=0縺ｮ譁ｹ蜷�
 		} direction;
 	} dead_end;
 
-	dead_end.all = 0;	//初期化
+	dead_end.all = 0;	//蛻晄悄蛹�
 
-//左マス
-	if ((map::get_wall(target_x, target_y, MUKI_LEFT))) {	//左壁があるなら
-		dead_end.direction.left = 1;	//左フラグを建てる
-		dead_end.direction.count++;	//1足す
-	} else if ((target_x - 1) >= 0) {		//座標が迷路内(x-1が0以上)にあり
+//蟾ｦ繝槭せ
+	if ((map::get_wall(target_x, target_y, MUKI_LEFT))) {	//蟾ｦ螢√′縺ゅｋ縺ｪ繧�
+		dead_end.direction.left = 1;	//蟾ｦ繝輔Λ繧ｰ繧貞ｻｺ縺ｦ繧�
+		dead_end.direction.count++;	//1雜ｳ縺�
+	} else if ((target_x - 1) >= 0) {		//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(x-1縺�0莉･荳�)縺ｫ縺ゅｊ
 		if ((maze_step[target_x - 1][target_y] == STEP_INIT)
-				|| (map::check_exist(target_x, target_y, MUKI_LEFT) == false)) {//左のマスに行けない（入ってる歩数が255 または ）
-			dead_end.direction.left = 1;		//左フラグオン
-			dead_end.direction.count++;		//1足す
+				|| (map::check_exist(target_x, target_y, MUKI_LEFT) == false)) {//蟾ｦ縺ｮ繝槭せ縺ｫ陦後￠縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺�255 縺ｾ縺溘�ｯ �ｼ�
+			dead_end.direction.left = 1;		//蟾ｦ繝輔Λ繧ｰ繧ｪ繝ｳ
+			dead_end.direction.count++;		//1雜ｳ縺�
 		}
 	}
 
-//右マス
-	if ((map::get_wall(target_x, target_y, MUKI_RIGHT))) {		//右壁があるなら
-		dead_end.direction.right = 1;		//右フラグを建てる
-		dead_end.direction.count++;		//1足す
-	} else if ((target_x + 1) < MAZE_SIZE) {		//座標が迷路内(x+1がMax_x未満)にあり
+//蜿ｳ繝槭せ
+	if ((map::get_wall(target_x, target_y, MUKI_RIGHT))) {		//蜿ｳ螢√′縺ゅｋ縺ｪ繧�
+		dead_end.direction.right = 1;		//蜿ｳ繝輔Λ繧ｰ繧貞ｻｺ縺ｦ繧�
+		dead_end.direction.count++;		//1雜ｳ縺�
+	} else if ((target_x + 1) < MAZE_SIZE) {		//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(x+1縺勲ax_x譛ｪ貅�)縺ｫ縺ゅｊ
 		if ((maze_step[target_x + 1][target_y] == STEP_INIT)
-				|| (map::check_exist(target_x, target_y, MUKI_RIGHT) == false)) {//右のマスに行けない（入ってる歩数が255 または 壁がある）
-			dead_end.direction.right = 1;		//右フラグを建てる
-			dead_end.direction.count++;		//1足す
+				|| (map::check_exist(target_x, target_y, MUKI_RIGHT) == false)) {//蜿ｳ縺ｮ繝槭せ縺ｫ陦後￠縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺�255 縺ｾ縺溘�ｯ 螢√′縺ゅｋ�ｼ�
+			dead_end.direction.right = 1;		//蜿ｳ繝輔Λ繧ｰ繧貞ｻｺ縺ｦ繧�
+			dead_end.direction.count++;		//1雜ｳ縺�
 		}
 	}
 
-//下マス
-	if ((map::get_wall(target_x, target_y, MUKI_DOWN))) {		//下壁があるなら
-		dead_end.direction.down = 1;		//下フラグを建てる
-		dead_end.direction.count++;		//1足す
-	} else if ((target_y - 1 >= 0)) {		//座標が迷路内(y-1が0以上)にあり
+//荳九�槭せ
+	if ((map::get_wall(target_x, target_y, MUKI_DOWN))) {		//荳句｣√′縺ゅｋ縺ｪ繧�
+		dead_end.direction.down = 1;		//荳九ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
+		dead_end.direction.count++;		//1雜ｳ縺�
+	} else if ((target_y - 1 >= 0)) {		//蠎ｧ讓吶′霑ｷ霍ｯ蜀�(y-1縺�0莉･荳�)縺ｫ縺ゅｊ
 		if ((maze_step[target_x][target_y - 1] == STEP_INIT)
-				|| (map::check_exist(target_x, target_y, MUKI_DOWN) == false)) {//下のマスに行けない（入ってる歩数が255 または 壁がある）
-			dead_end.direction.down = 1;		//下フラグを建てる
-			dead_end.direction.count++;		//1足す
+				|| (map::check_exist(target_x, target_y, MUKI_DOWN) == false)) {//荳九�ｮ繝槭せ縺ｫ陦後￠縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺�255 縺ｾ縺溘�ｯ 螢√′縺ゅｋ�ｼ�
+			dead_end.direction.down = 1;		//荳九ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
+			dead_end.direction.count++;		//1雜ｳ縺�
 		}
 	}
 
-//上マス
-	if ((map::get_wall(target_x, target_y, MUKI_UP))) {		//上壁があるなら
-		dead_end.direction.up = 1;		//上フラグを建てる
-		dead_end.direction.count++;		//1足す
-	} else if ((target_y + 1 < MAZE_SIZE)) {		//x,y+1の座標が迷路内(MAX_y未満)である
+//荳翫�槭せ
+	if ((map::get_wall(target_x, target_y, MUKI_UP))) {		//荳雁｣√′縺ゅｋ縺ｪ繧�
+		dead_end.direction.up = 1;		//荳翫ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
+		dead_end.direction.count++;		//1雜ｳ縺�
+	} else if ((target_y + 1 < MAZE_SIZE)) {		//x,y+1縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�(MAX_y譛ｪ貅�)縺ｧ縺ゅｋ
 		if ((maze_step[target_x][target_y + 1] == STEP_INIT)
-				|| (map::check_exist(target_x, target_y, MUKI_UP) == false)) {//上のマスに行けない（入ってる歩数が255　または　壁がある）
-			dead_end.direction.up = 1;		//上フラグを建てる
-			dead_end.direction.count++;		//1足す
+				|| (map::check_exist(target_x, target_y, MUKI_UP) == false)) {//荳翫�ｮ繝槭せ縺ｫ陦後￠縺ｪ縺�ｼ亥�･縺｣縺ｦ繧区ｭｩ謨ｰ縺�255縲�縺ｾ縺溘�ｯ縲�螢√′縺ゅｋ�ｼ�
+			dead_end.direction.up = 1;		//荳翫ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
+			dead_end.direction.count++;		//1雜ｳ縺�
 		}
 	}
 
-//袋小路をふさぐ
-	if (dead_end.direction.count >= 3) {		//行けない方向が3以上 = 袋小路なら
-		if ((target_x == 0) && (target_y == 0)) {		//それがスタートなら何もしない
-		} else if ((target_x == GOAL_x) && (target_y == GOAL_y)) {//それがゴールでも何もしない
-		} else {							//上記以外なら袋小路を潰す
-			maze_step[target_x][target_y] = STEP_INIT;					//歩数を初期化
-			//袋小路のあいてる方向についてもう一回同じことを行う
+//陲句ｰ剰ｷｯ繧偵�ｵ縺輔＄
+	if (dead_end.direction.count >= 3) {		//陦後￠縺ｪ縺�譁ｹ蜷代′3莉･荳� = 陲句ｰ剰ｷｯ縺ｪ繧�
+		if ((target_x == 0) && (target_y == 0)) {		//縺昴ｌ縺後せ繧ｿ繝ｼ繝医↑繧我ｽ輔ｂ縺励↑縺�
+		} else if ((target_x == GOAL_x) && (target_y == GOAL_y)) {//縺昴ｌ縺後ざ繝ｼ繝ｫ縺ｧ繧ゆｽ輔ｂ縺励↑縺�
+		} else {							//荳願ｨ倅ｻ･螟悶↑繧芽｢句ｰ剰ｷｯ繧呈ｽｰ縺�
+			maze_step[target_x][target_y] = STEP_INIT;					//豁ｩ謨ｰ繧貞�晄悄蛹�
+			//陲句ｰ剰ｷｯ縺ｮ縺ゅ＞縺ｦ繧区婿蜷代↓縺､縺�縺ｦ繧ゅ≧荳�蝗槫酔縺倥％縺ｨ繧定｡後≧
 			if (dead_end.direction.left == 0) {
 				map::create_wall(target_x, target_y, MUKI_LEFT);
 				map::remember_exist(target_x, target_y, MUKI_LEFT);
@@ -1116,13 +1116,13 @@ PATH path::path_memory[PATH_MAX];
 void path::set_step_for_shortest(unsigned char target_x,
 		unsigned char target_y) {
 
-//set_step_by_known(target_x, target_y);		//既知の壁だけで歩数マップを作成
-	spread_step(target_x, target_y, true);					//既知の壁だけで歩数マップを作成
-	close_dead_end();					//袋小路を潰す
+//set_step_by_known(target_x, target_y);		//譌｢遏･縺ｮ螢√□縺代〒豁ｩ謨ｰ繝槭ャ繝励ｒ菴懈��
+	spread_step(target_x, target_y, true);					//譌｢遏･縺ｮ螢√□縺代〒豁ｩ謨ｰ繝槭ャ繝励ｒ菴懈��
+	close_dead_end();					//陲句ｰ剰ｷｯ繧呈ｽｰ縺�
 }
 
 void path::displace_path(unsigned int path_number) {
-//1個ずらす
+//1蛟九★繧峨☆
 	for (uint16_t number = path_number;
 			path_memory[number].element.flag == TRUE; number++) {
 		path_memory[number].all = path_memory[number + 1].all;
@@ -1132,38 +1132,38 @@ void path::displace_path(unsigned int path_number) {
 void path::improve_path() {
 	unsigned int count = 0;
 
-	while (path_memory[count].element.flag == TRUE) {	//pathが終われば終了
+	while (path_memory[count].element.flag == TRUE) {	//path縺檎ｵゅｏ繧後�ｰ邨ゆｺ�
 
-		if (path_memory[count].element.distance >= 1) {	//90mm以上直進するなら
+		if (path_memory[count].element.distance >= 1) {	//90mm莉･荳顔峩騾ｲ縺吶ｋ縺ｪ繧�
 
-			if (path_memory[count + 1].element.distance >= 1) {	//ターン後も90mm以上直進するなら	大回りのチェックを行う
-				path_memory[count].element.turn = 2;	//大回りターンに変更
-				path_memory[count].element.distance -= 1;	//直線距離を90mm減らす
-				path_memory[count + 1].element.distance -= 1;	//直線距離を90mm減らす
+			if (path_memory[count + 1].element.distance >= 1) {	//繧ｿ繝ｼ繝ｳ蠕後ｂ90mm莉･荳顔峩騾ｲ縺吶ｋ縺ｪ繧�	螟ｧ蝗槭ｊ縺ｮ繝√ぉ繝�繧ｯ繧定｡後≧
+				path_memory[count].element.turn = 2;	//螟ｧ蝗槭ｊ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+				path_memory[count].element.distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+				path_memory[count + 1].element.distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 
-			} else {								//ターン後90mm直進はしないなら
+			} else {								//繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺ｯ縺励↑縺�縺ｪ繧�
 
 				if (path_memory[count].element.muki
-						== path_memory[count + 1].element.muki) {//同じ方向に曲がるなら(Uターン)
+						== path_memory[count + 1].element.muki) {//蜷後§譁ｹ蜷代↓譖ｲ縺後ｋ縺ｪ繧�(U繧ｿ繝ｼ繝ｳ)
 
-					if (path_memory[count + 2].element.distance >= 1) {	//Uターン後90mm直進するなら
-						path_memory[count].element.turn = 3;	//180°ターンに変更
-						path_memory[count].element.distance -= 1;//直線距離を90mm減らす
-						path_memory[count + 2].element.distance -= 1;//直線距離を90mm減らす
+					if (path_memory[count + 2].element.distance >= 1) {	//U繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺吶ｋ縺ｪ繧�
+						path_memory[count].element.turn = 3;	//180ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+						path_memory[count].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+						path_memory[count + 2].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 
-						//1個ずらす
+						//1蛟九★繧峨☆
 						displace_path(count + 1);
 
-					} else {							//Uターン後すぐ曲がるなら
+					} else {							//U繧ｿ繝ｼ繝ｳ蠕後☆縺先峇縺後ｋ縺ｪ繧�
 
-						if (path_memory[count + 2].element.flag == FALSE) {	//pathが終わってないかチェック　終わってなければ逆方向にターンのはず
-							//ナナメの処理なので何もしない
+						if (path_memory[count + 2].element.flag == FALSE) {	//path縺檎ｵゅｏ縺｣縺ｦ縺ｪ縺�縺九メ繧ｧ繝�繧ｯ縲�邨ゅｏ縺｣縺ｦ縺ｪ縺代ｌ縺ｰ騾�譁ｹ蜷代↓繧ｿ繝ｼ繝ｳ縺ｮ縺ｯ縺�
+							//繝翫リ繝｡縺ｮ蜃ｦ逅�縺ｪ縺ｮ縺ｧ菴輔ｂ縺励↑縺�
 						}
 
 					}
 
-				} else {		//違う方法に曲がるなら
-					//ナナメの処理なので何もしない
+				} else {		//驕輔≧譁ｹ豕輔↓譖ｲ縺後ｋ縺ｪ繧�
+					//繝翫リ繝｡縺ｮ蜃ｦ逅�縺ｪ縺ｮ縺ｧ菴輔ｂ縺励↑縺�
 				}
 
 			}
@@ -1177,119 +1177,119 @@ void path::improve_path() {
 
 void path::improve_advance_path() {
 	unsigned int count = 0;
-	unsigned char temp_distance = 0;	//一時的な距離保存
-	unsigned char naname_flag = FALSE;	//現在機体が斜めかを判断	ONなら斜め走行中
+	unsigned char temp_distance = 0;	//荳�譎ら噪縺ｪ霍晞屬菫晏ｭ�
+	unsigned char naname_flag = FALSE;	//迴ｾ蝨ｨ讖滉ｽ薙′譁懊ａ縺九ｒ蛻､譁ｭ	ON縺ｪ繧画万繧∬ｵｰ陦御ｸｭ
 
-	while (path_memory[count].element.flag == TRUE) {	//pathが終われば終了
+	while (path_memory[count].element.flag == TRUE) {	//path縺檎ｵゅｏ繧後�ｰ邨ゆｺ�
 
-		if (naname_flag == TRUE) {	//斜め走行中なら	確実に直進距離(distance)が0のはず
+		if (naname_flag == TRUE) {	//譁懊ａ襍ｰ陦御ｸｭ縺ｪ繧�	遒ｺ螳溘↓逶ｴ騾ｲ霍晞屬(distance)縺�0縺ｮ縺ｯ縺�
 
-			if (path_memory[count + 1].element.distance >= 1) {	//次のターン後90mm以上直進(斜め終わり)
+			if (path_memory[count + 1].element.distance >= 1) {	//谺｡縺ｮ繧ｿ繝ｼ繝ｳ蠕�90mm莉･荳顔峩騾ｲ(譁懊ａ邨ゅｏ繧�)
 
-				path_memory[count].element.turn = 5;	//終わり45°ターンに変更
-				path_memory[count + 1].element.distance -= 1;	//直線距離を90mm減らす
+				path_memory[count].element.turn = 5;	//邨ゅｏ繧�45ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+				path_memory[count + 1].element.distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 				naname_flag = FALSE;
-				count++;	//配列を次へ
+				count++;	//驟榊�励ｒ谺｡縺ｸ
 
-			} else if (path_memory[count + 2].element.distance >= 1) {//次の次のターン後90mm以上直進(斜め終わり)
+			} else if (path_memory[count + 2].element.distance >= 1) {//谺｡縺ｮ谺｡縺ｮ繧ｿ繝ｼ繝ｳ蠕�90mm莉･荳顔峩騾ｲ(譁懊ａ邨ゅｏ繧�)
 
 				if (path_memory[count].element.muki
-						== path_memory[count + 1].element.muki) {	//同じ方向の2回ターン
+						== path_memory[count + 1].element.muki) {	//蜷後§譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ
 
-					path_memory[count].element.turn = 7;	//終わり135°ターンに変更
-					displace_path(count + 1);	//一個ずらす
-					path_memory[count + 1].element.distance -= 1;//ターン後の直線距離を90mm減らす
+					path_memory[count].element.turn = 7;	//邨ゅｏ繧�135ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					displace_path(count + 1);	//荳�蛟九★繧峨☆
+					path_memory[count + 1].element.distance -= 1;//繧ｿ繝ｼ繝ｳ蠕後�ｮ逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 					naname_flag = FALSE;
-					count++;	//配列を次へ
+					count++;	//驟榊�励ｒ谺｡縺ｸ
 
-				} else {								//交互のターン(ギザギザ)
+				} else {								//莠､莠偵�ｮ繧ｿ繝ｼ繝ｳ(繧ｮ繧ｶ繧ｮ繧ｶ)
 
-					path_memory[count].element.distance += 1;	//斜めの直線距離を1増やす
-					temp_distance = path_memory[count].element.distance;//距離を一時的に持っておく
-					displace_path(count);								//一個ずらす
-					path_memory[count].element.distance = temp_distance;//距離を入れなおす
+					path_memory[count].element.distance += 1;	//譁懊ａ縺ｮ逶ｴ邱夊ｷ晞屬繧�1蠅励ｄ縺�
+					temp_distance = path_memory[count].element.distance;//霍晞屬繧剃ｸ�譎ら噪縺ｫ謖√▲縺ｦ縺翫￥
+					displace_path(count);								//荳�蛟九★繧峨☆
+					path_memory[count].element.distance = temp_distance;//霍晞屬繧貞�･繧後↑縺翫☆
 
 				}
 
-			} else {									//まだまだ斜めは続くなら
+			} else {									//縺ｾ縺�縺ｾ縺�譁懊ａ縺ｯ邯壹￥縺ｪ繧�
 
 				if (path_memory[count].element.muki
-						== path_memory[count + 1].element.muki) {//同じ方向の2回ターン	コの字
+						== path_memory[count + 1].element.muki) {//蜷後§譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ	繧ｳ縺ｮ蟄�
 
-					path_memory[count].element.turn = 8;		//斜め90°ターンに変更
-					displace_path(count + 1);							//一個ずらす
-					count++;									//配列を次へ
+					path_memory[count].element.turn = 8;		//譁懊ａ90ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					displace_path(count + 1);							//荳�蛟九★繧峨☆
+					count++;									//驟榊�励ｒ谺｡縺ｸ
 
-				} else {							//違う方向の2回ターン	ギザギザ
+				} else {							//驕輔≧譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ	繧ｮ繧ｶ繧ｮ繧ｶ
 
-					path_memory[count].element.distance += 1;	//斜めの直線距離を1増やす
-					temp_distance = path_memory[count].element.distance;//距離を一時的に持っておく
-					displace_path(count);							//一個ずらす
-					path_memory[count].element.distance = temp_distance;//距離を入れなおす
+					path_memory[count].element.distance += 1;	//譁懊ａ縺ｮ逶ｴ邱夊ｷ晞屬繧�1蠅励ｄ縺�
+					temp_distance = path_memory[count].element.distance;//霍晞屬繧剃ｸ�譎ら噪縺ｫ謖√▲縺ｦ縺翫￥
+					displace_path(count);							//荳�蛟九★繧峨☆
+					path_memory[count].element.distance = temp_distance;//霍晞屬繧貞�･繧後↑縺翫☆
 
 				}
 			}
 
-		} else {										//斜めじゃなければ
+		} else {										//譁懊ａ縺倥ｃ縺ｪ縺代ｌ縺ｰ
 
-			if (path_memory[count + 1].element.distance >= 1) {	//ターン後も90mm以上直進するなら	大回りのチェックを行う
+			if (path_memory[count + 1].element.distance >= 1) {	//繧ｿ繝ｼ繝ｳ蠕後ｂ90mm莉･荳顔峩騾ｲ縺吶ｋ縺ｪ繧�	螟ｧ蝗槭ｊ縺ｮ繝√ぉ繝�繧ｯ繧定｡後≧
 
-				if ((count != 0) || (path_memory[0].element.distance > 1)) {//初っ端のターンじゃなければ
+				if ((count != 0) || (path_memory[0].element.distance > 1)) {//蛻昴▲遶ｯ縺ｮ繧ｿ繝ｼ繝ｳ縺倥ｃ縺ｪ縺代ｌ縺ｰ
 
-					path_memory[count].element.turn = 2;	//大回りターンに変更
-					path_memory[count].element.distance -= 1;	//直線距離を90mm減らす
-					path_memory[count + 1].element.distance -= 1;//直線距離を90mm減らす
+					path_memory[count].element.turn = 2;	//螟ｧ蝗槭ｊ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					path_memory[count].element.distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+					path_memory[count + 1].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 
 				} else {
-					//TODO 初っ端大回り90ターンの処理
+					//TODO 蛻昴▲遶ｯ螟ｧ蝗槭ｊ90繧ｿ繝ｼ繝ｳ縺ｮ蜃ｦ逅�
 				}
 
-			} else {								//ターン後90mm直進はしないなら
+			} else {								//繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺ｯ縺励↑縺�縺ｪ繧�
 
 				if (path_memory[count].element.muki
-						== path_memory[count + 1].element.muki) {//同じ方向に曲がるなら(Uターン)
+						== path_memory[count + 1].element.muki) {//蜷後§譁ｹ蜷代↓譖ｲ縺後ｋ縺ｪ繧�(U繧ｿ繝ｼ繝ｳ)
 
-					if (path_memory[count + 2].element.distance >= 1) {	//Uターン後90mm直進するなら
+					if (path_memory[count + 2].element.distance >= 1) {	//U繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺吶ｋ縺ｪ繧�
 
-						path_memory[count].element.turn = 3;	//180°ターンに変更
-						path_memory[count].element.distance -= 1;//直線距離を90mm減らす
-						path_memory[count + 2].element.distance -= 1;//直線距離を90mm減らす
-						displace_path(count + 1);	//一個ずらす
+						path_memory[count].element.turn = 3;	//180ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+						path_memory[count].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+						path_memory[count + 2].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+						displace_path(count + 1);	//荳�蛟九★繧峨☆
 
-					} else {							//Uターン後すぐ曲がるなら
+					} else {							//U繧ｿ繝ｼ繝ｳ蠕後☆縺先峇縺後ｋ縺ｪ繧�
 
-						if (path_memory[count + 2].all != 0) {//pathが終わってないかチェック　終わってなければ逆方向にターンのはず
+						if (path_memory[count + 2].all != 0) {//path縺檎ｵゅｏ縺｣縺ｦ縺ｪ縺�縺九メ繧ｧ繝�繧ｯ縲�邨ゅｏ縺｣縺ｦ縺ｪ縺代ｌ縺ｰ騾�譁ｹ蜷代↓繧ｿ繝ｼ繝ｳ縺ｮ縺ｯ縺�
 
-							path_memory[count].element.turn = 6;	//135°ターンに変更
-							path_memory[count].element.distance -= 1;//直線距離を90mm減らす
-							displace_path(count + 1);					//一個ずらす
+							path_memory[count].element.turn = 6;	//135ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+							path_memory[count].element.distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+							displace_path(count + 1);					//荳�蛟九★繧峨☆
 							naname_flag = TRUE;
 
 						}
 
 					}
 
-				} else {		//違う方法に曲がるなら
+				} else {		//驕輔≧譁ｹ豕輔↓譖ｲ縺後ｋ縺ｪ繧�
 
-					path_memory[count].element.turn = 4;		//45°ターンに変更
-					path_memory[count].element.distance -= 1;	//直線距離を90mm減らす
+					path_memory[count].element.turn = 4;		//45ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					path_memory[count].element.distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 					naname_flag = TRUE;
 
 				}
 
 			}
-			count++;		//配列を次へ
+			count++;		//驟榊�励ｒ谺｡縺ｸ
 		}
 	}
 
 }
 
 void path::create_path() {
-	int8_t path_x, path_y;							//位置管理用
-	int8_t path_direction_x, path_direction_y;							//方向管理用
-	bool straight_flag;							//直線できるかどうか判別用フラグ
-	SAVE_DIRECTION save_direction;							//次に行くマスの方向を保存
-	uint16_t count = 0;							//数を数えるだけの変数
+	int8_t path_x, path_y;							//菴咲ｽｮ邂｡逅�逕ｨ
+	int8_t path_direction_x, path_direction_y;							//譁ｹ蜷醍ｮ｡逅�逕ｨ
+	bool straight_flag;							//逶ｴ邱壹〒縺阪ｋ縺九←縺�縺句愛蛻･逕ｨ繝輔Λ繧ｰ
+	SAVE_DIRECTION save_direction;							//谺｡縺ｫ陦後￥繝槭せ縺ｮ譁ｹ蜷代ｒ菫晏ｭ�
+	uint16_t count = 0;							//謨ｰ繧呈焚縺医ｋ縺�縺代�ｮ螟画焚
 
 //set_step_for_shortest(GOAL_x,GOAL_y);
 
@@ -1297,135 +1297,135 @@ void path::create_path() {
 
 	path_reset();
 
-	path_direction_x = 0;							//方向を初期化
+	path_direction_x = 0;							//譁ｹ蜷代ｒ蛻晄悄蛹�
 	path_direction_y = 1;
 
-	path_x = 0;							//位置を初期化
+	path_x = 0;							//菴咲ｽｮ繧貞�晄悄蛹�
 	path_y = 0;
 
-	straight_flag = false;							//フラグは折っておく
+	straight_flag = false;							//繝輔Λ繧ｰ縺ｯ謚倥▲縺ｦ縺翫￥
 
-	path_memory[count].element.distance += 1;					//最初は必ず半区画直進する
-	path_memory[count].element.flag = TRUE;						//最初だし続行フラグを建てる
+	path_memory[count].element.distance += 1;					//譛�蛻昴�ｯ蠢�縺壼濠蛹ｺ逕ｻ逶ｴ騾ｲ縺吶ｋ
+	path_memory[count].element.flag = TRUE;						//譛�蛻昴□縺礼ｶ夊｡後ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
 
 	while (1) {
 
-		save_direction.all = 0;		//次に行く方向初期化
-		straight_flag = false;		//フラグは折っておく
+		save_direction.all = 0;		//谺｡縺ｫ陦後￥譁ｹ蜷大�晄悄蛹�
+		straight_flag = false;		//繝輔Λ繧ｰ縺ｯ謚倥▲縺ｦ縺翫￥
 
-		path_x += path_direction_x;		//位置修正
+		path_x += path_direction_x;		//菴咲ｽｮ菫ｮ豁｣
 		path_y += path_direction_y;
 
-		//GOALにたどり着いたら終了
+		//GOAL縺ｫ縺溘←繧顔捩縺�縺溘ｉ邨ゆｺ�
 		if ((path_x == GOAL_x) && (path_y == GOAL_y)) {
-			path_memory[count].element.distance += 1;	//90mm直進を追加	ゴールに入りきるため
-			path_memory[count + 1].element.flag = FALSE;		//続行フラグを折っておく
+			path_memory[count].element.distance += 1;	//90mm逶ｴ騾ｲ繧定ｿｽ蜉�	繧ｴ繝ｼ繝ｫ縺ｫ蜈･繧翫″繧九◆繧�
+			path_memory[count + 1].element.flag = FALSE;		//邯夊｡後ヵ繝ｩ繧ｰ繧呈釜縺｣縺ｦ縺翫￥
 			break;
 		}
 
-		//左
-		if ((path_x - 1) >= 0) {	//path_x-1,path_yの座標が迷路内(0以上)である
-			if (get_step(path_x - 1, path_y) < get_step(path_x, path_y)) {//歩数の小さいほうへ
-				if ((map::get_wall(path_x, path_y, MUKI_LEFT) == false)) {//壁がないなら
-					save_direction.element.left = 1;	//次に進む方向の選択肢に追加
-					if ((path_direction_x == -1) && (path_direction_y == 0)) {//左を向いてるとき（直進できるとき）
-						straight_flag = true;	//直進フラグをたてる
+		//蟾ｦ
+		if ((path_x - 1) >= 0) {	//path_x-1,path_y縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�(0莉･荳�)縺ｧ縺ゅｋ
+			if (get_step(path_x - 1, path_y) < get_step(path_x, path_y)) {//豁ｩ謨ｰ縺ｮ蟆上＆縺�縺ｻ縺�縺ｸ
+				if ((map::get_wall(path_x, path_y, MUKI_LEFT) == false)) {//螢√′縺ｪ縺�縺ｪ繧�
+					save_direction.element.left = 1;	//谺｡縺ｫ騾ｲ繧�譁ｹ蜷代�ｮ驕ｸ謚櫁い縺ｫ霑ｽ蜉�
+					if ((path_direction_x == -1) && (path_direction_y == 0)) {//蟾ｦ繧貞髄縺�縺ｦ繧九→縺搾ｼ育峩騾ｲ縺ｧ縺阪ｋ縺ｨ縺搾ｼ�
+						straight_flag = true;	//逶ｴ騾ｲ繝輔Λ繧ｰ繧偵◆縺ｦ繧�
 					}
 				}
 			}
 
 		}
 
-		//右
-		if ((path_x + 1) < MAZE_SIZE) {	//path_x+1,path_yの座標が迷路内である
-			if (get_step(path_x + 1, path_y) < get_step(path_x, path_y)) {//歩数の小さいほうへ
-				if ((map::get_wall(path_x, path_y, MUKI_RIGHT) == false)) {	//壁がないなら
-					save_direction.element.right = 1;	//次に進む方向の選択肢に追加
-					if ((path_direction_x == 1) && (path_direction_y == 0)) {//右を向いてるとき（直進できるとき）
-						straight_flag = true;	//直進フラグをたてる
+		//蜿ｳ
+		if ((path_x + 1) < MAZE_SIZE) {	//path_x+1,path_y縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�縺ｧ縺ゅｋ
+			if (get_step(path_x + 1, path_y) < get_step(path_x, path_y)) {//豁ｩ謨ｰ縺ｮ蟆上＆縺�縺ｻ縺�縺ｸ
+				if ((map::get_wall(path_x, path_y, MUKI_RIGHT) == false)) {	//螢√′縺ｪ縺�縺ｪ繧�
+					save_direction.element.right = 1;	//谺｡縺ｫ騾ｲ繧�譁ｹ蜷代�ｮ驕ｸ謚櫁い縺ｫ霑ｽ蜉�
+					if ((path_direction_x == 1) && (path_direction_y == 0)) {//蜿ｳ繧貞髄縺�縺ｦ繧九→縺搾ｼ育峩騾ｲ縺ｧ縺阪ｋ縺ｨ縺搾ｼ�
+						straight_flag = true;	//逶ｴ騾ｲ繝輔Λ繧ｰ繧偵◆縺ｦ繧�
 					}
 				}
 			}
 		}
 
-		//下
-		if ((path_y - 1) >= 0) {	//path_x,path_y-1の座標が迷路内(0以上)である
-			if (get_step(path_x, path_y - 1) < get_step(path_x, path_y)) {//歩数の小さいほうへ
-				if ((map::get_wall(path_x, path_y, MUKI_DOWN) == false)) {//壁がないなら
-					save_direction.element.down = 1;	//次に進む方向の選択肢に追加
-					if ((path_direction_x == 0) && (path_direction_y == -1)) {//下を向いてるとき（直進できるとき）
-						straight_flag = true;	//直進フラグをたてる
+		//荳�
+		if ((path_y - 1) >= 0) {	//path_x,path_y-1縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�(0莉･荳�)縺ｧ縺ゅｋ
+			if (get_step(path_x, path_y - 1) < get_step(path_x, path_y)) {//豁ｩ謨ｰ縺ｮ蟆上＆縺�縺ｻ縺�縺ｸ
+				if ((map::get_wall(path_x, path_y, MUKI_DOWN) == false)) {//螢√′縺ｪ縺�縺ｪ繧�
+					save_direction.element.down = 1;	//谺｡縺ｫ騾ｲ繧�譁ｹ蜷代�ｮ驕ｸ謚櫁い縺ｫ霑ｽ蜉�
+					if ((path_direction_x == 0) && (path_direction_y == -1)) {//荳九ｒ蜷代＞縺ｦ繧九→縺搾ｼ育峩騾ｲ縺ｧ縺阪ｋ縺ｨ縺搾ｼ�
+						straight_flag = true;	//逶ｴ騾ｲ繝輔Λ繧ｰ繧偵◆縺ｦ繧�
 					}
 				}
 			}
 		}
 
-		//上
-		if ((path_y + 1) < MAZE_SIZE) {	//path_x,path_y+1の座標が迷路内(16以下)である
-			if (get_step(path_x, path_y + 1) < get_step(path_x, path_y)) {//歩数の小さいほうへ
-				if ((map::get_wall(path_x, path_y, MUKI_UP) == false)) {//壁がないなら
-					save_direction.element.up = 1;	//次に進む方向の選択肢に追加
-					if ((path_direction_x == 0) && (path_direction_y == 1)) {//上を向いてるとき（直進できるとき）
-						straight_flag = true;	//直進フラグをたてる
+		//荳�
+		if ((path_y + 1) < MAZE_SIZE) {	//path_x,path_y+1縺ｮ蠎ｧ讓吶′霑ｷ霍ｯ蜀�(16莉･荳�)縺ｧ縺ゅｋ
+			if (get_step(path_x, path_y + 1) < get_step(path_x, path_y)) {//豁ｩ謨ｰ縺ｮ蟆上＆縺�縺ｻ縺�縺ｸ
+				if ((map::get_wall(path_x, path_y, MUKI_UP) == false)) {//螢√′縺ｪ縺�縺ｪ繧�
+					save_direction.element.up = 1;	//谺｡縺ｫ騾ｲ繧�譁ｹ蜷代�ｮ驕ｸ謚櫁い縺ｫ霑ｽ蜉�
+					if ((path_direction_x == 0) && (path_direction_y == 1)) {//荳翫ｒ蜷代＞縺ｦ繧九→縺搾ｼ育峩騾ｲ縺ｧ縺阪ｋ縺ｨ縺搾ｼ�
+						straight_flag = true;	//逶ｴ騾ｲ繝輔Λ繧ｰ繧偵◆縺ｦ繧�
 					}
 				}
 			}
 		}
 
-		if (straight_flag) {			//直進できるなら
-			path_memory[count].element.distance += 2;			//半区間直進*2 を追加
+		if (straight_flag) {			//逶ｴ騾ｲ縺ｧ縺阪ｋ縺ｪ繧�
+			path_memory[count].element.distance += 2;			//蜊雁玄髢鍋峩騾ｲ*2 繧定ｿｽ蜉�
 
-		} else {								//ターンするなら
-			path_memory[count].element.turn = 1;						//小回りターン
+		} else {								//繧ｿ繝ｼ繝ｳ縺吶ｋ縺ｪ繧�
+			path_memory[count].element.turn = 1;						//蟆丞屓繧翫ち繝ｼ繝ｳ
 
-			if (path_direction_x == 0) {				//上か下向きのとき
-				//右に行きたい
+			if (path_direction_x == 0) {				//荳翫°荳句髄縺阪�ｮ縺ｨ縺�
+				//蜿ｳ縺ｫ陦後″縺溘＞
 				if (save_direction.element.right == 1) {
-					if (path_direction_y == 1) {	//上を向いてる
-						//右向きターン
+					if (path_direction_y == 1) {	//荳翫ｒ蜷代＞縺ｦ繧�
+						//蜿ｳ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_RIGHT;
-					} else {					//下を向いてる
-						//左向きターン
+					} else {					//荳九ｒ蜷代＞縺ｦ繧�
+						//蟾ｦ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_LEFT;
 					}
-					//左に行きたい
+					//蟾ｦ縺ｫ陦後″縺溘＞
 				} else {
-					if (path_direction_y == -1) {	//下を向いてる
-						//右向きターン
+					if (path_direction_y == -1) {	//荳九ｒ蜷代＞縺ｦ繧�
+						//蜿ｳ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_RIGHT;
-					} else {					//上を向いてる
-						//左向きターン
+					} else {					//荳翫ｒ蜷代＞縺ｦ繧�
+						//蟾ｦ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_LEFT;
 					}
 				}
 
-			} else {										//右か左向きのとき
-				//上に行きたい
+			} else {										//蜿ｳ縺句ｷｦ蜷代″縺ｮ縺ｨ縺�
+				//荳翫↓陦後″縺溘＞
 				if (save_direction.element.up == 1) {
-					if (path_direction_x == -1) {	//左を向いてる
-						//右向きターン
+					if (path_direction_x == -1) {	//蟾ｦ繧貞髄縺�縺ｦ繧�
+						//蜿ｳ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_RIGHT;
-					} else {					//右を向いてる
-						//左向きターン
+					} else {					//蜿ｳ繧貞髄縺�縺ｦ繧�
+						//蟾ｦ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_LEFT;
 					}
-					//下に行きたい
+					//荳九↓陦後″縺溘＞
 				} else {
-					if (path_direction_x == 1) {	//右を向いてる
-						//右向きターン
+					if (path_direction_x == 1) {	//蜿ｳ繧貞髄縺�縺ｦ繧�
+						//蜿ｳ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_RIGHT;
-					} else {					//左を向いてる
-						//左向きターン
+					} else {					//蟾ｦ繧貞髄縺�縺ｦ繧�
+						//蟾ｦ蜷代″繧ｿ繝ｼ繝ｳ
 						path_memory[count].element.muki = MUKI_LEFT;
 					}
 				}
 			}
-			//ターンによる方向修正
+			//繧ｿ繝ｼ繝ｳ縺ｫ繧医ｋ譁ｹ蜷台ｿｮ豁｣
 			direction_turn(&path_direction_x, &path_direction_y,
 					path_memory[count].element.muki);
 
 			count++;
-			path_memory[count].element.flag = TRUE;			//パスが続くのなら続行フラグを建てる
+			path_memory[count].element.flag = TRUE;			//繝代せ縺檎ｶ壹￥縺ｮ縺ｪ繧臥ｶ夊｡後ヵ繝ｩ繧ｰ繧貞ｻｺ縺ｦ繧�
 
 		}
 
@@ -1447,15 +1447,15 @@ void path::draw_path() {
 	myprintf("path-start \n\r");
 
 	for (int i = 0; path_memory[i].element.flag == TRUE; i++) {
-		//直線
+		//逶ｴ邱�
 		myprintf("distance -> %2d *", path_memory[i].element.distance);
-		if (MOUSE_MODE == 1)								//ハーフは半区間が45mm
+		if (MOUSE_MODE == 1)								//繝上�ｼ繝輔�ｯ蜊雁玄髢薙′45mm
 			myprintf("45mm\n\r");
 		else
 			myprintf("90mm\n\r");
 
-		//ターン
-		//myprintf("turn -> %2d ", path_memory[i].element.turn);	//格納している値を表示
+		//繧ｿ繝ｼ繝ｳ
+		//myprintf("turn -> %2d ", path_memory[i].element.turn);	//譬ｼ邏阪＠縺ｦ縺�繧句�､繧定｡ｨ遉ｺ
 		myprintf("turn -> ");
 		switch (path::get_path_turn_type(i)) {
 		case none:
@@ -1511,7 +1511,7 @@ void path::path_reset() {
 }
 
 bool path::get_path_flag(signed int index_number) {
-//pathがあるならtrue,ないならfalseを返す
+//path縺後≠繧九↑繧液rue,縺ｪ縺�縺ｪ繧映alse繧定ｿ斐☆
 	if (path_memory[index_number].element.flag == TRUE) {
 		return true;
 	} else {
@@ -1581,20 +1581,20 @@ bool path::set_path(uint16_t _index, PATH _path) {
 
 void direction_turn(signed char *direction_x, signed char *direction_y,
 		unsigned char direction_turn_muki) {
-	signed char temp_direction_x = (*direction_x);	//他の場所に保存しないと変換途中で参照する羽目になる
+	signed char temp_direction_x = (*direction_x);	//莉悶�ｮ蝣ｴ謇�縺ｫ菫晏ｭ倥＠縺ｪ縺�縺ｨ螟画鋤騾比ｸｭ縺ｧ蜿ら�ｧ縺吶ｋ鄒ｽ逶ｮ縺ｫ縺ｪ繧�
 	signed char temp_direction_y = (*direction_y);
 	if (direction_turn_muki == MUKI_LEFT) {
-		*direction_x = (temp_direction_x) * 0 + (temp_direction_y) * (-1);//回転行列のθ=90の計算
-		*direction_y = (temp_direction_x) * 1 + (temp_direction_y) * 0;	//回転行列のθ=90の計算
+		*direction_x = (temp_direction_x) * 0 + (temp_direction_y) * (-1);//蝗櫁ｻ｢陦悟�励�ｮﾎｸ=90縺ｮ險育ｮ�
+		*direction_y = (temp_direction_x) * 1 + (temp_direction_y) * 0;	//蝗櫁ｻ｢陦悟�励�ｮﾎｸ=90縺ｮ險育ｮ�
 	} else {
-		*direction_x = (temp_direction_x) * 0 + (temp_direction_y) * 1;	//回転行列のθ=-90の計算
-		*direction_y = (temp_direction_x) * (-1) + (temp_direction_y) * 0;//回転行列のθ=-90の計算
+		*direction_x = (temp_direction_x) * 0 + (temp_direction_y) * 1;	//蝗櫁ｻ｢陦悟�励�ｮﾎｸ=-90縺ｮ險育ｮ�
+		*direction_y = (temp_direction_x) * (-1) + (temp_direction_y) * 0;//蝗櫁ｻ｢陦悟�励�ｮﾎｸ=-90縺ｮ險育ｮ�
 	}
 
 }
 
 std::pair<int8_t, int8_t> compas_to_direction(compas tar) {
-	//TODO 斜め
+	//TODO 譁懊ａ
 	std::pair<int8_t, int8_t> ans(0, 0);
 	switch (tar) {
 	case north:
@@ -1614,7 +1614,7 @@ std::pair<int8_t, int8_t> compas_to_direction(compas tar) {
 }
 
 compas direction_to_compas(std::pair<int8_t, int8_t> tar) {
-	//TODO 斜め
+	//TODO 譁懊ａ
 	compas ans = north;
 	switch (tar.first) {
 	case 0:
@@ -1646,21 +1646,21 @@ bool node_step::able_set_step(uint8_t double_x, uint8_t y, compas muki,
 		uint16_t step_val, bool by_known) {
 	uint8_t def_muki = compas_to_muki(muki);
 
-//見ていない部分には書き込めない
+//隕九※縺�縺ｪ縺�驛ｨ蛻�縺ｫ縺ｯ譖ｸ縺崎ｾｼ繧√↑縺�
 	if (by_known) {
 		if (!map::check_exist(double_x / 2, y, def_muki))
 			return false;
 	}
 
-//配列の要素外なら何もしない
+//驟榊�励�ｮ隕∫ｴ�螟悶↑繧我ｽ輔ｂ縺励↑縺�
 	if (is_outside_array(double_x, y))
 		return false;
 
-//壁がある部分には書き込めない
+//螢√′縺ゅｋ驛ｨ蛻�縺ｫ縺ｯ譖ｸ縺崎ｾｼ繧√↑縺�
 	if (map::get_wall(double_x / 2, y, def_muki))
 		return false;
 
-//書き込む歩数より小さい場所には書き込めない
+//譖ｸ縺崎ｾｼ繧�豁ｩ謨ｰ繧医ｊ蟆上＆縺�蝣ｴ謇�縺ｫ縺ｯ譖ｸ縺崎ｾｼ繧√↑縺�
 	if (step[double_x][y] <= step_val)
 		return false;
 
@@ -1682,33 +1682,33 @@ bool node_step::is_outside_array(uint8_t x_index, uint8_t y_index) {
 
 bool node_step::set_step(uint8_t x, uint8_t y, compas muki, uint16_t step_val,
 		bool by_known) {
-//代入用の変数
+//莉｣蜈･逕ｨ縺ｮ螟画焚
 	uint8_t step_x = x;
 	uint8_t step_y = y;
 
 	switch (muki) {
-	//南向きと西向きに変更してやりなおし
+	//蜊怜髄縺阪→隘ｿ蜷代″縺ｫ螟画峩縺励※繧�繧翫↑縺翫＠
 	case north:
-		step_y++;	//yを1つ増やして南向き扱いに
-		step_x = 2 * x + 1;	//南向きだと横向きの壁なので、x方向が2x+1
+		step_y++;	//y繧�1縺､蠅励ｄ縺励※蜊怜髄縺肴桶縺�縺ｫ
+		step_x = 2 * x + 1;	//蜊怜髄縺阪□縺ｨ讓ｪ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代′2x+1
 		break;
 	case south:
-		step_x = 2 * x + 1;	//南向きだと横向きの壁なので、x方向が2x+1
+		step_x = 2 * x + 1;	//蜊怜髄縺阪□縺ｨ讓ｪ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代′2x+1
 		break;
 	case east:
-		step_x = 2 * (x + 1);	//xを1つ増やして、西向き扱い　縦向きの壁なので、x方向は2x
+		step_x = 2 * (x + 1);	//x繧�1縺､蠅励ｄ縺励※縲∬･ｿ蜷代″謇ｱ縺�縲�邵ｦ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代�ｯ2x
 		break;
 	case west:
-		step_x = 2 * x;	//西向きだと縦向きの壁なので、x方向は2x
+		step_x = 2 * x;	//隘ｿ蜷代″縺�縺ｨ邵ｦ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代�ｯ2x
 		break;
 
-	default:		//斜めは非対応
+	default:		//譁懊ａ縺ｯ髱槫ｯｾ蠢�
 		return false;
 	}
 
-//書き込めるなら
+//譖ｸ縺崎ｾｼ繧√ｋ縺ｪ繧�
 	if (able_set_step(step_x, step_y, muki, step_val, by_known)) {
-		step[step_x][step_y] = step_val;	//配列に歩数代入
+		step[step_x][step_y] = step_val;	//驟榊�励↓豁ｩ謨ｰ莉｣蜈･
 		return true;
 	}
 
@@ -1717,7 +1717,7 @@ bool node_step::set_step(uint8_t x, uint8_t y, compas muki, uint16_t step_val,
 
 bool node_step::set_step_double(uint8_t _double_x, uint8_t _double_y,
 		uint16_t step_val, bool by_known) {
-	//代入用の変数
+	//莉｣蜈･逕ｨ縺ｮ螟画焚
 	uint8_t step_x = _double_x;
 	uint8_t step_y = static_cast<uint8_t>(_double_y / 2);
 
@@ -1725,9 +1725,9 @@ bool node_step::set_step_double(uint8_t _double_x, uint8_t _double_y,
 	if (step_x % 2 == 0)
 		muki = west;
 
-	//書き込めるなら
+	//譖ｸ縺崎ｾｼ繧√ｋ縺ｪ繧�
 	if (able_set_step(step_x, step_y, muki, step_val, by_known)) {
-		step[step_x][step_y] = step_val;	//配列に歩数代入
+		step[step_x][step_y] = step_val;	//驟榊�励↓豁ｩ謨ｰ莉｣蜈･
 		return true;
 	}
 	return false;
@@ -1735,47 +1735,47 @@ bool node_step::set_step_double(uint8_t _double_x, uint8_t _double_y,
 }
 
 uint16_t node_step::get_step(uint8_t x, uint8_t y, compas muki) {
-//代入用の変数
+//莉｣蜈･逕ｨ縺ｮ螟画焚
 	uint8_t step_x = x;
 	uint8_t step_y = y;
 
 	switch (muki) {
-//南向きと西向きに変更してやりなおして終了
+//蜊怜髄縺阪→隘ｿ蜷代″縺ｫ螟画峩縺励※繧�繧翫↑縺翫＠縺ｦ邨ゆｺ�
 	case north:
-		step_y++;	//1つ増やして南向き扱いに。
-		step_x = 2 * x + 1;	//南向きだと横向きの壁なので、x方向が2x+1
+		step_y++;	//1縺､蠅励ｄ縺励※蜊怜髄縺肴桶縺�縺ｫ縲�
+		step_x = 2 * x + 1;	//蜊怜髄縺阪□縺ｨ讓ｪ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代′2x+1
 		break;
 	case south:
-		step_x = 2 * x + 1;	//南向きだと横向きの壁なので、x方向が2x+1
+		step_x = 2 * x + 1;	//蜊怜髄縺阪□縺ｨ讓ｪ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代′2x+1
 		break;
 	case east:
-		step_x = 2 * (x + 1);	//1つ増やして西向き扱いに。縦向きの壁なので、x方向は2x
+		step_x = 2 * (x + 1);	//1縺､蠅励ｄ縺励※隘ｿ蜷代″謇ｱ縺�縺ｫ縲らｸｦ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代�ｯ2x
 		break;
 	case west:
-		step_x = 2 * x;	//西向きだと縦向きの壁なので、x方向は2x
+		step_x = 2 * x;	//隘ｿ蜷代″縺�縺ｨ邵ｦ蜷代″縺ｮ螢√↑縺ｮ縺ｧ縲』譁ｹ蜷代�ｯ2x
 		break;
-	default:	//斜めは非対応
+	default:	//譁懊ａ縺ｯ髱槫ｯｾ蠢�
 		return init_step;
 		break;
 	}
 
-//配列の要素外を読みだすときはInit_stepを
+//驟榊�励�ｮ隕∫ｴ�螟悶ｒ隱ｭ縺ｿ縺�縺吶→縺阪�ｯInit_step繧�
 	if (is_outside_array(step_x, step_y))
 		return init_step;
 
-	return step[step_x][step_y];	//配列から歩数参照
+	return step[step_x][step_y];	//驟榊�励°繧画ｭｩ謨ｰ蜿ら�ｧ
 }
 
 uint16_t node_step::get_step_double(uint8_t double_x, uint8_t double_y) {
-	//代入用の変数
+	//莉｣蜈･逕ｨ縺ｮ螟画焚
 	uint8_t step_x = double_x;
 	uint8_t step_y = double_y / 2;
 
-	//配列の要素外を読みだすときはInit_stepを
+	//驟榊�励�ｮ隕∫ｴ�螟悶ｒ隱ｭ縺ｿ縺�縺吶→縺阪�ｯInit_step繧�
 	if (is_outside_array(step_x, step_y))
 		return init_step;
 
-	return step[step_x][step_y];	//配列から歩数参照
+	return step[step_x][step_y];	//驟榊�励°繧画ｭｩ謨ｰ蜿ら�ｧ
 
 }
 
@@ -1809,37 +1809,37 @@ void node_step::draw_step() {
 	myprintf("\n-----start draw_step-------\n\r");
 
 	for (tekitou_y = MAZE_SIZE - 1; tekitou_y >= 0; tekitou_y--) {
-		//////////////////////////////////////////迷路の壁の行
+		//////////////////////////////////////////霑ｷ霍ｯ縺ｮ螢√�ｮ陦�
 		for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++) {
-			myprintf("+");	//柱
-			if (get_wall(tekitou_x, tekitou_y, MUKI_UP)) {	//壁があるなら
+			myprintf("+");	//譟ｱ
+			if (get_wall(tekitou_x, tekitou_y, MUKI_UP)) {	//螢√′縺ゅｋ縺ｪ繧�
 				myprintf("---");
 			} else {
 				if (get_step(tekitou_x, tekitou_y, north) == init_step)
-					myprintf("   ");	//初期値なら空白に
+					myprintf("   ");	//蛻晄悄蛟､縺ｪ繧臥ｩｺ逋ｽ縺ｫ
 				else
-					myprintf("%3d", get_step(tekitou_x, tekitou_y, north));	//なければ歩数を書く
+					myprintf("%3d", get_step(tekitou_x, tekitou_y, north));	//縺ｪ縺代ｌ縺ｰ豁ｩ謨ｰ繧呈嶌縺�
 			}
 		}
 		myprintf("+\n\r");
 
-		/////////////////////////////////////////迷路のマス目の行
-		myprintf("| ");	//左端の壁
+		/////////////////////////////////////////霑ｷ霍ｯ縺ｮ繝槭せ逶ｮ縺ｮ陦�
+		myprintf("| ");	//蟾ｦ遶ｯ縺ｮ螢�
 		for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++) {
-			myprintf(" ");		//区画中心のスペース
-			if (get_wall(tekitou_x, tekitou_y, MUKI_RIGHT)) {//今書いたマスの右の壁があれば壁を書く
+			myprintf(" ");		//蛹ｺ逕ｻ荳ｭ蠢�縺ｮ繧ｹ繝壹�ｼ繧ｹ
+			if (get_wall(tekitou_x, tekitou_y, MUKI_RIGHT)) {//莉頑嶌縺�縺溘�槭せ縺ｮ蜿ｳ縺ｮ螢√′縺ゅｌ縺ｰ螢√ｒ譖ｸ縺�
 				myprintf(" | ");
 			} else {
 				if (get_step(tekitou_x, tekitou_y, east) == init_step)
-					myprintf("   ");	//初期値なら空白に
+					myprintf("   ");	//蛻晄悄蛟､縺ｪ繧臥ｩｺ逋ｽ縺ｫ
 				else
-					myprintf("%3d", get_step(tekitou_x, tekitou_y, east));//なければ歩数を書く
+					myprintf("%3d", get_step(tekitou_x, tekitou_y, east));//縺ｪ縺代ｌ縺ｰ豁ｩ謨ｰ繧呈嶌縺�
 			}
 		}
 		myprintf("\n\r");
 	}
 
-//下辺	迷路の端は壁しかないはず
+//荳玖ｾｺ	霑ｷ霍ｯ縺ｮ遶ｯ縺ｯ螢√＠縺九↑縺�縺ｯ縺�
 	for (tekitou_x = 0; tekitou_x < MAZE_SIZE; tekitou_x++)
 		myprintf("+---");
 	myprintf("+\n\r");
@@ -1859,15 +1859,15 @@ node_step::~node_step() {
 }
 
 void node_search::set_weight_algo(weight_algo weight) {
-	static const std::vector<uint8_t> temp_s { 21, 20, 19, 18, 17, 16, 9, 4 }; //直進方向の重みづけ
-	static const std::vector<uint8_t> temp_o { 15, 14, 13, 12, 11, 10, 9, 4 }; //斜め方向の重みづけ
-	static const std::vector<uint8_t> temp_c { 0, 10, 14 }; //カーブに関する重みづけ、0°,45°,90°の順番
+	static const std::vector<uint8_t> temp_s { 21, 20, 19, 18, 17, 16, 9, 4 }; //逶ｴ騾ｲ譁ｹ蜷代�ｮ驥阪∩縺･縺�
+	static const std::vector<uint8_t> temp_o { 15, 14, 13, 12, 11, 10, 9, 4 }; //譁懊ａ譁ｹ蜷代�ｮ驥阪∩縺･縺�
+	static const std::vector<uint8_t> temp_c { 0, 10, 14 }; //繧ｫ繝ｼ繝悶↓髢｢縺吶ｋ驥阪∩縺･縺代��0ﾂｰ,45ﾂｰ,90ﾂｰ縺ｮ鬆�逡ｪ
 
 	algo = weight;
 
 	switch (get_weight_algo()) {
 	case weight_algo::adachi:
-		//斜めも直進も重みは1
+		//譁懊ａ繧ら峩騾ｲ繧る㍾縺ｿ縺ｯ1
 		std::vector<uint8_t>().swap(straight_w);
 		straight_w.emplace_back(1);
 		std::vector<uint8_t>().swap(oblique_w);
@@ -1876,7 +1876,7 @@ void node_search::set_weight_algo(weight_algo weight) {
 		break;
 
 	case weight_algo::based_distance:
-		//斜めと直進は1:√2の重み
+		//譁懊ａ縺ｨ逶ｴ騾ｲ縺ｯ1:竏�2縺ｮ驥阪∩
 		std::vector<uint8_t>().swap(straight_w);
 		straight_w.emplace_back(7);
 		std::vector<uint8_t>().swap(oblique_w);
@@ -1885,14 +1885,14 @@ void node_search::set_weight_algo(weight_algo weight) {
 		break;
 
 	case weight_algo::priority_straight:
-		straight_w = (temp_s);	//staright_wに代入
-		oblique_w = (temp_o);	//oblique_wに代入
+		straight_w = (temp_s);	//staright_w縺ｫ莉｣蜈･
+		oblique_w = (temp_o);	//oblique_w縺ｫ莉｣蜈･
 		curve_w = std::vector<uint8_t> { 0, 0, 0 };
 		break;
 
-	case weight_algo::T_Wataru_method:		//斜めにも重みがある
-		straight_w = (temp_s);		//staright_wに代入
-		oblique_w = (temp_o);		//oblique_wに代入
+	case weight_algo::T_Wataru_method:		//譁懊ａ縺ｫ繧る㍾縺ｿ縺後≠繧�
+		straight_w = (temp_s);		//staright_w縺ｫ莉｣蜈･
+		oblique_w = (temp_o);		//oblique_w縺ｫ莉｣蜈･
 		curve_w = temp_c;
 		break;
 
@@ -1906,9 +1906,9 @@ weight_algo node_search::get_weight_algo() {
 
 void node_search::spread_step(std::vector<std::pair<uint8_t, uint8_t> > finish,
 		bool by_known) {
-	bool debranch = false;	//枝切するか否か
+	bool debranch = false;	//譫晏��縺吶ｋ縺句凄縺�
 
-//座標管理は歩数の配列(X方向だけ倍)と異なりX,Y方向両方で倍にする　隣接座標の取り扱いが楽だから
+//蠎ｧ讓咏ｮ｡逅�縺ｯ豁ｩ謨ｰ縺ｮ驟榊��(X譁ｹ蜷代□縺大��)縺ｨ逡ｰ縺ｪ繧街,Y譁ｹ蜷台ｸ｡譁ｹ縺ｧ蛟阪↓縺吶ｋ縲�髫｣謗･蠎ｧ讓吶�ｮ蜿悶ｊ謇ｱ縺�縺梧･ｽ縺�縺九ｉ
 	union _dir {
 		int8_t xy;
 		struct {
@@ -1920,25 +1920,25 @@ void node_search::spread_step(std::vector<std::pair<uint8_t, uint8_t> > finish,
 			x = _x;
 			y = _y;
 		}
-	} dir;			//方向管理用　int8_tでxy両方管理したかった
+	} dir;			//譁ｹ蜷醍ｮ｡逅�逕ｨ縲�int8_t縺ｧxy荳｡譁ｹ邂｡逅�縺励◆縺九▲縺�
 
 	union _dir temp_dir;
 
-	my_queue x_queue;		//座標管理用Queue
-	my_queue y_queue;		//座標管理用Queue
-	my_queue dir_queue;		//方向管理用Queue
-	uint8_t x, y;		//2倍座標
+	my_queue x_queue;		//蠎ｧ讓咏ｮ｡逅�逕ｨQueue
+	my_queue y_queue;		//蠎ｧ讓咏ｮ｡逅�逕ｨQueue
+	my_queue dir_queue;		//譁ｹ蜷醍ｮ｡逅�逕ｨQueue
+	uint8_t x, y;		//2蛟榊ｺｧ讓�
 
-	//マウスのいる座標
+	//繝槭え繧ｹ縺ｮ縺�繧句ｺｧ讓�
 	uint8_t mouse_x = mouse::get_x_position();
 	uint8_t mouse_y = mouse::get_y_position();
 	uint16_t mouse_step = get_step(mouse_x, mouse_y,
 			get_min_compas(mouse_x, mouse_y));
 
-//歩数をリセット
+//豁ｩ謨ｰ繧偵Μ繧ｻ繝�繝�
 	node_step::reset_step(init_step);
 
-//目標座標を最初にキューにぶち込む
+//逶ｮ讓吝ｺｧ讓吶ｒ譛�蛻昴↓繧ｭ繝･繝ｼ縺ｫ縺ｶ縺｡霎ｼ繧�
 	for (uint16_t index = 0; index < finish.size(); index++) {
 		for (int i = -1; i < 2; i += 2) {
 			x = 2 * finish.at(index).first + 1;
@@ -1948,86 +1948,86 @@ void node_search::spread_step(std::vector<std::pair<uint8_t, uint8_t> > finish,
 				y_queue.push(y);
 				dir.set(i, 0);
 				dir_queue.push(dir.xy);
-				//方向も記録
+				//譁ｹ蜷代ｂ險倬鹸
 			}
 			if (set_step_double(x, y + i, 0, by_known)) {
 				x_queue.push(x);
 				y_queue.push(y + i);
 				dir.set(0, i);
 				dir_queue.push(dir.xy);
-				//方向も記録
+				//譁ｹ蜷代ｂ險倬鹸
 			}
 		}
 	}
 
-	uint16_t next_step = 0;	//次の歩数
-	int8_t dx, dy;	//次に行く方向
-	int8_t curve_index;	//ターンの種類を判別する
+	uint16_t next_step = 0;	//谺｡縺ｮ豁ｩ謨ｰ
+	int8_t dx, dy;	//谺｡縺ｫ陦後￥譁ｹ蜷�
+	int8_t curve_index;	//繧ｿ繝ｼ繝ｳ縺ｮ遞ｮ鬘槭ｒ蛻､蛻･縺吶ｋ
 
-//直進する歩数の重みを管理
+//逶ｴ騾ｲ縺吶ｋ豁ｩ謨ｰ縺ｮ驥阪∩繧堤ｮ｡逅�
 	uint8_t straight;
 	loop = 0;
 	while (x_queue.size() != 0) {
 		loop++;
 
-		//キューから座標を取り出す
-		x = x_queue.pop();	//取り出して削除
-		y = y_queue.pop();	//取り出して削除
+		//繧ｭ繝･繝ｼ縺九ｉ蠎ｧ讓吶ｒ蜿悶ｊ蜃ｺ縺�
+		x = x_queue.pop();	//蜿悶ｊ蜃ｺ縺励※蜑企勁
+		y = y_queue.pop();	//蜿悶ｊ蜃ｺ縺励※蜑企勁
 		next_step = get_step_double(x, y);
 		mouse_step = get_step(mouse_x, mouse_y,
 				get_min_compas(mouse_x, mouse_y));
 
-		//キューから方向を取り出す
-		dir.xy = dir_queue.pop();	//取り出して削除
+		//繧ｭ繝･繝ｼ縺九ｉ譁ｹ蜷代ｒ蜿悶ｊ蜃ｺ縺�
+		dir.xy = dir_queue.pop();	//蜿悶ｊ蜃ｺ縺励※蜑企勁
 
-		//現在のマスより歩数が大きくなるなら枝切り　by_known=trueつまりパス生成時には行わない　バグ怖いから
+		//迴ｾ蝨ｨ縺ｮ繝槭せ繧医ｊ豁ｩ謨ｰ縺悟､ｧ縺阪￥縺ｪ繧九↑繧画椌蛻�繧翫��by_known=true縺､縺ｾ繧翫ヱ繧ｹ逕滓�先凾縺ｫ縺ｯ陦後ｏ縺ｪ縺�縲�繝舌げ諤悶＞縺九ｉ
 		if (debranch && (next_step > mouse_step)) {
-			//何もしない
+			//菴輔ｂ縺励↑縺�
 		} else {
 			temp_dir.xy = dir.xy;
 			for (int n = -1; n <= 1; n++) {
 				next_step = get_step_double(x, y);
-				//次に行く方向は3パターンしか見ない　区画中心より今の方向側にある3種　ex.now(1,1)ならdx>0の(1,1)(2,0)(-1,0)
-				//つまるところ、ここの歩数にたどり着く直前で候補にあったやつらは、その時に行ったほうが早いに決まってるので無視
+				//谺｡縺ｫ陦後￥譁ｹ蜷代�ｯ3繝代ち繝ｼ繝ｳ縺励°隕九↑縺�縲�蛹ｺ逕ｻ荳ｭ蠢�繧医ｊ莉翫�ｮ譁ｹ蜷大�ｴ縺ｫ縺ゅｋ3遞ｮ縲�ex.now(1,1)縺ｪ繧嬰x>0縺ｮ(1,1)(2,0)(-1,0)
+				//縺､縺ｾ繧九→縺薙ｍ縲√％縺薙�ｮ豁ｩ謨ｰ縺ｫ縺溘←繧顔捩縺冗峩蜑阪〒蛟呵｣懊↓縺ゅ▲縺溘ｄ縺､繧峨�ｯ縲√◎縺ｮ譎ゅ↓陦後▲縺溘⊇縺�縺梧掠縺�縺ｫ豎ｺ縺ｾ縺｣縺ｦ繧九�ｮ縺ｧ辟｡隕�
 				temp_dir = dir;
-				if (!(x % 2)) {		//縦壁の時
+				if (!(x % 2)) {		//邵ｦ螢√�ｮ譎�
 					dx = (2 - ABS(n)) * SIGN(dir.x);
 					dy = n;
-					curve_index = ABS(dir.y - dy);		//0が直進、1が45°、2が90°
+					curve_index = ABS(dir.y - dy);		//0縺檎峩騾ｲ縲�1縺�45ﾂｰ縲�2縺�90ﾂｰ
 					temp_dir.y = n;
-				} else {			//縦でなければ横（y%2==0）しかない
+				} else {			//邵ｦ縺ｧ縺ｪ縺代ｌ縺ｰ讓ｪ�ｼ�y%2==0�ｼ峨＠縺九↑縺�
 					dx = n;
 					dy = (2 - ABS(n)) * SIGN(dir.y);
-					curve_index = ABS(dir.x - dx);			//0が直進、1が45°、2が90°
+					curve_index = ABS(dir.x - dx);			//0縺檎峩騾ｲ縲�1縺�45ﾂｰ縲�2縺�90ﾂｰ
 					temp_dir.x = n;
 				}
-				next_step += curve_w.at(curve_index);	//カーブすることに対する重みを足す
+				next_step += curve_w.at(curve_index);	//繧ｫ繝ｼ繝悶☆繧九％縺ｨ縺ｫ蟇ｾ縺吶ｋ驥阪∩繧定ｶｳ縺�
 
-//その直線方向に、書き込めなくなるまで書き込んでいく
+//縺昴�ｮ逶ｴ邱壽婿蜷代↓縲∵嶌縺崎ｾｼ繧√↑縺上↑繧九∪縺ｧ譖ｸ縺崎ｾｼ繧薙〒縺�縺�
 				for (uint8_t i = 0;; i++) {
-//直線が続くと足していく歩数は小さくなっていく
-					if (n == 0) {		//区画を横切るとき
+//逶ｴ邱壹′邯壹￥縺ｨ雜ｳ縺励※縺�縺乗ｭｩ謨ｰ縺ｯ蟆上＆縺上↑縺｣縺ｦ縺�縺�
+					if (n == 0) {		//蛹ｺ逕ｻ繧呈ｨｪ蛻�繧九→縺�
 						if (i < straight_w.size())
-							straight = straight_w.at(i);//要素外に出る場合は値を更新しない＝最後の値が続く
-					} else {			//斜め方向の直進のとき
+							straight = straight_w.at(i);//隕∫ｴ�螟悶↓蜃ｺ繧句�ｴ蜷医�ｯ蛟､繧呈峩譁ｰ縺励↑縺�ｼ晄怙蠕後�ｮ蛟､縺檎ｶ壹￥
+					} else {			//譁懊ａ譁ｹ蜷代�ｮ逶ｴ騾ｲ縺ｮ縺ｨ縺�
 						if (i < oblique_w.size())
-							straight = oblique_w.at(i);	//要素外に出る場合は値を更新しない＝最後の値が続く
+							straight = oblique_w.at(i);	//隕∫ｴ�螟悶↓蜃ｺ繧句�ｴ蜷医�ｯ蛟､繧呈峩譁ｰ縺励↑縺�ｼ晄怙蠕後�ｮ蛟､縺檎ｶ壹￥
 					}
-//歩数を書き込めたら、書き込んだ座標をQueueにぶっこむ
+//豁ｩ謨ｰ繧呈嶌縺崎ｾｼ繧√◆繧峨�∵嶌縺崎ｾｼ繧薙□蠎ｧ讓吶ｒQueue縺ｫ縺ｶ縺｣縺薙�
 					if (set_step_double(x + dx * (i + 1), y + dy * (i + 1),
 							(next_step + straight), by_known)) {
-						next_step += straight;		//ステップを更新
+						next_step += straight;		//繧ｹ繝�繝�繝励ｒ譖ｴ譁ｰ
 						x_queue.push(x + (i + 1) * dx);
 						y_queue.push(y + (i + 1) * dy);
 						dir_queue.push(temp_dir.xy);
 					} else {
-						break;	//書き込めなくなったらループを抜ける
+						break;	//譖ｸ縺崎ｾｼ繧√↑縺上↑縺｣縺溘ｉ繝ｫ繝ｼ繝励ｒ謚懊￠繧�
 					}
-//直線が続くことによる重みの減少がないなら一回だけで抜ける
+//逶ｴ邱壹′邯壹￥縺薙→縺ｫ繧医ｋ驥阪∩縺ｮ貂帛ｰ代′縺ｪ縺�縺ｪ繧我ｸ�蝗槭□縺代〒謚懊￠繧�
 					if (algo == adachi || algo == based_distance) {
 						break;
 					}
-//枝切り
+//譫晏��繧�
 					if (debranch && (next_step > mouse_step)) {
 						break;
 					}
@@ -2042,25 +2042,25 @@ void node_search::spread_step(std::vector<std::pair<uint8_t, uint8_t> > finish,
 bool node_search::create_small_path(
 		std::vector<std::pair<uint8_t, uint8_t> > finish,
 		std::pair<uint8_t, uint8_t> init, compas mouse_direction) {
-//歩数マップ作製
+//豁ｩ謨ｰ繝槭ャ繝嶺ｽ懆｣ｽ
 	node_step::reset_step(init_step);
-	spread_step(finish, true);	//ここは既知壁だけで歩数マップ作製
-	return node_path::create_path(init, mouse_direction);	//歩数マップに従ってパス作製
+	spread_step(finish, true);	//縺薙％縺ｯ譌｢遏･螢√□縺代〒豁ｩ謨ｰ繝槭ャ繝嶺ｽ懆｣ｽ
+	return node_path::create_path(init, mouse_direction);	//豁ｩ謨ｰ繝槭ャ繝励↓蠕薙▲縺ｦ繝代せ菴懆｣ｽ
 
 }
 
 bool node_search::create_big_path(
 		std::vector<std::pair<uint8_t, uint8_t> > finish,
 		std::pair<uint8_t, uint8_t> init, compas mouse_direction) {
-	if (create_small_path(finish, init, mouse_direction)) {	//小回りパス作製
-		node_path::improve_path();	//小回りを大回りパスに改良
+	if (create_small_path(finish, init, mouse_direction)) {	//蟆丞屓繧翫ヱ繧ｹ菴懆｣ｽ
+		node_path::improve_path();	//蟆丞屓繧翫ｒ螟ｧ蝗槭ｊ繝代せ縺ｫ謾ｹ濶ｯ
 		return true;
 	}
 	return false;
 }
 
 void node_search::reset_finish() {
-//目的地情報をすべてリセット
+//逶ｮ逧�蝨ｰ諠�蝣ｱ繧偵☆縺ｹ縺ｦ繝ｪ繧ｻ繝�繝�
 	for (int i = 0; i < MAZE_SIZE; i++) {
 		x_finish[i].all = 0;
 		y_finish[i].all = 0;
@@ -2079,27 +2079,27 @@ void node_search::set_finish(uint8_t _x, uint8_t _y, compas dir) {
 	uint8_t set_y = _y;
 
 	if (dir == east) {
-		if (set_x == 0)		//一番左は常に外壁なので無視
+		if (set_x == 0)		//荳�逡ｪ蟾ｦ縺ｯ蟶ｸ縺ｫ螟門｣√↑縺ｮ縺ｧ辟｡隕�
 			return;
 		else
-			set_x--;		//必ず右を更新
+			set_x--;		//蠢�縺壼承繧呈峩譁ｰ
 	}
 	if (dir == east || dir == west) {
 		if (set_x < MAZE_SIZE)
-			set_maze_wall(&x_finish[set_y], set_x, true);//x_finish[y]のx番目の右区画中心
+			set_maze_wall(&x_finish[set_y], set_x, true);//x_finish[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ蛹ｺ逕ｻ荳ｭ蠢�
 		return;
 	}
 
 	if (dir == south) {
-		if (set_y == 0) 		//一番下壁は管理しない
+		if (set_y == 0) 		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 			return;
 		else
-			set_y--;	//必ず上壁を更新するように、座標を変える
+			set_y--;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 
 	}
 	if (dir == south || dir == north) {
 		if (set_y < MAZE_SIZE)
-			set_maze_wall(&y_finish[set_x], set_y, true);//x_maze_wall[y]のx番目の右壁に1を代入
+			set_maze_wall(&y_finish[set_x], set_y, true);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
 		return;
 	}
 
@@ -2110,26 +2110,26 @@ bool node_search::get_finish(uint8_t _x, uint8_t _y, compas dir) {
 	uint8_t get_y = _y;
 
 	if (dir == east) {
-		if (get_x == 0)		//一番左は常に外壁なので無視
-			return false;	//壁なのでゴール座標としては不適
+		if (get_x == 0)		//荳�逡ｪ蟾ｦ縺ｯ蟶ｸ縺ｫ螟門｣√↑縺ｮ縺ｧ辟｡隕�
+			return false;	//螢√↑縺ｮ縺ｧ繧ｴ繝ｼ繝ｫ蠎ｧ讓吶→縺励※縺ｯ荳埼←
 		else
-			get_x--;		//必ず右を更新
+			get_x--;		//蠢�縺壼承繧呈峩譁ｰ
 	}
 	if (dir == east || dir == west) {
 		if (get_x < MAZE_SIZE)
-			return get_maze_wall(x_finish[get_y], get_x);//x_finish[y]のx番目の右区画中心
+			return get_maze_wall(x_finish[get_y], get_x);//x_finish[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ蛹ｺ逕ｻ荳ｭ蠢�
 	}
 
 	if (dir == south) {
-		if (get_y == 0) 		//一番下壁は管理しない
+		if (get_y == 0) 		//荳�逡ｪ荳句｣√�ｯ邂｡逅�縺励↑縺�
 			return false;
 		else
-			get_y--;	//必ず上壁を更新するように、座標を変える
+			get_y--;	//蠢�縺壻ｸ雁｣√ｒ譖ｴ譁ｰ縺吶ｋ繧医≧縺ｫ縲∝ｺｧ讓吶ｒ螟峨∴繧�
 
 	}
 	if (dir == south || dir == north) {
 		if (get_y < MAZE_SIZE)
-			return get_maze_wall(y_finish[get_x], get_y);//x_maze_wall[y]のx番目の右壁に1を代入
+			return get_maze_wall(y_finish[get_x], get_y);//x_maze_wall[y]縺ｮx逡ｪ逶ｮ縺ｮ蜿ｳ螢√↓1繧剃ｻ｣蜈･
 	}
 
 	return false;
@@ -2228,36 +2228,36 @@ bool node_path::is_right_turn(compas now, compas next) {
 }
 
 void node_path::format() {
-	//distance=0, sla_type=none, is_right=true　を1つだけ用意し、それでpathを初期化
+	//distance=0, sla_type=none, is_right=true縲�繧�1縺､縺�縺醍畑諢上＠縲√◎繧後〒path繧貞�晄悄蛹�
 	std::vector<path_element>().swap(path);
 	path_element init = { 0, none, true };
 	path.emplace_back(init);
 }
 
 void node_path::push_straight(int half) {
-	(path.back()).distance += half;	//直線を増やす
+	(path.back()).distance += half;	//逶ｴ邱壹ｒ蠅励ｄ縺�
 }
 
 void node_path::push_small_turn(bool is_right) {
-	(path.back()).turn = small;		//種類は小回り
-	(path.back()).is_right = is_right;		//右向き
+	(path.back()).turn = small;		//遞ｮ鬘槭�ｯ蟆丞屓繧�
+	(path.back()).is_right = is_right;		//蜿ｳ蜷代″
 
 	path_element temp = { 0, none, true };
-	path.emplace_back(temp);		//次の要素を作っておく
+	path.emplace_back(temp);		//谺｡縺ｮ隕∫ｴ�繧剃ｽ懊▲縺ｦ縺翫￥
 
 }
 
 bool node_path::create_path(std::pair<uint8_t, uint8_t> init,
 		compas mouse_direction) {
-	node_path::format();				//パスを初期化
-	node_path::push_straight(1);				//区画中心にいる想定なので半区間前進
+	node_path::format();				//繝代せ繧貞�晄悄蛹�
+	node_path::push_straight(1);				//蛹ｺ逕ｻ荳ｭ蠢�縺ｫ縺�繧区Φ螳壹↑縺ｮ縺ｧ蜊雁玄髢灘燕騾ｲ
 
-//向かっている方向の歩数が初期値なら、道が閉じているので終了
+//蜷代°縺｣縺ｦ縺�繧区婿蜷代�ｮ豁ｩ謨ｰ縺悟�晄悄蛟､縺ｪ繧峨��驕薙′髢峨§縺ｦ縺�繧九�ｮ縺ｧ邨ゆｺ�
 	uint16_t now_step = get_step(init.first, init.second, mouse_direction);
 	if (now_step >= init_step)
 		return false;
 
-//歩数の低い方へ下っていく
+//豁ｩ謨ｰ縺ｮ菴弱＞譁ｹ縺ｸ荳九▲縺ｦ縺�縺�
 	compas now_compas = mouse_direction;
 	uint8_t now_x = init.first;
 	uint8_t now_y = init.second;
@@ -2266,7 +2266,7 @@ bool node_path::create_path(std::pair<uint8_t, uint8_t> init,
 	compas next_compas = now_compas;
 	while (now_step != 0) {
 
-		//次の方角へマスを移動　※区画外に出るとかは、歩数マップ作成時にはじかれてるはずと信じている
+		//谺｡縺ｮ譁ｹ隗偵∈繝槭せ繧堤ｧｻ蜍輔��窶ｻ蛹ｺ逕ｻ螟悶↓蜃ｺ繧九→縺九�ｯ縲∵ｭｩ謨ｰ繝槭ャ繝嶺ｽ懈�先凾縺ｫ縺ｯ縺倥°繧後※繧九�ｯ縺壹→菫｡縺倥※縺�繧�
 		switch (next_compas) {
 		case north:
 			//now_y += 1;
@@ -2288,31 +2288,31 @@ bool node_path::create_path(std::pair<uint8_t, uint8_t> init,
 			dx = -1;
 			dy = 0;
 			break;
-		default:	//斜めは予期せぬエラー
+		default:	//譁懊ａ縺ｯ莠域悄縺帙〓繧ｨ繝ｩ繝ｼ
 			return false;
 			break;
 		}
-		now_x += dx;		//X座標更新
-		now_y += dy;		//Y座標更新
+		now_x += dx;		//X蠎ｧ讓呎峩譁ｰ
+		now_y += dy;		//Y蠎ｧ讓呎峩譁ｰ
 
-		next_compas = get_min_compas(now_x, now_y);		//次に行く方角を決める
-		next_step = get_step(now_x, now_y, next_compas);		//次に行く場所の歩数も取得
+		next_compas = get_min_compas(now_x, now_y);		//谺｡縺ｫ陦後￥譁ｹ隗偵ｒ豎ｺ繧√ｋ
+		next_step = get_step(now_x, now_y, next_compas);		//谺｡縺ｫ陦後￥蝣ｴ謇�縺ｮ豁ｩ謨ｰ繧ょ叙蠕�
 
 		if (now_step <= next_step)
-			return false;	//今の歩数が次行くべき歩数と同じかそれ以下ということはあり得ないはずなので、とりあえず失敗しとく
+			return false;	//莉翫�ｮ豁ｩ謨ｰ縺梧ｬ｡陦後￥縺ｹ縺肴ｭｩ謨ｰ縺ｨ蜷後§縺九◎繧御ｻ･荳九→縺�縺�縺薙→縺ｯ縺ゅｊ蠕励↑縺�縺ｯ縺壹↑縺ｮ縺ｧ縲√→繧翫≠縺医★螟ｱ謨励＠縺ｨ縺�
 
-		//パスを追加
+		//繝代せ繧定ｿｽ蜉�
 		if (now_compas == next_compas)
-			node_path::push_straight(2);		//今の向きと同じ方向に進むなら直進
+			node_path::push_straight(2);		//莉翫�ｮ蜷代″縺ｨ蜷後§譁ｹ蜷代↓騾ｲ繧�縺ｪ繧臥峩騾ｲ
 		else
-			node_path::push_small_turn(is_right_turn(now_compas, next_compas));	//ターン以外の選択肢はないはず
+			node_path::push_small_turn(is_right_turn(now_compas, next_compas));	//繧ｿ繝ｼ繝ｳ莉･螟悶�ｮ驕ｸ謚櫁い縺ｯ縺ｪ縺�縺ｯ縺�
 
-		now_step = next_step;		//歩数を更新
-		now_compas = next_compas;		//方角を更新
+		now_step = next_step;		//豁ｩ謨ｰ繧呈峩譁ｰ
+		now_compas = next_compas;		//譁ｹ隗偵ｒ譖ｴ譁ｰ
 
 	}
 
-//次の方角の変化方向を取得
+//谺｡縺ｮ譁ｹ隗偵�ｮ螟牙喧譁ｹ蜷代ｒ蜿門ｾ�
 	switch (next_compas) {
 	case north:
 		//now_y += 1;
@@ -2334,24 +2334,24 @@ bool node_path::create_path(std::pair<uint8_t, uint8_t> init,
 		dx = -1;
 		dy = 0;
 		break;
-	default:	//斜めになるのは予期せぬ場合だけ
+	default:	//譁懊ａ縺ｫ縺ｪ繧九�ｮ縺ｯ莠域悄縺帙〓蝣ｴ蜷医□縺�
 		return false;
 		break;
 	}
 
-//複数マスゴールの場合用に、0の続く限り直進
+//隍�謨ｰ繝槭せ繧ｴ繝ｼ繝ｫ縺ｮ蝣ｴ蜷育畑縺ｫ縲�0縺ｮ邯壹￥髯舌ｊ逶ｴ騾ｲ
 	while (1) {
-		now_x += dx;		//X座標更新
-		now_y += dy;		//Y座標更新
+		now_x += dx;		//X蠎ｧ讓呎峩譁ｰ
+		now_y += dy;		//Y蠎ｧ讓呎峩譁ｰ
 
-		if (get_step(now_x, now_y, next_compas) != 0) {	//ゴール外に出たら
+		if (get_step(now_x, now_y, next_compas) != 0) {	//繧ｴ繝ｼ繝ｫ螟悶↓蜃ｺ縺溘ｉ
 			break;
-		} else {									//ゴール区画がまだ続くなら
+		} else {									//繧ｴ繝ｼ繝ｫ蛹ｺ逕ｻ縺後∪縺�邯壹￥縺ｪ繧�
 			node_path::push_straight(2);
 		}
 
 	}
-	node_path::push_straight(1);		//区画に入りきるために半区画直進して終了
+	node_path::push_straight(1);		//蛹ｺ逕ｻ縺ｫ蜈･繧翫″繧九◆繧√↓蜊雁玄逕ｻ逶ｴ騾ｲ縺励※邨ゆｺ�
 
 	mouse::set_position(now_x, now_y);
 
@@ -2362,114 +2362,114 @@ bool node_path::create_path(std::pair<uint8_t, uint8_t> init,
 void node_path::improve_path() {
 
 	uint16_t count = 0;
-	uint8_t temp_distance = 0;	//一時的な距離保存
-	bool naname_flag = false;	//現在機体が斜めかを判断	ONなら斜め走行中
+	uint8_t temp_distance = 0;	//荳�譎ら噪縺ｪ霍晞屬菫晏ｭ�
+	bool naname_flag = false;	//迴ｾ蝨ｨ讖滉ｽ薙′譁懊ａ縺九ｒ蛻､譁ｭ	ON縺ｪ繧画万繧∬ｵｰ陦御ｸｭ
 	uint16_t size = path.size();
 
-	path.at(size - 1).distance -= 1;//最後の区画の中心まで入り込むための半区間直進を消す。　こうしておかないと最後が大回りに丸め込まれて減速できなくなる可能性があるから
+	path.at(size - 1).distance -= 1;//譛�蠕後�ｮ蛹ｺ逕ｻ縺ｮ荳ｭ蠢�縺ｾ縺ｧ蜈･繧願ｾｼ繧�縺溘ａ縺ｮ蜊雁玄髢鍋峩騾ｲ繧呈ｶ医☆縲ゅ��縺薙≧縺励※縺翫°縺ｪ縺�縺ｨ譛�蠕後′螟ｧ蝗槭ｊ縺ｫ荳ｸ繧∬ｾｼ縺ｾ繧後※貂幃�溘〒縺阪↑縺上↑繧句庄閭ｽ諤ｧ縺後≠繧九°繧�
 
-	while (count < path.size()) {		//pathが終われば終了
-		if (naname_flag) {		//斜め走行中なら	確実に直進距離(distance)が0のはず
+	while (count < path.size()) {		//path縺檎ｵゅｏ繧後�ｰ邨ゆｺ�
+		if (naname_flag) {		//譁懊ａ襍ｰ陦御ｸｭ縺ｪ繧�	遒ｺ螳溘↓逶ｴ騾ｲ霍晞屬(distance)縺�0縺ｮ縺ｯ縺�
 
-			if (get_path(count + 1).element.distance >= 1) {//次のターン後90mm以上直進(斜め終わり)
-				path.at(count).turn = end_45;		//45°ターンに変更
-				path.at(count + 1).distance -= 1;		//直線距離を90mm減らす
+			if (get_path(count + 1).element.distance >= 1) {//谺｡縺ｮ繧ｿ繝ｼ繝ｳ蠕�90mm莉･荳顔峩騾ｲ(譁懊ａ邨ゅｏ繧�)
+				path.at(count).turn = end_45;		//45ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+				path.at(count + 1).distance -= 1;		//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 				naname_flag = false;
-				count++;		//配列を次へ
+				count++;		//驟榊�励ｒ谺｡縺ｸ
 
-			} else if (get_path(count + 2).element.distance >= 1) {	//次の次のターン後90mm以上直進(斜め終わり)
+			} else if (get_path(count + 2).element.distance >= 1) {	//谺｡縺ｮ谺｡縺ｮ繧ｿ繝ｼ繝ｳ蠕�90mm莉･荳顔峩騾ｲ(譁懊ａ邨ゅｏ繧�)
 
-				if (path.at(count).is_right == path.at(count + 1).is_right) {//同じ方向の2回ターン
-					path.at(count).turn = end_135;	//135°ターンに変更
-					path.erase(path.begin() + count + 1);	//一個ずらす
-					path.at(count + 1).distance -= 1;	//ターン後の直線距離を90mm減らす
+				if (path.at(count).is_right == path.at(count + 1).is_right) {//蜷後§譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ
+					path.at(count).turn = end_135;	//135ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					path.erase(path.begin() + count + 1);	//荳�蛟九★繧峨☆
+					path.at(count + 1).distance -= 1;	//繧ｿ繝ｼ繝ｳ蠕後�ｮ逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 					naname_flag = false;
-					count++;	//配列を次へ
+					count++;	//驟榊�励ｒ谺｡縺ｸ
 
-				} else {								//交互のターン(ギザギザ)
-					path.at(count).distance += 1;				//斜めの直線距離を1増やす
-					temp_distance = path.at(count).distance;	//距離を一時的に持っておく
-					path.erase(path.begin() + count);					//一個ずらす
-					path.at(count).distance = temp_distance;		//距離を入れなおす
+				} else {								//莠､莠偵�ｮ繧ｿ繝ｼ繝ｳ(繧ｮ繧ｶ繧ｮ繧ｶ)
+					path.at(count).distance += 1;				//譁懊ａ縺ｮ逶ｴ邱夊ｷ晞屬繧�1蠅励ｄ縺�
+					temp_distance = path.at(count).distance;	//霍晞屬繧剃ｸ�譎ら噪縺ｫ謖√▲縺ｦ縺翫￥
+					path.erase(path.begin() + count);					//荳�蛟九★繧峨☆
+					path.at(count).distance = temp_distance;		//霍晞屬繧貞�･繧後↑縺翫☆
 
 				}
 
-			} else {									//まだまだ斜めは続くなら
-				if (count + 1 < size) {		//次のパスが存在する
+			} else {									//縺ｾ縺�縺ｾ縺�譁懊ａ縺ｯ邯壹￥縺ｪ繧�
+				if (count + 1 < size) {		//谺｡縺ｮ繝代せ縺悟ｭ伜惠縺吶ｋ
 					if (path.at(count + 1).turn == none) {
-						//斜めの大回りで終わるパターン
-						temp_distance = path.at(count).distance;//距離を一時的に持っておく
-						path.erase(path.begin() + count);		//一個ずらす
-						path.at(count).distance = temp_distance;//距離を入れなおす						count++;
+						//譁懊ａ縺ｮ螟ｧ蝗槭ｊ縺ｧ邨ゅｏ繧九ヱ繧ｿ繝ｼ繝ｳ
+						temp_distance = path.at(count).distance;//霍晞屬繧剃ｸ�譎ら噪縺ｫ謖√▲縺ｦ縺翫￥
+						path.erase(path.begin() + count);		//荳�蛟九★繧峨☆
+						path.at(count).distance = temp_distance;//霍晞屬繧貞�･繧後↑縺翫☆						count++;
 						naname_flag = false;
 					} else {
 						if (path.at(count).is_right
-								== path.at(count + 1).is_right) {//同じ方向の2回ターン	コの字
-							path.at(count).turn = oblique_90;	//斜め90°ターンに変更
-							path.erase(path.begin() + count + 1);		//一個ずらす
-							count++;		//配列を次へ
-						} else {					//違う方向の2回ターン	ギザギザ
-							path.at(count).distance += 1;		//斜めの直線距離を1増やす
-							temp_distance = path.at(count).distance;//距離を一時的に持っておく
-							path.erase(path.begin() + count);			//一個ずらす
-							path.at(count).distance = temp_distance;//距離を入れなおす
+								== path.at(count + 1).is_right) {//蜷後§譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ	繧ｳ縺ｮ蟄�
+							path.at(count).turn = oblique_90;	//譁懊ａ90ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+							path.erase(path.begin() + count + 1);		//荳�蛟九★繧峨☆
+							count++;		//驟榊�励ｒ谺｡縺ｸ
+						} else {					//驕輔≧譁ｹ蜷代�ｮ2蝗槭ち繝ｼ繝ｳ	繧ｮ繧ｶ繧ｮ繧ｶ
+							path.at(count).distance += 1;		//譁懊ａ縺ｮ逶ｴ邱夊ｷ晞屬繧�1蠅励ｄ縺�
+							temp_distance = path.at(count).distance;//霍晞屬繧剃ｸ�譎ら噪縺ｫ謖√▲縺ｦ縺翫￥
+							path.erase(path.begin() + count);			//荳�蛟九★繧峨☆
+							path.at(count).distance = temp_distance;//霍晞屬繧貞�･繧後↑縺翫☆
 
 						}
 					}
-				} else {			//TODO 斜めのままパスが終了する　とりあえず入りきらずに終了する
-//FIX_ME 斜めのまま終了するときの処理
-					path.at(count).distance += 1;				//斜めの直線距離を1増やす
+				} else {			//TODO 譁懊ａ縺ｮ縺ｾ縺ｾ繝代せ縺檎ｵゆｺ�縺吶ｋ縲�縺ｨ繧翫≠縺医★蜈･繧翫″繧峨★縺ｫ邨ゆｺ�縺吶ｋ
+//FIX_ME 譁懊ａ縺ｮ縺ｾ縺ｾ邨ゆｺ�縺吶ｋ縺ｨ縺阪�ｮ蜃ｦ逅�
+					path.at(count).distance += 1;				//譁懊ａ縺ｮ逶ｴ邱夊ｷ晞屬繧�1蠅励ｄ縺�
 					path.at(count).turn = none;
-					count = size;							//終了
+					count = size;							//邨ゆｺ�
 				}
 			}
 
-		} else {										//斜めじゃなければ
+		} else {										//譁懊ａ縺倥ｃ縺ｪ縺代ｌ縺ｰ
 
-			if (count + 1 < size) {	//count+1でもパスが終わらないなら
+			if (count + 1 < size) {	//count+1縺ｧ繧ゅヱ繧ｹ縺檎ｵゅｏ繧峨↑縺�縺ｪ繧�
 
-				if (path.at(count + 1).distance >= 1) {	//ターン後も90mm以上直進するなら	大回りのチェックを行う
-					path.at(count).turn = big_90;	//大回りターンに変更
-					path.at(count).distance -= 1;	//直線距離を90mm減らす
-					path.at(count + 1).distance -= 1;	//直線距離を90mm減らす
+				if (path.at(count + 1).distance >= 1) {	//繧ｿ繝ｼ繝ｳ蠕後ｂ90mm莉･荳顔峩騾ｲ縺吶ｋ縺ｪ繧�	螟ｧ蝗槭ｊ縺ｮ繝√ぉ繝�繧ｯ繧定｡後≧
+					path.at(count).turn = big_90;	//螟ｧ蝗槭ｊ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+					path.at(count).distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+					path.at(count + 1).distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 
-				} else {							//ターン後90mm直進はしないなら
+				} else {							//繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺ｯ縺励↑縺�縺ｪ繧�
 
 					if (path.at(count).is_right
-							== path.at(count + 1).is_right) {//同じ方向に曲がるなら(Uターン)
-						if (count + 2 < size) {		//2つ先までパスが存在するなら
-							if (path.at(count + 2).distance >= 1) {	//Uターン後90mm直進するなら
-								path.at(count).turn = big_180;	//180°ターンに変更
-								path.at(count).distance -= 1;	//直線距離を90mm減らす
-								path.at(count + 2).distance -= 1;//直線距離を90mm減らす
-								path.erase(path.begin() + count + 1);	//一個ずらす
+							== path.at(count + 1).is_right) {//蜷後§譁ｹ蜷代↓譖ｲ縺後ｋ縺ｪ繧�(U繧ｿ繝ｼ繝ｳ)
+						if (count + 2 < size) {		//2縺､蜈医∪縺ｧ繝代せ縺悟ｭ伜惠縺吶ｋ縺ｪ繧�
+							if (path.at(count + 2).distance >= 1) {	//U繧ｿ繝ｼ繝ｳ蠕�90mm逶ｴ騾ｲ縺吶ｋ縺ｪ繧�
+								path.at(count).turn = big_180;	//180ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+								path.at(count).distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+								path.at(count + 2).distance -= 1;//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+								path.erase(path.begin() + count + 1);	//荳�蛟九★繧峨☆
 
-							} else {					//Uターン後すぐ曲がるなら
-								path.at(count).turn = begin_135;	//135°ターンに変更
-								path.at(count).distance -= 1;	//直線距離を90mm減らす
-								path.erase(path.begin() + count + 1);	//一個ずらす
+							} else {					//U繧ｿ繝ｼ繝ｳ蠕後☆縺先峇縺後ｋ縺ｪ繧�
+								path.at(count).turn = begin_135;	//135ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+								path.at(count).distance -= 1;	//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
+								path.erase(path.begin() + count + 1);	//荳�蛟九★繧峨☆
 								naname_flag = true;
 
 							}
 
 						}
-					} else {		//違う方法に曲がるなら
-						path.at(count).turn = begin_45;		//45°ターンに変更
-						path.at(count).distance -= 1;		//直線距離を90mm減らす
+					} else {		//驕輔≧譁ｹ豕輔↓譖ｲ縺後ｋ縺ｪ繧�
+						path.at(count).turn = begin_45;		//45ﾂｰ繧ｿ繝ｼ繝ｳ縺ｫ螟画峩
+						path.at(count).distance -= 1;		//逶ｴ邱夊ｷ晞屬繧�90mm貂帙ｉ縺�
 						naname_flag = true;
 
 					}
 
 				}
 			}
-			count++;		//配列を次へ
+			count++;		//驟榊�励ｒ谺｡縺ｸ
 		}
 
-		size = path.size();		//sizeを更新
+		size = path.size();		//size繧呈峩譁ｰ
 
 	}
 
-//最初に1つ削ったから忘れず足しておく
+//譛�蛻昴↓1縺､蜑翫▲縺溘°繧牙ｿ倥ｌ縺夊ｶｳ縺励※縺翫￥
 	if (naname_flag)
 		path.at(size - 1).distance -= 1;
 	else
@@ -2478,7 +2478,7 @@ void node_path::improve_path() {
 }
 
 PATH node_path::get_path(uint16_t index) {
-	if (index >= path.size()) {		//要素外アクセス禁止
+	if (index >= path.size()) {		//隕∫ｴ�螟悶い繧ｯ繧ｻ繧ｹ遖∵ｭ｢
 		path_element temp = { 0, none, true };
 		PATH ans = to_PATH(temp);
 		ans.element.flag = FALSE;
@@ -2486,7 +2486,7 @@ PATH node_path::get_path(uint16_t index) {
 	}
 	path_element tar = path.at(index);
 	if ((tar.distance == 0) && (tar.turn == none)) {
-//path.erase(path.begin() + index);		//直進なしかつターンなしの場合（起こりうるのは末尾だけのはず）いらないので削除
+//path.erase(path.begin() + index);		//逶ｴ騾ｲ縺ｪ縺励°縺､繧ｿ繝ｼ繝ｳ縺ｪ縺励�ｮ蝣ｴ蜷茨ｼ郁ｵｷ縺薙ｊ縺�繧九�ｮ縺ｯ譛ｫ蟆ｾ縺�縺代�ｮ縺ｯ縺夲ｼ峨＞繧峨↑縺�縺ｮ縺ｧ蜑企勁
 		return get_path(index + 1);
 	}
 	return to_PATH(tar);

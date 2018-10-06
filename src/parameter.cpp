@@ -8,9 +8,9 @@
 #include"parameter.h"
 //ideal_photo[x][y]	xは0がハーフ,1がクラシック	yが光学センサの向きに対応。
 //right left front_right front_left,front
-const float parameter::ideal_photo[2][5] = { { 13, 0, 0, 0, -7/*中心からどれだけオフセットがあるか[mm]*/ },
+float parameter::correct_photo[2][5] = { { 9, -2, 0, 0, -5/*中心からどれだけオフセットがあるか[mm]*/ },
 		{ 3250, 3200, 10815, 10100, 0 } };
-const int16_t parameter::min_wall_photo[2][5] = { { 20, 70, 1400, 130, 1500 }, {
+int16_t parameter::min_wall_photo[2][5] = { { 20, 70, 1400, 130, 500 }, {
 		20000, 20000, 0, 0, 0 } };
 
 //0番目は探索用
@@ -103,7 +103,7 @@ float parameter::get_run_acceleration(const uint8_t _select_mode) {
 	return straight_run[_select_mode].accel;
 }
 
-float parameter::get_ideal_photo(const PHOTO_TYPE _type) {
+float parameter::get_correct_photo(const PHOTO_TYPE _type) {
 
 	switch (_type) {
 	case PHOTO_TYPE::right:
@@ -116,8 +116,25 @@ float parameter::get_ideal_photo(const PHOTO_TYPE _type) {
 		return 0;
 		break;
 	}
-	return ideal_photo[MOUSE_MODE - 1][static_cast<int>(_type)];
+	return correct_photo[MOUSE_MODE - 1][static_cast<int>(_type)];
 }
+
+void parameter::set_correct_photo(const float val, const PHOTO_TYPE _type) {
+
+	switch (_type) {
+	case PHOTO_TYPE::right:
+	case PHOTO_TYPE::left:
+	case PHOTO_TYPE::front_right:
+	case PHOTO_TYPE::front_left:
+	case PHOTO_TYPE::front:
+		break;
+	default:
+		return;
+		break;
+	}
+	correct_photo[MOUSE_MODE - 1][static_cast<int>(_type)] = val;
+}
+
 
 int16_t parameter::get_min_wall_photo(const PHOTO_TYPE _type) {
 	switch (_type) {
@@ -134,6 +151,23 @@ int16_t parameter::get_min_wall_photo(const PHOTO_TYPE _type) {
 	}
 	return min_wall_photo[MOUSE_MODE - 1][static_cast<int>(_type)];
 }
+
+void parameter::set_min_wall_photo(const float val, const PHOTO_TYPE _type) {
+
+	switch (_type) {
+	case PHOTO_TYPE::right:
+	case PHOTO_TYPE::left:
+	case PHOTO_TYPE::front_right:
+	case PHOTO_TYPE::front_left:
+	case PHOTO_TYPE::front:
+		break;
+	default:
+		return;
+		break;
+	}
+	min_wall_photo[MOUSE_MODE - 1][static_cast<int>(_type)] = val;
+}
+
 
 float parameter::get_run_max_velocity(const uint8_t _select_mode) {
 	if (_select_mode >= RUN_MODE_NUMBER) {			//存在しないモードを選択したらエラー

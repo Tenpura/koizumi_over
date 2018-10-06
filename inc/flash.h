@@ -20,11 +20,14 @@ class flash{
 private:
 	static const uint16_t BACKUP_FLASH_SIZE = 1024*2;	//flashのサイズは3KBくらい　Flashは最大128k使えるけどそれを移す先のRAMが足りないから
 	static uint32_t* const BACKUP_SECTOR_START_POINTER;	//sector10の初期アドレスのポインタを管理
+
 public:
 	static uint32_t work_ram[(BACKUP_FLASH_SIZE / sizeof(uint32_t))];
 	bool clear();	//対称のsectorのフラッシュメモリを消去
 	uint32_t* load();	//work_ramにflashのデータを移してwork_ramのポインタを返す
 	bool write_block();
+	static void init();		//FIX_ME initの取り扱い
+
 };
 
 //flashを用いて実際に迷路とか保存するclass

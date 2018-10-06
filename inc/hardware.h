@@ -241,7 +241,7 @@ static const uint8_t PHOTO_N = CAST_UI(PHOTO_TYPE::element_count);		//センサの個
 		static const std::array<uint16_t,PHOTO_N> LED_GPIO_PIN = {GPIO_Pin_14,GPIO_Pin_11,GPIO_Pin_13,GPIO_Pin_0,GPIO_Pin_1};
 
 	//受光側の設定
-		#define SEN_RCC_AHB1Periph (RCC_AHB1Periph_GPIOC)	//センサーとして使っているGPIO　|を使って複数指定
+		#define SEN_RCC_AHB1Periph (RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC)	//センサーとして使っているGPIO　|を使って複数指定
 		#define SEN_ADC_CMD (ADC1)			//センサーとして使っているADC　|を使って複数指定
 		#define SEN_RCC_APB2Periph_ADC (RCC_APB2Periph_ADC1)	//センサーとして使っているADC　|を使って複数指定
 		//photo_typeの順番　right,  left, front_right, front_left, front
@@ -298,7 +298,7 @@ public:
 
 	static float get_value(PHOTO_TYPE sensor_type);
 
-	//センサ値から距離に変換し、区画中心からどれだけずれているのか[m]を返す。右側正
+	//センサ値から距離に変換し、区画中心からどれだけずれているのか[m]を返す。進行方向右側正
 	static float get_displa_from_center_debag(PHOTO_TYPE type);
 	static void get_displa_from_center_void(PHOTO_TYPE type, float val);
 	static float get_displa_from_center(PHOTO_TYPE type);
