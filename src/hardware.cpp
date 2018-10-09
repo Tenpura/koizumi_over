@@ -274,6 +274,7 @@ void motor::init_PWM() {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+
 	for(int i=0; i<PWM_IN_N; i++){
 		GPIO_InitStructure.GPIO_Pin = PWM_GPIO_PIN.at(i);
 		GPIO_Init(PWM_GPIO.at(i), &GPIO_InitStructure);	//Ý’è
@@ -305,14 +306,19 @@ void motor::init_PWM() {
 		TIM_OC2Init(PWM_TIM.at(i), &TIM_OC_InitStructure);		//TIM2‚ÌCH2
 		TIM_OC2PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
 
-		GPIO_PinAFConfig(PWM_GPIO.at(0+i*MOTOR_N), PWM_GPIO_PIN.at(0+i*MOTOR_N), PWM_GPIO_AF.at(i));
-		GPIO_PinAFConfig(PWM_GPIO.at(1+i*MOTOR_N), PWM_GPIO_PIN.at(1+i*MOTOR_N), PWM_GPIO_AF.at(i));
-
-		TIM_ARRPreloadConfig(PWM_TIM.at(i), ENABLE);
+//FIX_ME ‚±‚±‚É‘‚­‚ÆãŽè‚­‚¢‚©‚È‚¢
+//		GPIO_PinAFConfig(PWM_GPIO.at(0+i*MOTOR_N), PWM_GPIO_PIN.at(0+i*MOTOR_N), PWM_GPIO_AF.at(i));
+//		GPIO_PinAFConfig(PWM_GPIO.at(1+i*MOTOR_N), PWM_GPIO_PIN.at(1+i*MOTOR_N), PWM_GPIO_AF.at(i));
 	}
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_TIM2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+
 
 	//TIM‹N“®
 	for(int i=0; i<MOTOR_N; i++){
+		TIM_ARRPreloadConfig(PWM_TIM.at(i), ENABLE);
 		TIM_Cmd(PWM_TIM.at(i), ENABLE);
 	}
 
