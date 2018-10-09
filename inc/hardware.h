@@ -44,20 +44,43 @@ public:
 };
 
 //motor関連
-extern const uint16_t MAX_PERIOD;
+const uint16_t MAX_PERIOD = (840 - 1); //PWMの周波数決めのための最大カウント		84MHzで100kHzになる
+
 enum MOTOR_SIDE {
 	m_left = 0, m_right = 1, motor_count
 };
 static const int MOTOR_N = CAST_UI(motor_count);
+static const int PWM_IN_N = 2*MOTOR_N;
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
-	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM5, TIM4};
+	#define SLEEP_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA )
 	static GPIO_TypeDef* const SLEEP_GPIO = GPIOA;
 	static const uint16_t SLEEP_GPIO_PIN = GPIO_Pin_2;
+
+	#define PWM_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB )
+	//順番　A1,A2,B1,B2
+	static const std::array<GPIO_TypeDef*,PWM_IN_N> PWM_GPIO = {GPIOA,GPIOA,GPIOB,GPIOB};
+	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_7,GPIO_Pin_6};
+
+	#define PWM_TIM_AHB1Periph ( RCC_APB1Periph_TIM5 | RCC_APB1Periph_TIM4 )
+	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM5, TIM4};
+	static const std::array<uint8_t , MOTOR_N> PWM_GPIO_AF = {GPIO_AF_TIM5, GPIO_AF_TIM4};
+
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM2, TIM4};
+
+	#define SLEEP_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOB )
 	static GPIO_TypeDef* const SLEEP_GPIO = GPIOB;
 	static const uint16_t SLEEP_GPIO_PIN = GPIO_Pin_5;
+
+	#define PWM_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB )
+	//順番　A1,A2,B1,B2
+	static const std::array<GPIO_TypeDef*,PWM_IN_N> PWM_GPIO = {GPIOB,GPIOA,GPIOB,GPIOB};
+	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_3,GPIO_Pin_15,GPIO_Pin_7,GPIO_Pin_6};
+
+	#define PWM_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4 )
+	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM2, TIM4};
+	static const std::array<uint8_t , MOTOR_N> PWM_GPIO_AF = {GPIO_AF_TIM2, GPIO_AF_TIM4};
+
 #endif
 
 class motor {
@@ -81,6 +104,8 @@ public:
 	static void stanby_motor();		//モータードライバをスタンバイ状態に
 
 	static bool isEnable();		//motorが起動しているかどうか
+
+	static void init_PWM();
 
 	~motor();
 };

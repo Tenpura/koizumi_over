@@ -15,7 +15,6 @@ void init_all(void) {
 	init_adc();
 	init_usart();
 	init_spi();
-	init_pwm();
 	init_enc();
 }
 #elif (MOUSE_NAME == KOIZUMI_OVER)
@@ -26,7 +25,6 @@ void init_all(void) {
 	init_adc();
 	init_usart();
 	init_spi();
-	init_pwm();
 	//init_enc();
 }
 #endif
@@ -255,152 +253,6 @@ void init_spi(void) {
 	GPIO_SetBits(GPIOA, GPIO_Pin_4); // CSをセット
 
 }
-
-
-#if (MOUSE_NAME == KOIZUMI_FISH)
-void init_pwm() {
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_ResetBits(GPIOA, GPIO_Pin_2);		//モータードライバーをスリープモードに
-
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	TIM_TimeBaseInitTypeDef TIM_InitStructure;
-	TIM_InitStructure.TIM_Period = MAX_PERIOD;//カウンタクリア要因 200kHz ExcelファイルからTIMのクロックを確認
-	TIM_InitStructure.TIM_Prescaler = 0;//プリスケーラ(カウンタがPrescaler回カウントされたタイミングで，TIMのカウンタが1加算される)
-	TIM_InitStructure.TIM_ClockDivision = 0;	//デットタイム発生回路用の分周。通常0(分周しない)。
-	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
-	TIM_InitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM4, &TIM_InitStructure);
-	TIM_TimeBaseInit(TIM5, &TIM_InitStructure);
-
-	TIM_OCInitTypeDef TIM_OC_InitStructure;
-	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;		//モードはPWM1
-	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
-	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
-	TIM_OC_InitStructure.TIM_Pulse = 0;	//パルス幅。Duty比に関係。
-
-	//PWM出力が4本必要なので各タイマ2つずつ
-	TIM_OC1Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH1
-	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-	TIM_OC2Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH2
-	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
-
-	TIM_OC1Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH1
-	TIM_OC1PreloadConfig(TIM5, TIM_OCPreload_Enable);
-	TIM_OC2Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH2
-	TIM_OC2PreloadConfig(TIM5, TIM_OCPreload_Enable);
-
-	TIM_ARRPreloadConfig(TIM2, ENABLE);
-	TIM_CtrlPWMOutputs(TIM2, ENABLE);
-	TIM_ARRPreloadConfig(TIM3, ENABLE);
-	TIM_CtrlPWMOutputs(TIM3, ENABLE);
-
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM5);
-
-	TIM_ARRPreloadConfig(TIM4, ENABLE);
-	TIM_ARRPreloadConfig(TIM5, ENABLE);
-
-	//TIM起動
-	TIM_Cmd(TIM4, ENABLE);
-	TIM_Cmd(TIM5, ENABLE);
-}
-
-#elif (MOUSE_NAME == KOIZUMI_OVER)
-void init_pwm() {
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	//モータドライバスリープ設定
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	GPIO_ResetBits(GPIOB, GPIO_Pin_5);		//モータードライバーをスリープモードに
-
-
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	TIM_TimeBaseInitTypeDef TIM_InitStructure;
-	TIM_InitStructure.TIM_Period = MAX_PERIOD;//カウンタクリア要因 100kHz ExcelファイルからTIMのクロックを確認
-	TIM_InitStructure.TIM_Prescaler = 0;//プリスケーラ(カウンタがPrescaler回カウントされたタイミングで，TIMのカウンタが1加算される)
-	TIM_InitStructure.TIM_ClockDivision = 0;	//デットタイム発生回路用の分周。通常0(分周しない)。
-	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
-	TIM_InitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM2, &TIM_InitStructure);
-	TIM_TimeBaseInit(TIM4, &TIM_InitStructure);
-
-	TIM_OCInitTypeDef TIM_OC_InitStructure;
-	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;		//モードはPWM1
-	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
-	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
-	TIM_OC_InitStructure.TIM_Pulse = 0;	//パルス幅。Duty比に関係。
-
-	//PWM出力が4本必要なので各タイマ2つずつ
-	TIM_OC1Init(TIM2, &TIM_OC_InitStructure);		//TIM2のCH1
-	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Enable);
-	TIM_OC2Init(TIM2, &TIM_OC_InitStructure);		//TIM2のCH2
-	TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Enable);
-
-	TIM_OC1Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH1
-	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-	TIM_OC2Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH2
-	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
-
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
-
-	TIM_ARRPreloadConfig(TIM2, ENABLE);
-	TIM_ARRPreloadConfig(TIM4, ENABLE);
-
-	//TIM起動
-	TIM_Cmd(TIM2, ENABLE);
-	TIM_Cmd(TIM4, ENABLE);
-}
-#endif
-
 
 void init_enc() {
 	//クロック供給

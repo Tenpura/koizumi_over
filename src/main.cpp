@@ -43,6 +43,7 @@ int main(void) {
 	init_all();
 	photo::init();
 	flash::init();
+	motor::init_PWM();
 	mouse::reset_count();
 	mpu6000::init();
 

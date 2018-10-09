@@ -251,6 +251,73 @@ bool motor::isEnable() {
 	return motor_state;
 }
 
+void motor::init_PWM() {
+
+	RCC_AHB1PeriphClockCmd(SLEEP_GPIO_AHB1Periph, ENABLE);
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	//モータドライバスリープ設定
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_InitStructure.GPIO_Pin = SLEEP_GPIO_PIN;
+	GPIO_Init(SLEEP_GPIO, &GPIO_InitStructure);
+
+	GPIO_ResetBits(SLEEP_GPIO, SLEEP_GPIO_PIN);		//モータードライバーをスリープモードに
+
+
+	RCC_AHB1PeriphClockCmd(PWM_GPIO_AHB1Periph, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	for(int i=0; i<PWM_IN_N; i++){
+		GPIO_InitStructure.GPIO_Pin = PWM_GPIO_PIN.at(i);
+		GPIO_Init(PWM_GPIO.at(i), &GPIO_InitStructure);	//設定
+	}
+
+
+	RCC_APB1PeriphClockCmd(PWM_TIM_AHB1Periph, ENABLE);
+
+	TIM_TimeBaseInitTypeDef TIM_InitStructure;
+	TIM_InitStructure.TIM_Period = MAX_PERIOD;//カウンタクリア要因 100kHz ExcelファイルからTIMのクロックを確認
+	TIM_InitStructure.TIM_Prescaler = 0;//プリスケーラ(カウンタがPrescaler回カウントされたタイミングで，TIMのカウンタが1加算される)
+	TIM_InitStructure.TIM_ClockDivision = 0;	//デットタイム発生回路用の分周。通常0(分周しない)。
+	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
+	TIM_InitStructure.TIM_RepetitionCounter = 0;
+	for(int i=0; i<MOTOR_N; i++){
+		TIM_TimeBaseInit(PWM_TIM.at(i), &TIM_InitStructure);
+	}
+
+	TIM_OCInitTypeDef TIM_OC_InitStructure;
+	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;		//モードはPWM1
+	TIM_OC_InitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
+	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
+	TIM_OC_InitStructure.TIM_Pulse = 0;	//パルス幅。Duty比に関係。
+
+	for(int i=0; i<MOTOR_N; i++){
+		//PWM出力が4本必要なので各タイマ2つずつ
+		TIM_OC1Init(PWM_TIM.at(i), &TIM_OC_InitStructure);		//TIM2のCH1
+		TIM_OC1PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
+		TIM_OC2Init(PWM_TIM.at(i), &TIM_OC_InitStructure);		//TIM2のCH2
+		TIM_OC2PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
+
+		GPIO_PinAFConfig(PWM_GPIO.at(0+i*MOTOR_N), PWM_GPIO_PIN.at(0+i*MOTOR_N), PWM_GPIO_AF.at(i));
+		GPIO_PinAFConfig(PWM_GPIO.at(1+i*MOTOR_N), PWM_GPIO_PIN.at(1+i*MOTOR_N), PWM_GPIO_AF.at(i));
+
+		TIM_ARRPreloadConfig(PWM_TIM.at(i), ENABLE);
+	}
+
+	//TIM起動
+	for(int i=0; i<MOTOR_N; i++){
+		TIM_Cmd(PWM_TIM.at(i), ENABLE);
+	}
+
+}
+
 motor::motor() {
 }
 
