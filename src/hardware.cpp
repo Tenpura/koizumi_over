@@ -184,11 +184,8 @@ void motor::set_duty(const MOTOR_SIDE side, const float set_duty) {
 	signed short duty = 0;		//一時的な保存
 
 	//Dutyに絶対値をとる
-	duty = ABS(set_duty);
-
 	//上限を切る
-	if (set_duty > MAX_DUTY)
-		duty = MAX_DUTY;
+	duty = MIN( ABS(set_duty), MAX_DUTY);
 
 	static TIM_OCInitTypeDef TIM_OC_InitStructure;
 	TIM_OC_InitStructure.TIM_OCMode = TIM_OCMode_PWM1;		//モードはPWM1
@@ -197,49 +194,28 @@ void motor::set_duty(const MOTOR_SIDE side, const float set_duty) {
 
 	TIM_OC_InitStructure.TIM_Pulse = static_cast<uint32_t>(MAX_PERIOD * duty
 			* 0.01);	//dutyに応じてカウントを変更
+	if (set_duty == 0) {					//0のときはstop
+		TIM_OC_InitStructure.TIM_Pulse = 0;		//duty0の時は一応0を代入しておく
+		TIM_OC1Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH1
+		TIM_OC2Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH2
+
+	} else if (set_duty > 0) {				//正のときは正転
+		TIM_OC1Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH1
+		TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
+		TIM_OC2Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH2
+
+	} else {									//負のときは逆転
+		TIM_OC2Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH2
+		TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
+		TIM_OC1Init(PWM_TIM.at(CAST_UI(side)), &TIM_OC_InitStructure);		//TIM4のCH1
+
+	}
 
 	if (side == MOTOR_SIDE::m_right) {
-
-		if (set_duty == 0) {					//0のときはstop
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//duty0の時は一応0を代入しておく
-			TIM_OC1Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH1
-			TIM_OC2Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH2
-
-		} else if (set_duty > 0) {				//正のときは正転
-			TIM_OC1Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH1
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
-			TIM_OC2Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH2
-
-		} else {									//負のときは逆転
-			TIM_OC2Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH2
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
-			TIM_OC1Init(TIM4, &TIM_OC_InitStructure);		//TIM4のCH1
-
-		}
-
 		right_duty = duty;
 	}
 
 	if (side == MOTOR_SIDE::m_left) {
-
-		if (set_duty == 0) {					//0のときはstop
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//duty0の時は一応0を代入しておく
-
-			TIM_OC1Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH1
-			TIM_OC2Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH2
-		} else if (set_duty > 0) {				//正のときは正転
-			TIM_OC1Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH1
-
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
-			TIM_OC2Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH2
-
-		} else {									//負のときは逆転
-			TIM_OC2Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH2
-
-			TIM_OC_InitStructure.TIM_Pulse = 0;		//電位差を作るため、片方は0に
-			TIM_OC1Init(TIM5, &TIM_OC_InitStructure);		//TIM5のCH1
-		}
-
 		left_duty = duty;
 	}
 
@@ -254,19 +230,20 @@ signed short motor::get_duty_right() {
 }
 
 void motor::sleep_motor() {
-	GPIO_ResetBits(GPIOA, GPIO_Pin_2);	//モータードライバースリープ
-	TIM_Cmd(TIM4, DISABLE);
-	TIM_Cmd(TIM5, DISABLE);
-	motor::set_duty(m_left, 0);
-	motor::set_duty(m_right, 0);
+	GPIO_ResetBits(SLEEP_GPIO, SLEEP_GPIO_PIN);	//モータードライバースリープ
+	for( int side = 0; side < MOTOR_N; side++){
+		TIM_Cmd(PWM_TIM.at(side), DISABLE);
+		motor::set_duty(static_cast<MOTOR_SIDE>(side), 0);
+	}
 	motor_state = false;
 
 }
 
 void motor::stanby_motor() {
-	GPIO_SetBits(GPIOA, GPIO_Pin_2);	//モータードライバースタンバイ
-	TIM_Cmd(TIM4, ENABLE);
-	TIM_Cmd(TIM5, ENABLE);
+	GPIO_SetBits(SLEEP_GPIO, SLEEP_GPIO_PIN);	//モータードライバースタンバイ
+	for( int side = 0; side < MOTOR_N; side++){
+		TIM_Cmd(PWM_TIM.at(side), ENABLE);
+	}
 	motor_state = true;
 }
 

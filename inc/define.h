@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-#define MOUSE_NAME KOIZUMI_FISH		//どの機体に書き込むか
-//#define MOUSE_NAME KOIZUMI_OVER		//どの機体に書き込むか
+//#define MOUSE_NAME KOIZUMI_FISH		//どの機体に書き込むか
+#define MOUSE_NAME KOIZUMI_OVER		//どの機体に書き込むか
 
 #define KOIZUMI_FISH 0
 #define KOIZUMI_OVER 1
@@ -171,7 +171,7 @@ typedef struct {
 } MAP_DATA;
 
 //光学センサの種類
-enum class PHOTO_TYPE : uint8_t{
+enum PHOTO_TYPE{
 	right = 0, left = 1, front_right = 2, front_left = 3, front = 4, element_count
 };
 

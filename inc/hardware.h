@@ -46,8 +46,19 @@ public:
 //motor関連
 extern const uint16_t MAX_PERIOD;
 enum MOTOR_SIDE {
-	m_left = 0, m_right = 1
+	m_left = 0, m_right = 1, motor_count
 };
+static const int MOTOR_N = CAST_UI(motor_count);
+
+#if (MOUSE_NAME == KOIZUMI_FISH)
+	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM5, TIM4};
+	static GPIO_TypeDef* const SLEEP_GPIO = GPIOA;
+	static const uint16_t SLEEP_GPIO_PIN = GPIO_Pin_2;
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM2, TIM4};
+	static GPIO_TypeDef* const SLEEP_GPIO = GPIOB;
+	static const uint16_t SLEEP_GPIO_PIN = GPIO_Pin_5;
+#endif
 
 class motor {
 private:
@@ -55,7 +66,6 @@ private:
 	static signed char right_duty, left_duty;		//duty[％]
 
 	static const char MAX_DUTY;	 	//Dutyの最大値［％］
-	static const char MAX_COUNT;	//Dutyの最大値［％］
 
 	static bool motor_state;		//motorが起動していればTRUE。
 

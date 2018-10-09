@@ -44,17 +44,18 @@ int main(void) {
 	photo::init();
 	flash::init();
 	mouse::reset_count();
+	mpu6000::init();
+
 
 #if (MOUSE_NAME == KOIZUMI_OVER)
-	photo::light(PHOTO_TYPE::right);
-	photo::light(PHOTO_TYPE::left);
-	photo::light(PHOTO_TYPE::front_right);
-	photo::light(PHOTO_TYPE::front_left);
-	photo::light(PHOTO_TYPE::front);
+
+	mouse::run_init(false, false);
+	motor::set_duty(MOTOR_SIDE::m_right, -1);
+	motor::set_duty(MOTOR_SIDE::m_left, -10);
 
 	while (1) {
-		myprintf("right %4.3f  ", photo::get_ad(PHOTO_TYPE::right));
-		myprintf("left %4.3f  ", photo::get_ad(PHOTO_TYPE::left));
+		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
+		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
 //		myprintf("f_r %4.3f  ",
 //				photo::get_ad(PHOTO_TYPE::front_right));
 //		myprintf("f_l %4.3f  ",
@@ -64,12 +65,10 @@ int main(void) {
 		myprintf("\n\r");
 
 	}
+
 #endif
 
 	my7seg::blink(8, 200, 5);
-
-	mpu6000::init();
-
 
 	my7seg::turn_off();
 
@@ -385,6 +384,9 @@ void interrupt_timer() {
 	wait_counter++;	//ms(ミリ秒)のカウントを1増加
 	mouse::add_one_count_ms();
 	wait::set_count(wait_counter);
+
+	photo::interrupt(true);
+
 
 #endif
 }
