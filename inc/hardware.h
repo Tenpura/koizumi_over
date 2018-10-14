@@ -49,7 +49,7 @@ const uint16_t MAX_PERIOD = (840 - 1); //PWMの周波数決めのための最大カウント		84
 enum MOTOR_SIDE {
 	m_left = 0, m_right = 1, motor_count
 };
-static const int MOTOR_N = CAST_UI(motor_count);
+static const unsigned int MOTOR_N = CAST_UI(motor_count);
 static const int PWM_IN_N = 2*MOTOR_N;
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
@@ -59,12 +59,13 @@ static const int PWM_IN_N = 2*MOTOR_N;
 
 	#define PWM_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB )
 	//順番　A1,A2,B1,B2
-	static const std::array<GPIO_TypeDef*,PWM_IN_N> PWM_GPIO = {GPIOA,GPIOA,GPIOB,GPIOB};
+	static std::array<GPIO_TypeDef* const,PWM_IN_N> PWM_GPIO = {GPIOA,GPIOA,GPIOB,GPIOB};
 	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_7,GPIO_Pin_6};
+	static std::array<uint8_t,PWM_IN_N> PWM_GPIO_PIN_SOURCE = {GPIO_PinSource0,GPIO_PinSource1,GPIO_PinSource7,GPIO_PinSource6};
+	static const std::array<uint8_t , PWM_IN_N> PWM_GPIO_AF = {GPIO_AF_TIM5, GPIO_AF_TIM5, GPIO_AF_TIM4, GPIO_AF_TIM4};
 
 	#define PWM_TIM_AHB1Periph ( RCC_APB1Periph_TIM5 | RCC_APB1Periph_TIM4 )
-	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM5, TIM4};
-	static const std::array<uint8_t , MOTOR_N> PWM_GPIO_AF = {GPIO_AF_TIM5, GPIO_AF_TIM4};
+	static std::array<TIM_TypeDef* const, MOTOR_N> PWM_TIM = {TIM5, TIM4};
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 
@@ -74,12 +75,13 @@ static const int PWM_IN_N = 2*MOTOR_N;
 
 	#define PWM_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB )
 	//順番　A1,A2,B1,B2
-	static const std::array<GPIO_TypeDef*,PWM_IN_N> PWM_GPIO = {GPIOB,GPIOA,GPIOB,GPIOB};
+	static std::array<GPIO_TypeDef* const,PWM_IN_N> PWM_GPIO = {GPIOB,GPIOA,GPIOB,GPIOB};
 	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_3,GPIO_Pin_15,GPIO_Pin_7,GPIO_Pin_6};
+	static std::array<uint8_t,PWM_IN_N> PWM_GPIO_PIN_SOURCE = {GPIO_PinSource3,GPIO_PinSource15,GPIO_PinSource7,GPIO_PinSource6};
+	static const std::array<uint8_t , PWM_IN_N> PWM_GPIO_AF = {GPIO_AF_TIM2, GPIO_AF_TIM2, GPIO_AF_TIM4, GPIO_AF_TIM4};
 
 	#define PWM_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4 )
-	static const std::array<TIM_TypeDef* , MOTOR_N> PWM_TIM = {TIM2, TIM4};
-	static const std::array<uint8_t , MOTOR_N> PWM_GPIO_AF = {GPIO_AF_TIM2, GPIO_AF_TIM4};
+	static std::array<TIM_TypeDef* const, MOTOR_N> PWM_TIM = {TIM2, TIM4};
 
 #endif
 
@@ -217,8 +219,34 @@ public:
 
 //encoder
 typedef enum {
-	enc_right = 0, enc_left = 1
+	enc_right = 0, enc_left = 1, enc_count
 } ENC_SIDE;
+static const unsigned int ENC_N = CAST_UI(enc_count);
+static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1つのエンコーダにつき2チャンネル使用
+
+#if (MOUSE_NAME == KOIZUMI_FISH)
+	#define ENC_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC )
+	//順番　right_A,right_B,left_A,left_B
+	static const std::array<GPIO_TypeDef*,ENC_GPIO_N> ENC_GPIO = {GPIOC, GPIOC, GPIOB, GPIOA};
+	static const std::array<uint16_t,ENC_GPIO_N> ENC_GPIO_PIN = {GPIO_PinSource7, GPIO_PinSource6, GPIO_PinSource3, GPIO_PinSource15};
+	static std::array<uint8_t,ENC_GPIO_N> ENC_GPIO_PIN_SOURCE = {GPIO_PinSource7,GPIO_PinSource6,GPIO_PinSource3,GPIO_PinSource15};
+	static const std::array<uint8_t , ENC_GPIO_N> ENC_GPIO_AF = {GPIO_AF_TIM3, GPIO_AF_TIM3, GPIO_AF_TIM2, GPIO_AF_TIM2};
+
+	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 )
+	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM2};
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	#define ENC_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC )
+	//順番　right_A,right_B,left_A,left_B
+	static const std::array<GPIO_TypeDef*,ENC_GPIO_N> ENC_GPIO = {GPIOC, GPIOC, GPIOB, GPIOA};
+	static const std::array<uint16_t,ENC_GPIO_N> ENC_GPIO_PIN = {GPIO_Pin_7, GPIO_Pin_6, GPIO_Pin_3, GPIO_Pin_15};
+	static std::array<uint8_t,ENC_GPIO_N> ENC_GPIO_PIN_SOURCE = {GPIO_PinSource7,GPIO_PinSource6,GPIO_PinSource3,GPIO_PinSource15};
+	static const std::array<uint8_t , ENC_GPIO_N> ENC_GPIO_AF = {GPIO_AF_TIM3, GPIO_AF_TIM3, GPIO_AF_TIM2, GPIO_AF_TIM2};
+
+	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 )
+	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM2};
+#endif
+
 class encoder {
 private:
 	const static uint8_t MOVING_AVERAGE;	//移動平均をとる時間　単位は制御周期
@@ -245,6 +273,8 @@ public:
 	static void yi_correct();		//Y.I.式補正法を行う。（補正テーブルの作成）
 
 	static void draw_correct(bool right, bool left);		//Y.I.式補正テーブルを表示
+
+	static void init();
 
 	~encoder();
 };

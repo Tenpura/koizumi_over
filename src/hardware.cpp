@@ -305,15 +305,11 @@ void motor::init_PWM() {
 		TIM_OC1PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
 		TIM_OC2Init(PWM_TIM.at(i), &TIM_OC_InitStructure);		//TIM2のCH2
 		TIM_OC2PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
-
-//FIX_ME ここに書くと上手くいかない
-//		GPIO_PinAFConfig(PWM_GPIO.at(0+i*MOTOR_N), PWM_GPIO_PIN.at(0+i*MOTOR_N), PWM_GPIO_AF.at(i));
-//		GPIO_PinAFConfig(PWM_GPIO.at(1+i*MOTOR_N), PWM_GPIO_PIN.at(1+i*MOTOR_N), PWM_GPIO_AF.at(i));
 	}
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_TIM2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+
+	for(int i=0; i<PWM_IN_N; i++){
+		GPIO_PinAFConfig(PWM_GPIO.at(i), PWM_GPIO_PIN_SOURCE.at(i), PWM_GPIO_AF.at(i));
+	}
 
 
 	//TIM起動
@@ -898,6 +894,49 @@ void encoder::draw_correct(bool right, bool left) {
 		if (left)
 			myprintf(", %f", correct[enc_left][i]);
 		myprintf("\n\r");
+	}
+}
+
+void encoder::init(){
+//クロック供給
+	RCC_AHB1PeriphClockCmd(ENC_GPIO_AHB1Periph, ENABLE);
+	RCC_APB1PeriphClockCmd(ENC_TIM_AHB1Periph, ENABLE);
+
+	//Remap
+	for(uint32_t i=0; i<ENC_GPIO_N; i++ ){
+		GPIO_PinAFConfig(ENC_GPIO.at(i), ENC_GPIO_PIN_SOURCE.at(i), ENC_GPIO_AF.at(i));
+	}
+
+	//端子を位相係数ように設定
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+
+	for(uint32_t i=0; i<ENC_GPIO_N; i++ ){
+		GPIO_InitStructure.GPIO_Pin = ENC_GPIO_PIN.at(i);
+		GPIO_Init(ENC_GPIO.at(i), &GPIO_InitStructure);
+	}
+
+	//TIMの設定
+	for(uint32_t i=0; i < ENC_N; i++){
+		TIM_ARRPreloadConfig(ENC_TIM.at(i), ENABLE);
+	}
+
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_TimeBaseStructure.TIM_Period = 65535;		//カウンタクリア要因
+	TIM_TimeBaseStructure.TIM_Prescaler = 0;//分周(カウンタがPrescaler回カウントされたタイミングで，TIMのカウンタが1加算される)
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;	//デットタイム発生回路用の分周。通常0(分周しない)。
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
+	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+	for(uint32_t i=0; i < ENC_N; i++){
+		TIM_TimeBaseInit(ENC_TIM.at(i), &TIM_TimeBaseStructure);
+		//エンコーダ―について設定
+		TIM_EncoderInterfaceConfig(ENC_TIM.at(i), TIM_EncoderMode_TI12,
+			TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);//CH1とCH2の両方のエッジでカウント、CH1もCH2も立ち上がりを読む
+		TIM_Cmd(ENC_TIM.at(i), ENABLE);		//タイマ起動
 	}
 }
 
