@@ -15,7 +15,7 @@ void init_all(void) {
 	init_adc();
 	init_usart();
 	init_spi();
-	init_enc();
+	//init_enc();
 }
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 void init_all(void) {
@@ -26,6 +26,18 @@ void init_all(void) {
 	init_usart();
 	init_spi();
 	//init_enc();
+
+	//スイッチよう
+	GPIO_InitTypeDef GPIO_InitStructure;	//初期設定のための構造体を宣言
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);	//クロック供給
+	GPIO_StructInit(&GPIO_InitStructure);	//構造体を初期化
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		//クロック
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		//オープンドレインorプッシュプル
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		//入力に設定
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;	//プルアップかプルダウンか
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;	//設定するピンを決める
+	GPIO_Init(GPIOB, &GPIO_InitStructure);	//設定
+
 }
 #endif
 
@@ -65,9 +77,6 @@ void init_system() {
  }
  */
 void init_gpio(void) {
-	/* Reset HSEON, CSSON and PLLON bits */
-	RCC->CR &= (uint32_t) 0xFEF6FFFF; //HSEオシレーターは使用しないので、リセットしておく(SystemInit()内でONになっているため)
-
 	//IOの出力設定
 	GPIO_InitTypeDef GPIO_InitStructure;	//初期設定のための構造体を宣言
 

@@ -10,7 +10,7 @@ try:
 
 # シリアルポート
 	if platform.system() == "Windows":
-		port = "com4"
+		port = "com3"
 	elif platform.system() == "Linux":
 		port = "/dev/ttyUSB0"
 	else: # 他のOS

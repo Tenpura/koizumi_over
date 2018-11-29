@@ -8,9 +8,8 @@
 #include"hardware.h"
 
 //自作7セグ関連
-
+#if (MOUSE_NAME == KOIZUMI_FISH)
 void my7seg::light(const my7seg::DIRECTION muki) {
-
 	switch (muki) {
 	case front:
 		GPIO_ResetBits(GPIOH, GPIO_Pin_0);	//LED9
@@ -30,9 +29,31 @@ void my7seg::light(const my7seg::DIRECTION muki) {
 		break;
 	}
 }
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void my7seg::light(const my7seg::DIRECTION muki) {
+	switch (muki) {
+	case front:
+		GPIO_ResetBits(UI_GPIO.at(CAST_UI(top_front)).first, UI_GPIO.at(CAST_UI(top_front)).second);
+		break;
 
+	case left:
+		GPIO_ResetBits(UI_GPIO.at(CAST_UI(top_left)).first, UI_GPIO.at(CAST_UI(top_left)).second);
+		GPIO_ResetBits(UI_GPIO.at(CAST_UI(btm_left)).first, UI_GPIO.at(CAST_UI(btm_left)).second);
+		break;
+
+	case right:
+		GPIO_ResetBits(UI_GPIO.at(CAST_UI(top_right)).first, UI_GPIO.at(CAST_UI(top_right)).second);
+		GPIO_ResetBits(UI_GPIO.at(CAST_UI(btm_right)).first, UI_GPIO.at(CAST_UI(btm_right)).second);
+		break;
+
+	default:
+		break;
+	}
+}
+#endif	/* MOUSE_NAME */
+
+#if (MOUSE_NAME == KOIZUMI_FISH)
 void my7seg::light(const unsigned char number) {
-
 	//7セグで表示できるわけねえだろ！
 	if (number > 9) {
 		//error
@@ -134,17 +155,33 @@ void my7seg::light(const unsigned char number) {
 	}
 	return;
 }
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void my7seg::light(const unsigned char number) {
+	//7セグで表示できるわけねえだろ！
+	if (number > 9) {
+		//error
+		light_error();
+		return;
+	}
+	//XXX	TBD 将来は関数ポインタ＆Reset or SETを LED ON/OFFみたいに意味でラッピングする
+	for(int i=0; i<UI_GPIO_N;i++){
+		if( UI_GPIO_LIGHT_PTN.at(number).at(i) ==1 ){
+			GPIO_ResetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　ON */
+		}else{
+			GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　OFF */
+		}
+	}
+
+	return;
+}
+#endif	/* MOUSE_NAME */
 
 void my7seg::turn_off() {
-	GPIO_SetBits(GPIOB, GPIO_Pin_4);	//LED7
-	GPIO_SetBits(GPIOB, GPIO_Pin_12);	//LED3
-	GPIO_SetBits(GPIOC, GPIO_Pin_2);	//LED8
-	GPIO_SetBits(GPIOC, GPIO_Pin_14);	//LED5
-	GPIO_SetBits(GPIOC, GPIO_Pin_15);	//LED6
-	GPIO_SetBits(GPIOH, GPIO_Pin_0);	//LED9
-	GPIO_SetBits(GPIOH, GPIO_Pin_1);	//LED4
+	for(unsigned int i=0; i<UI_GPIO_N; i++){
+		GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);	/* LEDは消しとく */
+	}
 }
-
+#if (MOUSE_NAME == KOIZUMI_FISH)
 void my7seg::light_error() {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_4);	//LED7
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);	//LED3
@@ -154,6 +191,13 @@ void my7seg::light_error() {
 	GPIO_ResetBits(GPIOH, GPIO_Pin_0);	//LED9
 	GPIO_SetBits(GPIOH, GPIO_Pin_1);	//LED4
 }
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void my7seg::light_error() {
+	for(unsigned int i=0; i<UI_GPIO_N; i++){
+		GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);	/* LEDは全点灯 */
+	}
+}
+#endif	/* MOUSE_NAME */
 
 void my7seg::blink(const unsigned char number,
 		const unsigned short blink_cycle_ms,
@@ -173,6 +217,25 @@ void my7seg::count_down(const unsigned char start_number,
 		wait::ms(cycle_ms);
 	}
 	light(0);
+}
+
+void my7seg::init(){
+	RCC_AHB1PeriphClockCmd(UI_GPIO_AHB1Periph, ENABLE);
+
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+
+	for(unsigned int i=0; i<UI_GPIO_N; i++){
+		GPIO_InitStructure.GPIO_Pin = UI_GPIO.at(i).second;
+		GPIO_Init(UI_GPIO.at(i).first, &GPIO_InitStructure);
+
+		GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);	/* LEDは消しとく */
+	}
+
 }
 
 //motor関連
@@ -702,11 +765,10 @@ void encoder::interrupt() {
 	}
 
 	//エンコーダ―の値を取得
-	delta_value_r = 32762 - static_cast<float>(TIM3->CNT);
-	delta_value_l = static_cast<float>(TIM2->CNT) - 32762;
-
-	TIM2->CNT = 32762;
-	TIM3->CNT = 32762;
+	delta_value_r = 32762 - static_cast<float>(ENC_TIM.at(enc_right)->CNT);
+	ENC_TIM.at(enc_right)->CNT = 32762;
+	delta_value_l = static_cast<float>(ENC_TIM.at(enc_left)->CNT) - 32762;
+	ENC_TIM.at(enc_left)->CNT = 32762;
 
 	//FIX_ME
 	mouse::debag_val_enc_r += delta_value_r;
@@ -746,7 +808,7 @@ void encoder::interrupt() {
 		if (raw_count[enc_right] < 0)
 			raw_count[enc_right] += 4096;
 		else if (raw_count[enc_right] > 4096) {
-			raw_count[enc_right] %= 4096;
+			raw_count[enc_right] -= 4096;
 			correct_flag[enc_right] = false;	//補正テーブル作成完了
 			isCorrect[enc_right] = true;		//補正フラグを建てる
 			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
@@ -761,7 +823,7 @@ void encoder::interrupt() {
 		if (raw_count[enc_left] < 0)
 			raw_count[enc_left] += 4096;
 		else if (raw_count[enc_left] > 4096) {
-			raw_count[enc_left] %= 4096;
+			raw_count[enc_left] -= 4096;
 			correct_flag[enc_left] = false;
 			isCorrect[enc_left] = true;		//補正を完了フラグを建てる
 			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
@@ -811,7 +873,7 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	if (enc_side == enc_right)
 		motor::set_duty(MOTOR_SIDE::m_right, 30);
 	else
-		motor::set_duty(MOTOR_SIDE::m_left, 25);
+		motor::set_duty(MOTOR_SIDE::m_left, 30);
 
 	//補正テーブルを全消去
 	isCorrect[enc_side] = false;	//Y.I.式補正は中止
@@ -876,8 +938,8 @@ void encoder::yi_correct() {
 	control::ignore_failsafe(true);		//補正中はフェイルセーフを切る
 
 	//左右で補正を行う
-	yi_correct(enc_right);
 	yi_correct(enc_left);
+	yi_correct(enc_right);
 	control::reset_delta(sen_encoder);
 
 	control::ignore_failsafe(false);		//フェイルセーフを復活
@@ -899,6 +961,7 @@ void encoder::draw_correct(bool right, bool left) {
 
 void encoder::init(){
 //クロック供給
+
 	RCC_AHB1PeriphClockCmd(ENC_GPIO_AHB1Periph, ENABLE);
 	RCC_APB1PeriphClockCmd(ENC_TIM_AHB1Periph, ENABLE);
 
@@ -1152,8 +1215,11 @@ void photo::interrupt(bool is_light) {
 
 	photo::set_ref(PHOTO_TYPE::right, get_ad(PHOTO_TYPE::right));//消えてる時をrefにする
 	photo::set_ref(PHOTO_TYPE::left, get_ad(PHOTO_TYPE::left));	//消えてる時をrefにする
+	photo::set_ref(PHOTO_TYPE::front_right, get_ad(PHOTO_TYPE::front_right));//消えてる時をrefにする
+	photo::set_ref(PHOTO_TYPE::front_left, get_ad(PHOTO_TYPE::front_left));	//消えてる時をrefにする
+	photo::set_ref(PHOTO_TYPE::front, get_ad(PHOTO_TYPE::front));//消えてる時をrefにする
 
-	//左右の発光は回路的に同時におこるので、同時に左右の値をとる
+	// 左右の発光は回路的に同時におこるので、同時に左右の値をとる@鯉住
 	if (is_light) {
 		photo::light(PHOTO_TYPE::right);
 		photo::light(PHOTO_TYPE::left);
@@ -1167,30 +1233,10 @@ void photo::interrupt(bool is_light) {
 	photo::turn_off(PHOTO_TYPE::right);
 	photo::turn_off(PHOTO_TYPE::left);
 
-	/*
-	photo::set_ref(PHOTO_TYPE::front_right, get_ad(PHOTO_TYPE::front_right));//消えてる時をrefにする
-	photo::set_ref(PHOTO_TYPE::front_left, get_ad(PHOTO_TYPE::front_left));	//消えてる時をrefにする
+	// おそらく
 	if (is_light) {
 		photo::light(PHOTO_TYPE::front_right);
-		for (volatile int i = 0; i < wait_number; i++) {
-		}
-	}
-	photo::set_ad(PHOTO_TYPE::front_right,
-			get_ad(PHOTO_TYPE::front_right) - get_ref(PHOTO_TYPE::front_right));//差分を代入
-	photo::turn_off(PHOTO_TYPE::front_right);
-
-	if (is_light) {
 		photo::light(PHOTO_TYPE::front_left);
-		for (volatile int i = 0; i < wait_number; i++) {
-		}
-	}
-	photo::set_ad(PHOTO_TYPE::front_left,
-			get_ad(PHOTO_TYPE::front_left) - get_ref(PHOTO_TYPE::front_left));//差分を代入
-	photo::turn_off(PHOTO_TYPE::front_left);
-	*/
-
-	photo::set_ref(PHOTO_TYPE::front, get_ad(PHOTO_TYPE::front));//消えてる時をrefにする
-	if (is_light) {
 		photo::light(PHOTO_TYPE::front);
 		for (volatile int i = 0; i < wait_number; i++) {
 		}
@@ -1198,6 +1244,12 @@ void photo::interrupt(bool is_light) {
 	photo::set_ad(PHOTO_TYPE::front,
 			static_cast<float>(get_ad(PHOTO_TYPE::front) - get_ref(PHOTO_TYPE::front)));	//差分を代入
 	photo::turn_off(PHOTO_TYPE::front);
+	photo::set_ad(PHOTO_TYPE::front_right,
+			get_ad(PHOTO_TYPE::front_right) - get_ref(PHOTO_TYPE::front_right));//差分を代入
+	photo::turn_off(PHOTO_TYPE::front_right);
+	photo::set_ad(PHOTO_TYPE::front_left,
+			get_ad(PHOTO_TYPE::front_left) - get_ref(PHOTO_TYPE::front_left));//差分を代入
+	photo::turn_off(PHOTO_TYPE::front_left);
 
 	photo::turn_off_all();
 }
@@ -1488,10 +1540,19 @@ photo::~photo() {
 
 //XXX 各種ゲイン
 //control関連
+#if (MOUSE_NAME == KOIZUMI_FISH)
 const PID gyro_gain = { 15, 750, 0.015 };
 PID photo_gain = /*{ 100,0,0.003};*/{ 200, 0, 0.005 };
 const PID encoder_gain = { 200, 1000, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+const PID gyro_gain = { 0, 0, 0.0 };
+PID photo_gain = { 200, 0, 0.005 };
+const PID encoder_gain = { 20, 000, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
+const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
+
+#endif /* MOUSE_NAME */
 
 PID control::gyro_delta, control::photo_delta, control::encoder_delta,
 		control::accel_delta;

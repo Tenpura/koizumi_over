@@ -10,18 +10,18 @@
 
 #include <stdint.h>
 
-//#define MOUSE_NAME KOIZUMI_FISH		//どの機体に書き込むか
-#define MOUSE_NAME KOIZUMI_OVER		//どの機体に書き込むか
-
 #define KOIZUMI_FISH 0
 #define KOIZUMI_OVER 1
+
+//#define MOUSE_NAME KOIZUMI_FISH		//どの機体に書き込むか
+#define MOUSE_NAME KOIZUMI_OVER		//どの機体に書き込むか
 
 #define CONTROL_PERIOD 0.001		//制御周期[sec]
 
 #define MAZE_SIZE	32
 
-#define GOAL_x 9
-#define GOAL_y 9
+#define GOAL_x 12
+#define GOAL_y 12
 
 #define PATH_MAX 500
 
@@ -31,22 +31,46 @@ static const uint16_t buf_count = 1;	//バッファ式ログのバッファ数。
 //同じ機体を使ってる限り変わらないdefineはココに書く
 
 //ハードウェア
+#if (MOUSE_NAME == KOIZUMI_FISH)
+	#define MASS	(20 * 0.001)			//マウスの重さ[kg]
+	#define tire_R (7.55 * 0.001)	//タイヤの半径　[m]
+	#define TREAD_W	(44*0.001)		//トレッド幅[m]
 
-#define LOGIK_V 3.3
-#define CONTORL_PERIOD 0.001		//制御周期[s]
-#define PINION	9	//ピニオンギアの歯数
-#define SPAR	41	//スパーギアの歯数
-#define V_BATT_RATIO 2.1	//バッテリー監視用の抵抗による分圧比。バッテリーの何分の1を見てるか
-#define MOTOR_ORM	4.5		//モーターの端子間抵抗[Ω]
-#define	M_DRIVER_ORM	1	//モータードライバーの抵抗[Ω]
-#define M_SUM_ORM	5.5		//上2つの合算抵抗[Ω]
 
-#define ACCEL_SENSITIVITY	8192	//加速度計の感度[count/g] これで測定値を割ると加速度
-#define GYRO_SENSITIVITY	16.4		//Gyroの感度[count/(degree/s)]　これで測定値を割ると角速度になる
-//#define GYRO_CONST	1.53		//gyroの定数[degree/V/ms]パラメーターの1つ
-//XXX左右分ける必要があるかも？
+	#define LOGIK_V 3.3
+	#define CONTORL_PERIOD 0.001		//制御周期[s]
+	#define PINION	9	//ピニオンギアの歯数
+	#define SPAR	41	//スパーギアの歯数
+	#define V_BATT_RATIO 2.1	//バッテリー監視用の抵抗による分圧比。バッテリーの何分の1を見てるか
+	#define MOTOR_ORM	4.5		//モーターの端子間抵抗[Ω]
+	#define	M_DRIVER_ORM	1	//モータードライバーの抵抗[Ω]
+	#define M_SUM_ORM	5.5		//上2つの合算抵抗[Ω]
 
-#define ENCODER_CONST	(1.534 * 0.001)			//encoderの分解能[rad/count]
+	#define ACCEL_SENSITIVITY	8192	//加速度計の感度[count/g] これで測定値を割ると加速度
+	#define GYRO_SENSITIVITY	16.4		//Gyroの感度[count/(degree/s)]　これで測定値を割ると角速度になる
+	//#define GYRO_CONST	1.53		//gyroの定数[degree/V/ms]パラメーターの1つ
+	//XXX左右分ける必要があるかも？
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	#define MASS	(15 * 0.001)			//マウスの重さ[kg]
+	#define tire_R (6.00 * 0.001)	//タイヤの半径　[m]
+	#define TREAD_W	(44*0.001)		//トレッド幅[m]
+
+	#define LOGIK_V 3.3
+	#define CONTORL_PERIOD 0.001		//制御周期[s]
+	#define PINION	9	//ピニオンギアの歯数
+	#define SPAR	37	//スパーギアの歯数
+	#define V_BATT_RATIO 1.856	//バッテリー監視用の抵抗による分圧比。バッテリーの何分の1を見てるか
+	#define MOTOR_ORM	4.5		//モーターの端子間抵抗[Ω]
+	#define	M_DRIVER_ORM	1	//モータードライバーの抵抗[Ω]
+	#define M_SUM_ORM	5.5		//上2つの合算抵抗[Ω]
+
+	#define ACCEL_SENSITIVITY	8192	//加速度計の感度[count/g] これで測定値を割ると加速度
+	#define GYRO_SENSITIVITY	16.4		//Gyroの感度[count/(degree/s)]　これで測定値を割ると角速度になる
+	//#define GYRO_CONST	1.53		//gyroの定数[degree/V/ms]パラメーターの1つ
+	//XXX左右分ける必要があるかも？
+
+#endif /*MOUSE_NAME*/
 
 #define MOTOR_CONST	(222.6)		//モーターの回転定数[回転/s/V]
 

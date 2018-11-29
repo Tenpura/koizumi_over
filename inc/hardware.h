@@ -18,7 +18,58 @@
 #include <array>
 #include <cmath>
 
+#if (MOUSE_NAME == KOIZUMI_FISH)
+	const std::pair<GPIO_TypeDef* const, uint16_t> UI_INPUT = std::make_pair(GPIOB, GPIO_Pin_14);
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	const std::pair<GPIO_TypeDef* const, uint16_t> UI_INPUT = std::make_pair(GPIOB, GPIO_Pin_12);
+#endif	/* MOUSE_NAME */
+
+
+
 //©ì7ƒZƒOŠÖ˜A
+
+#if (MOUSE_NAME == KOIZUMI_FISH)
+	#define UI_GPIO_N	(7U)	/*	User Interface ‚Ég‚¤LED‚ÌŒÂ”	*/
+	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA )
+	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOH )
+	static const std::array< const std::pair<GPIO_TypeDef* const, uint16_t>, UI_GPIO_N> UI_GPIO = {
+		std::make_pair(GPIOB, GPIO_Pin_4),
+		std::make_pair(GPIOB, GPIO_Pin_12),
+		std::make_pair(GPIOC, GPIO_Pin_2),
+		std::make_pair(GPIOC, GPIO_Pin_14),
+		std::make_pair(GPIOC, GPIO_Pin_15),
+		std::make_pair(GPIOH, GPIO_Pin_0),
+		std::make_pair(GPIOH, GPIO_Pin_1)
+	};
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	enum {
+		btm_left=0, btm_right, top_left, top_right, top_front, UI_LED_N
+	}UI_LED_TYPE;
+	#define UI_GPIO_N	(CAST_UI(UI_LED_N))	/*	User Interface ‚Ég‚¤LED‚ÌŒÂ”	*/
+	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOD )
+	static const std::array< const std::pair<GPIO_TypeDef* const, uint16_t>, UI_GPIO_N> UI_GPIO = {
+		std::make_pair(GPIOA, GPIO_Pin_8),		/* bottom left */
+		std::make_pair(GPIOD, GPIO_Pin_2),		/* bottom right */
+		std::make_pair(GPIOA, GPIO_Pin_11),		/* top left */
+		std::make_pair(GPIOA, GPIO_Pin_14),		/* top right */
+		std::make_pair(GPIOB, GPIO_Pin_10)		/* top front */
+	};
+	static const std::array< const std::array<const uint16_t, UI_GPIO_N>, 9> UI_GPIO_LIGHT_PTN = {{
+			/*	btm_l, btm_r, top_l, top_r, top_f	*/
+			{	0,		0,		0,		0,		1	},		/*	0	*/
+			{	0,		1,		0,		0,		0	},		/*	1	*/
+			{	0,		0,		0,		1,		0	},		/*	2	*/
+			{	0,		1,		0,		1,		0	},		/*	3	*/
+			{	0,		0,		1,		0,		0	},		/*	4	*/
+			{	0,		1,		1,		0,		0	},		/*	5	*/
+			{	0,		0,		1,		1,		0	},		/*	6	*/
+			{	0,		1,		1,		1,		0	},		/*	7	*/
+			{	1,		0,		0,		0,		0	}		/*	8	*/
+	}};	/* 1‚ª“_“”A0‚ªÁ“”@*/
+
+#endif
+
+//XXX TBD –¼‘O‚ğUI_OUTPUT“I‚ÈŠ´‚¶‚É‚µ‚½‚¢Bƒ†[ƒU[‚Ö‚Ì’Ê’m
 class my7seg {
 private:
 public:
@@ -40,6 +91,8 @@ public:
 	//start_number‚©‚ç0‚Ü‚ÅƒJƒEƒ“ƒgƒ_ƒEƒ“
 	static void count_down(const unsigned char start_number,
 			const unsigned short cycle_ms);
+
+	static void init();
 
 };
 
@@ -75,9 +128,9 @@ static const int PWM_IN_N = 2*MOTOR_N;
 
 	#define PWM_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB )
 	//‡”Ô@A1,A2,B1,B2
-	static std::array<GPIO_TypeDef* const,PWM_IN_N> PWM_GPIO = {GPIOB,GPIOA,GPIOB,GPIOB};
-	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_3,GPIO_Pin_15,GPIO_Pin_7,GPIO_Pin_6};
-	static std::array<uint8_t,PWM_IN_N> PWM_GPIO_PIN_SOURCE = {GPIO_PinSource3,GPIO_PinSource15,GPIO_PinSource7,GPIO_PinSource6};
+	static std::array<GPIO_TypeDef* const,PWM_IN_N> PWM_GPIO = {GPIOA,GPIOB,GPIOB,GPIOB};
+	static const std::array<uint16_t,PWM_IN_N> PWM_GPIO_PIN = {GPIO_Pin_15,GPIO_Pin_3,GPIO_Pin_7,GPIO_Pin_6};
+	static std::array<uint8_t,PWM_IN_N> PWM_GPIO_PIN_SOURCE = {GPIO_PinSource15,GPIO_PinSource3,GPIO_PinSource7,GPIO_PinSource6};
 	static const std::array<uint8_t , PWM_IN_N> PWM_GPIO_AF = {GPIO_AF_TIM2, GPIO_AF_TIM2, GPIO_AF_TIM4, GPIO_AF_TIM4};
 
 	#define PWM_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4 )
@@ -225,17 +278,8 @@ static const unsigned int ENC_N = CAST_UI(enc_count);
 static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1‚Â‚ÌƒGƒ“ƒR[ƒ_‚É‚Â‚«2ƒ`ƒƒƒ“ƒlƒ‹g—p
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
-	#define ENC_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC )
-	//‡”Ô@right_A,right_B,left_A,left_B
-	static const std::array<GPIO_TypeDef*,ENC_GPIO_N> ENC_GPIO = {GPIOC, GPIOC, GPIOB, GPIOA};
-	static const std::array<uint16_t,ENC_GPIO_N> ENC_GPIO_PIN = {GPIO_PinSource7, GPIO_PinSource6, GPIO_PinSource3, GPIO_PinSource15};
-	static std::array<uint8_t,ENC_GPIO_N> ENC_GPIO_PIN_SOURCE = {GPIO_PinSource7,GPIO_PinSource6,GPIO_PinSource3,GPIO_PinSource15};
-	static const std::array<uint8_t , ENC_GPIO_N> ENC_GPIO_AF = {GPIO_AF_TIM3, GPIO_AF_TIM3, GPIO_AF_TIM2, GPIO_AF_TIM2};
+	#define ENCODER_CONST	(1.534 * 0.001)			//encoder‚Ì•ª‰ğ”\[rad/count]
 
-	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 )
-	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM2};
-
-#elif (MOUSE_NAME == KOIZUMI_OVER)
 	#define ENC_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC )
 	//‡”Ô@right_A,right_B,left_A,left_B
 	static const std::array<GPIO_TypeDef*,ENC_GPIO_N> ENC_GPIO = {GPIOC, GPIOC, GPIOB, GPIOA};
@@ -245,6 +289,19 @@ static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1‚Â‚ÌƒGƒ“ƒR[ƒ_‚É‚Â‚«2ƒ`ƒƒƒ
 
 	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 )
 	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM2};
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	#define ENCODER_CONST	(6.133 * 0.001)			//encoder‚Ì•ª‰ğ”\[rad/count]
+
+	#define ENC_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOC)
+	//‡”Ô@right_A,right_B,left_A,left_B
+	static const std::array<GPIO_TypeDef*,ENC_GPIO_N> ENC_GPIO = {GPIOC, 			GPIOC,				GPIOA,				GPIOA};
+	static const std::array<uint16_t,ENC_GPIO_N> ENC_GPIO_PIN = {GPIO_Pin_7,		GPIO_Pin_6,			GPIO_Pin_0,			GPIO_Pin_1};
+	static std::array<uint8_t,ENC_GPIO_N> ENC_GPIO_PIN_SOURCE = {GPIO_PinSource7,	GPIO_PinSource6,	GPIO_PinSource0,	GPIO_PinSource1};
+	static const std::array<uint8_t , ENC_GPIO_N> ENC_GPIO_AF = {GPIO_AF_TIM3,		GPIO_AF_TIM3,		GPIO_AF_TIM5,		GPIO_AF_TIM5};
+
+	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM5 )
+	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM5};
 #endif
 
 class encoder {
@@ -299,13 +356,13 @@ static const uint8_t PHOTO_N = CAST_UI(PHOTO_TYPE::element_count);		//ƒZƒ“ƒT‚ÌŒÂ
 		static const std::array<ADC_TypeDef*,PHOTO_N> SEN_ADC = {ADC1,ADC1,ADC1,ADC1,ADC1};
 		static const std::array<uint16_t,PHOTO_N> SEN_ADC_CH = {ADC_Channel_15,ADC_Channel_11,ADC_Channel_8,ADC_Channel_10,ADC_Channel_3};
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-	//”­Œõ‘¤‚Ìİ’è
+	// ”­Œõ‘¤‚Ìİ’è
 		#define LED_RCC_AHB1Periph (RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOH)	//LED‚Æ‚µ‚Äg‚Á‚Ä‚¢‚éGPIO@|‚ğg‚Á‚Ä•¡”w’è
 		//photo_type‚Ì‡”Ô@right,  left, front_right, front_left, front
-		static const std::array<GPIO_TypeDef*,PHOTO_N> LED_GPIO = {GPIOC,GPIOB,GPIOC,GPIOH,GPIOH};
-		static const std::array<uint16_t,PHOTO_N> LED_GPIO_PIN = {GPIO_Pin_14,GPIO_Pin_11,GPIO_Pin_13,GPIO_Pin_0,GPIO_Pin_1};
+		static const std::array<GPIO_TypeDef*,PHOTO_N> LED_GPIO = {GPIOC,		GPIOB,		GPIOC,		GPIOH,		GPIOC};
+		static const std::array<uint16_t,PHOTO_N> LED_GPIO_PIN = {GPIO_Pin_14,GPIO_Pin_11,GPIO_Pin_13,GPIO_Pin_0,GPIO_Pin_11};
 
-	//óŒõ‘¤‚Ìİ’è
+	//@óŒõ‘¤‚Ìİ’è
 		#define SEN_RCC_AHB1Periph (RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC)	//ƒZƒ“ƒT[‚Æ‚µ‚Äg‚Á‚Ä‚¢‚éGPIO@|‚ğg‚Á‚Ä•¡”w’è
 		#define SEN_ADC_CMD (ADC1)			//ƒZƒ“ƒT[‚Æ‚µ‚Äg‚Á‚Ä‚¢‚éADC@|‚ğg‚Á‚Ä•¡”w’è
 		#define SEN_RCC_APB2Periph_ADC (RCC_APB2Periph_ADC1)	//ƒZƒ“ƒT[‚Æ‚µ‚Äg‚Á‚Ä‚¢‚éADC@|‚ğg‚Á‚Ä•¡”w’è

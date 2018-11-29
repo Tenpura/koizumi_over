@@ -8,10 +8,19 @@
 #include"parameter.h"
 //ideal_photo[x][y]	xは0がハーフ,1がクラシック	yが光学センサの向きに対応。
 //right left front_right front_left,front
+#if (MOUSE_NAME == KOIZUMI_FISH)
 float parameter::correct_photo[2][5] = { { 9, -2, 0, 0, -5/*中心からどれだけオフセットがあるか[mm]*/ },
 		{ 3250, 3200, 10815, 10100, 0 } };
 int16_t parameter::min_wall_photo[2][5] = { { 20, 70, 1400, 130, 500 }, {
 		20000, 20000, 0, 0, 0 } };
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+float parameter::correct_photo[2][5] = { { 9, -2, 0, 0, -5/*中心からどれだけオフセットがあるか[mm]*/ },
+		{ 3250, 3200, 10815, 10100, 0 } };
+int16_t parameter::min_wall_photo[2][5] = { { 90, 70, 100, 30, 500 }, {
+		20000, 20000, 0, 0, 0 } };
+
+#endif /* MOUSE_NAME */
 
 //0番目は探索用
 //				普通							斜め

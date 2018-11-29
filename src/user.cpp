@@ -82,7 +82,7 @@ uint8_t mode::select_mode(const unsigned char mode_number,
 	unsigned char select = 0;
 	bool stnby_flag = true;		//モード送り可能のときtrue	センサーを反応させてるとき高速でモードが送られないように
 
-	while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 1) {	//押されたら決定
+	while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second)  == 1) {	//押されたら決定
 		my7seg::light(select);
 		wait::ms(10);
 
@@ -109,7 +109,7 @@ bool mode::select_RorL(const PHOTO_TYPE type) {
 	bool is_right = true;
 	bool stnby_flag = true;		//モード送り可能のときtrue	センサーを反応させてるとき高速でモードが送られないように
 
-	while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 1) {	//押されたら決定
+	while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second)  == 1) {	//押されたら決定
 		my7seg::turn_off();
 		if (is_right)
 			my7seg::light(my7seg::DIRECTION::right);

@@ -26,6 +26,7 @@ void abort(void);
 }
 #endif
 
+
 uint32_t wait_counter = 0;
 static const int16_t flog_number = 2000;
 float flog[3][flog_number] = { 0 };
@@ -44,26 +45,50 @@ int main(void) {
 	photo::init();
 	flash::init();
 	motor::init_PWM();
+	encoder::init();
 	mouse::reset_count();
 	mpu6000::init();
+	my7seg::init();
+
 
 
 #if (MOUSE_NAME == KOIZUMI_OVER)
 
-	mouse::run_init(false, false);
-	motor::set_duty(MOTOR_SIDE::m_right, -1);
-	motor::set_duty(MOTOR_SIDE::m_left, -10);
+	my7seg::count_down(8,500);
+	my7seg::turn_off();
+
+//	mouse::run_init(true, false);
+//	control::ignore_failsafe(true);
+//	run::accel_run(0.09,0,0);
+//
+//	wait::ms(2000);
+//	motor::sleep_motor();
+
+
+
+
+	//encoder::yi_correct();		//YI式補正
 
 	while (1) {
 		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
 		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
-//		myprintf("f_r %4.3f  ",
-//				photo::get_ad(PHOTO_TYPE::front_right));
-//		myprintf("f_l %4.3f  ",
-//				photo::get_ad(PHOTO_TYPE::front_left));
-//		myprintf("front %4.3f  ", photo::get_ad(PHOTO_TYPE::front));
+		myprintf("f_right %4.3f  ", photo::get_value(PHOTO_TYPE::front_right));
+		myprintf("f_left %4.3f  ", photo::get_value(PHOTO_TYPE::front_left));
+
+//		myprintf("right %4.3f  ", encoder::right_velocity);
+//		myprintf("left %4.3f  ", encoder::left_velocity);
+//		myprintf("v %4.3f  ", encoder::get_velocity());
+
+//		myprintf("ang v %4.3f", (gyro::get_angular_velocity()));
+//		myprintf("angle v %4.3f", degree(gyro::get_angle_radian()));
+//
 		myprintf("batt %4.3f  ", get_battery());
 		myprintf("\n\r");
+		wait::ms(100);
+		if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
+			break;
+		}
+
 
 	}
 
@@ -78,13 +103,13 @@ int main(void) {
 	map::output_map_data(&mouse::now_map);
 
 	//スイッチ押しながら起動したら補正しない　＝　デバック用
-	if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) != 0){
+	if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) != 0){
 		encoder::yi_correct();		//YI式補正
 	}else{
 		my7seg::light(0);
 	}
 	//チャタリング対策
-	while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0)
+	while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0)
 		;
 	wait::ms(100);
 
@@ -96,13 +121,13 @@ int main(void) {
 	uint8_t select = 0;	//モード管理用
 	while (1) {
 		//チャタリング対策
-		while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0)
+		while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0)
 			;
 		wait::ms(100);
 		if (get_battery() < 3.5) {
 			while (1) {
 				my7seg::light_error();
-				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0) {
+				if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
 					wait::ms(100);
 					myprintf("\n\r!!!!!  Worning   !!!!!\n\r\n\r");
 					myprintf("vol -> %f\n\r", get_battery());
@@ -115,7 +140,7 @@ int main(void) {
 				wait::ms(500);
 				my7seg::turn_off();
 				wait::ms(500);
-				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0) {
+				if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
 					wait::ms(100);
 					myprintf("vol -> %f\n\r", get_battery());
 					break;
@@ -125,20 +150,19 @@ int main(void) {
 		}
 
 		//チャタリング対策
-		while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0)
+		while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0)
 			;
 		wait::ms(100);
 
 		select = mode::select_mode(8 + 1, PHOTO_TYPE::right);
 
-		GPIO_SetBits(GPIOC, GPIO_Pin_3);	//LED2
 		mouse::set_direction(0, 1);	//スラロームで方向が変化するので初期化を忘れずに
 		mouse::set_place(0.045 * MOUSE_MODE, 0.045 * MOUSE_MODE);	//(0,0)の中心
 
 		switch (select) {
 		case 0:		//壁の値を読むだけ	事故防止のためにモード0は実害ない奴にしとく
 			while (1) {
-				myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
+				myprintf("mode 0  ");
 				myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
 				myprintf("f_r %4.3f  ",
 						photo::get_value(PHOTO_TYPE::front_right));
@@ -148,7 +172,7 @@ int main(void) {
 				myprintf("\n\r");
 
 				wait::ms(100);
-				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 0) {
+				if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
 					wait::ms(100);
 					break;
 				}
@@ -190,11 +214,11 @@ int main(void) {
 			encoder::draw_correct(false, false);
 			while (1) {
 				my7seg::blink(8, 500, 1);
-				if (photo::check_wall(PHOTO_TYPE::front))
+				if (photo::check_wall(PHOTO_TYPE::front_right))
 					break;
 			}
 			my7seg::count_down(3, 500);
-			mouse::run_init(true, true);
+			mouse::run_init(true, false);
 //			mouse::set_place(0,0);
 			flog[0][0] = -1;
 
@@ -287,8 +311,7 @@ int main(void) {
 			break;
 		}
 		case 7: {
-			GPIO_ResetBits(GPIOC, GPIO_Pin_3);	//LED2
-			while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_14) == 1) {
+			while (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 1) {
 			}
 
 			for (int i = 0; i < flog_number; i++) {
@@ -387,6 +410,33 @@ void interrupt_timer() {
 	wait::set_count(wait_counter);
 
 	photo::interrupt(true);
+	gyro::interrupt();
+	accelmeter::interrupt();
+	encoder::interrupt();
+
+	mouse::interrupt();
+
+	control::cal_delta();			//姿勢制御に用いる偏差を計算
+	control::posture_control();
+
+	control::fail_safe();
+
+	static volatile uint16_t i = 0;
+	if (i == 0) {
+		if (flog[0][0] == -1) {
+			i++;
+		}
+	} else if (i < flog_number) {
+		flog[0][i] = mouse::get_place().y;
+		flog[1][i] = mouse::get_ideal_velocity();
+		flog[2][i] = mouse::get_velocity();
+		//flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
+		//flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
+		i++;
+	} else if (i == flog_number) {
+		flog[0][0] = 0;
+		i = 0;
+	}
 
 
 #endif
