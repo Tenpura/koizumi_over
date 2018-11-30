@@ -149,12 +149,12 @@ bool mode::search_mode() {
 	goal_vect.emplace_back(std::make_pair(GOAL_x, GOAL_y + 1));
 	goal_vect.emplace_back(std::make_pair(GOAL_x + 1, GOAL_y + 1));
 
-	uint8_t select = select_mode(6 + 1, PHOTO_TYPE::right);
+	uint8_t select = select_mode(6 + 1, MOD_SEL_SEN);
 	//encoder::yi_correct();		//YIéÆï‚ê≥
 
 	while (select != 0) {
 		my7seg::blink(8, 500, 1);
-		if (photo::check_wall(PHOTO_TYPE::front))
+		if (photo::check_wall(MOD_ACT_SEN))
 			break;
 	}
 
@@ -444,7 +444,7 @@ bool mode::shortest_mode() {
 		return false;
 	search.convert_path();
 
-	uint8_t select = select_mode(3 + 1, PHOTO_TYPE::right);
+	uint8_t select = select_mode(3 + 1, MOD_SEL_SEN);
 
 	switch (select) {
 	case 0:		//0ÇÕÉÅÉjÉÖÅ[Ç…ñﬂÇÈ
@@ -464,12 +464,12 @@ bool mode::shortest_mode() {
 	}
 	}
 
-	uint8_t straight = select_mode(RUN_MODE_NUMBER, PHOTO_TYPE::right);
-	uint8_t curve = select_mode(3, PHOTO_TYPE::right);
+	uint8_t straight = select_mode(RUN_MODE_NUMBER, MOD_SEL_SEN);
+	uint8_t curve = select_mode(3, MOD_SEL_SEN);
 
 	while (straight != 0) {
 		my7seg::blink(8, 500, 1);
-		if (photo::check_wall(PHOTO_TYPE::front))
+		if (photo::check_wall(MOD_ACT_SEN))
 			break;
 	}
 

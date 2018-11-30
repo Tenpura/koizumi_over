@@ -81,7 +81,10 @@ int main(void) {
 
 //		myprintf("ang v %4.3f", (gyro::get_angular_velocity()));
 //		myprintf("angle v %4.3f", degree(gyro::get_angle_radian()));
-//
+
+//		myprintf("left = %5d  ",ENC_TIM.at(enc_left)->CNT);
+//		myprintf("right = %5d  ",ENC_TIM.at(enc_right)->CNT);
+
 		myprintf("batt %4.3f  ", get_battery());
 		myprintf("\n\r");
 		wait::ms(100);
@@ -154,7 +157,7 @@ int main(void) {
 			;
 		wait::ms(100);
 
-		select = mode::select_mode(8 + 1, PHOTO_TYPE::right);
+		select = mode::select_mode(8 + 1, MOD_SEL_SEN);
 
 		mouse::set_direction(0, 1);	//スラロームで方向が変化するので初期化を忘れずに
 		mouse::set_place(0.045 * MOUSE_MODE, 0.045 * MOUSE_MODE);	//(0,0)の中心
@@ -196,7 +199,7 @@ int main(void) {
 			break;
 
 		case 4:		//迷路データを呼び出す
-			select = mode::select_mode(2 + 1, PHOTO_TYPE::right);
+			select = mode::select_mode(2 + 1, MOD_SEL_SEN);
 			if (select == 0)
 				break;
 			flash_maze fl;
@@ -214,19 +217,22 @@ int main(void) {
 			encoder::draw_correct(false, false);
 			while (1) {
 				my7seg::blink(8, 500, 1);
-				if (photo::check_wall(PHOTO_TYPE::front_right))
+				if (photo::check_wall(MOD_ACT_SEN))
 					break;
 			}
 			my7seg::count_down(3, 500);
 			mouse::run_init(true, false);
-//			mouse::set_place(0,0);
+			mouse::set_place(0,0);
+
 			flog[0][0] = -1;
 
 //			run::accel_run(0.09*5,SEARCH_VELOCITY,0);
 //			run::wall_edge_run_for_search(0.09, SEARCH_VELOCITY, 0,0.09);
-			run::accel_run(0.09,0,0);
+			run::accel_run(0.09*3,0,0);
+//			run::spin_turn(360);
 
 			wait::ms(2000);
+
 			motor::sleep_motor();
 			my7seg::turn_off();
 			break;
@@ -234,10 +240,10 @@ int main(void) {
 		case 6: {		//スラローム調整
 
 			int8_t right_or_left = MUKI_RIGHT;
-			if (!mode::select_RorL(PHOTO_TYPE::right))
+			if (!mode::select_RorL(MOD_SEL_SEN))
 				right_or_left = MUKI_LEFT;
 
-			select = mode::select_mode(slalom_type_count, PHOTO_TYPE::right);
+			select = mode::select_mode(slalom_type_count, MOD_SEL_SEN);
 			float b_dis = 0.09 * 1 * MOUSE_MODE;		//スラロームの前にどれだけ進むか
 			float a_dis = 0.09 * 1 * MOUSE_MODE;		//スラロームの後にどれだけ進むか
 			SLALOM_TYPE sla_type = none;
@@ -283,11 +289,11 @@ int main(void) {
 			}
 			if (b_dis != 0) {		//前距離0のパターン(none,spin_turn)は調整しない
 
-				select = mode::select_mode(3, PHOTO_TYPE::right);
+				select = mode::select_mode(3, MOD_SEL_SEN);
 
 				while (1) {
 					my7seg::blink(8, 500, 1);
-					if (photo::check_wall(PHOTO_TYPE::front))
+					if (photo::check_wall(MOD_ACT_SEN))
 						break;
 				}
 				int straight = 1;	//直進の走行モード
@@ -419,7 +425,7 @@ void interrupt_timer() {
 	control::cal_delta();			//姿勢制御に用いる偏差を計算
 	control::posture_control();
 
-	control::fail_safe();
+	//control::fail_safe();
 
 	static volatile uint16_t i = 0;
 	if (i == 0) {
@@ -427,9 +433,16 @@ void interrupt_timer() {
 			i++;
 		}
 	} else if (i < flog_number) {
-		flog[0][i] = mouse::get_place().y;
+		flog[0][i] = mouse::get_angle_degree();
+
+		flog[1][i] = encoder::left_velocity;
+		flog[2][i] = encoder::right_velocity;;
+
 		flog[1][i] = mouse::get_ideal_velocity();
 		flog[2][i] = mouse::get_velocity();
+
+//		flog[1][i] = mouse::get_ideal_angular_velocity();
+//		flog[2][i] = mouse::get_angular_velocity();
 		//flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
 		//flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
 		i++;

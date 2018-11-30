@@ -60,7 +60,7 @@ static const uint16_t buf_count = 1;	//バッファ式ログのバッファ数。
 	#define CONTORL_PERIOD 0.001		//制御周期[s]
 	#define PINION	9	//ピニオンギアの歯数
 	#define SPAR	37	//スパーギアの歯数
-	#define V_BATT_RATIO 1.856	//バッテリー監視用の抵抗による分圧比。バッテリーの何分の1を見てるか
+	#define V_BATT_RATIO 1.8	//バッテリー監視用の抵抗による分圧比。バッテリーの何分の1を見てるか
 	#define MOTOR_ORM	4.5		//モーターの端子間抵抗[Ω]
 	#define	M_DRIVER_ORM	1	//モータードライバーの抵抗[Ω]
 	#define M_SUM_ORM	5.5		//上2つの合算抵抗[Ω]

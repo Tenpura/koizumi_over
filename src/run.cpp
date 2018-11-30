@@ -486,16 +486,19 @@ void mouse::cal_place() {
 		relative.y -= SIGN(relative.y) * 0.09 * MOUSE_MODE;
 
 }
+#if (MOUSE_NAME == KOIZUMI_FISH)
 
 void mouse::interrupt() {
 
 	//XXX カルマンフィルタの推定値（加速度センサ）と観測値（エンコーダー）の分散
 	static kalman v_kal(0.101, 630);		//速度用のカルマンフィルタクラスを呼び出す
+
 	if (get_spin_flag()) {		//超信地中なら
 		v_kal.update(encoder::get_velocity(), encoder::get_velocity());	//加速度センサは無視してカルマンフィルタをかける
 	} else {
 		v_kal.update(accelmeter::get_accel(axis_y) * CONTORL_PERIOD,
 				encoder::get_velocity());		//カルマンフィルタをかける
+
 	}
 	velocity = v_kal.get_value();		//現在速度として補正後の速度を採用する
 	//速度と距離を計算
@@ -506,6 +509,31 @@ void mouse::interrupt() {
 	ideal_angle_degree += get_ideal_angular_velocity() * CONTORL_PERIOD;
 
 }
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void mouse::interrupt() {
+
+	//XXX カルマンフィルタの推定値（加速度センサ）と観測値（エンコーダー）の分散
+	static kalman v_kal(0.0101, 630);		//速度用のカルマンフィルタクラスを呼び出す
+
+	if (get_spin_flag()) {		//超信地中なら
+		v_kal.update(encoder::get_velocity(), encoder::get_velocity());	//加速度センサは無視してカルマンフィルタをかける
+	} else {
+		v_kal.update(accelmeter::get_accel(axis_x) * CONTORL_PERIOD,
+				encoder::get_velocity());		//カルマンフィルタをかける
+
+	}
+	velocity = v_kal.get_value();		//現在速度として補正後の速度を採用する
+	//速度と距離を計算
+	mouse::cal_velocity();
+	mouse::cal_distance();
+	mouse::cal_place();
+
+	ideal_angle_degree += get_ideal_angular_velocity() * CONTORL_PERIOD;
+
+}
+
+#endif	/* MOUSE_NAME */
 
 void mouse::run_init(bool posture_ctrl, bool wall_ctrl) {
 	static const float half_section = 0.045 * MOUSE_MODE;	//半区画分の長さ

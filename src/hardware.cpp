@@ -565,7 +565,11 @@ mpu6000::~mpu6000() {
 
 const float accelmeter::ACCEL_PERIOD = CONTORL_PERIOD;		//加速度計の制御周期[s]
 const float accelmeter::REF_TIME = 1;			//加速度計のリファレンスとる時間[s]
+#if (MOUSE_NAME == KOIZUMI_FISH)
 const uint8_t accelmeter::AVERAGE_COUNT = 10;			//加速度計の平均回数[回]
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+const uint8_t accelmeter::AVERAGE_COUNT = 1;			//加速度計の平均回数[回]
+#endif	/* MOUSE_NAME */
 float accelmeter::accel_ad[AXIS_t::dim_num] = { 0 },
 		accelmeter::accel_ref[AXIS_t::dim_num] = { 0 };
 float accelmeter::accel[AXIS_t::dim_num] = { 0 };
@@ -581,6 +585,7 @@ void accelmeter::interrupt() {
 		}
 	}
 
+	//FIXME 移動平均になってない！
 	//配列の最後に入れる
 	buff[AXIS_t::axis_x][(AVERAGE_COUNT - 1)] =
 			static_cast<float>(mpu6000::get_mpu_val(sen_accel, axis_x));//加速度のx方向
@@ -741,7 +746,7 @@ gyro::~gyro() {
 }
 
 //encoder関連
-const uint8_t encoder::MOVING_AVERAGE = 1;
+const uint8_t encoder::MOVING_AVERAGE = 30;
 const uint32_t encoder::MEDIAN = 32762;
 float encoder::left_velocity, encoder::right_velocity, encoder::velocity;
 int16_t encoder::raw_count[2] = { 0 };
@@ -752,8 +757,10 @@ bool encoder::isCorrect[2] = { false, false };		//Y.I.式補正を行っているかどうか
 
 void encoder::interrupt() {
 	static float data_r[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
+	static unsigned int index_r=0;
 	float sum_r = 0;
 	static float data_l[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
+	static unsigned int index_l=0;
 	float sum_l = 0;
 	float delta_value_r, delta_value_l;
 
@@ -767,7 +774,11 @@ void encoder::interrupt() {
 	//エンコーダ―の値を取得
 	delta_value_r = 32762 - static_cast<float>(ENC_TIM.at(enc_right)->CNT);
 	ENC_TIM.at(enc_right)->CNT = 32762;
+#if (MOUSE_NAME == KOIZUMI_FISH)
 	delta_value_l = static_cast<float>(ENC_TIM.at(enc_left)->CNT) - 32762;
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	delta_value_l = 32762 - static_cast<float>(ENC_TIM.at(enc_left)->CNT);
+#endif	/* MOUSE_NAME */
 	ENC_TIM.at(enc_left)->CNT = 32762;
 
 	//FIX_ME
@@ -775,16 +786,23 @@ void encoder::interrupt() {
 	mouse::debag_val_enc_l += delta_value_l;
 
 	//Y.I.式補正テーブルが完成していたら、Y.I.式補正をする.してなかったら移動平均をとる
-	if (isCorrect[enc_right])
+	if (isCorrect[enc_right]){
 		//補正した差分を使って速度をとる
 		right_velocity = raw_to_correct(enc_right, delta_value_r)
 				* ENCODER_CONST / CONTROL_PERIOD * tire_R;//count*[rad/count]/[sec]*[m]
-	else {
-		//移動平均をとる
-		//配列の最後に入れる
-		data_r[(MOVING_AVERAGE - 1)] = delta_value_r * ENCODER_CONST
+	}else {
+		/* 移動平均をとる */
+		//配列の最古の奴を取り出し（sumから引く）、最新の値で更新（sumに加算）
+		sum_r -= data_r[index_r];
+		data_r[index_r] = delta_value_r * ENCODER_CONST
 				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
-		sum_r += data_r[(MOVING_AVERAGE - 1)];
+		sum_r += data_r[index_r];
+		// リングQみたいにする。　MAXまでいったら0に戻る
+		if( index_r >= (MOVING_AVERAGE-1) ){
+			index_r = 0;
+		}else{
+			index_r++;
+		}
 		right_velocity = sum_r / MOVING_AVERAGE;
 	}
 	if (isCorrect[enc_left])
@@ -792,11 +810,19 @@ void encoder::interrupt() {
 		left_velocity = raw_to_correct(enc_left, delta_value_l) * ENCODER_CONST
 				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
 	else {
-		//移動平均をとる
+		/* 移動平均をとる */
+		//配列の最古の奴を取り出し（sumから引く）、最新の値で更新（sumに加算）
+		sum_l -= data_l[index_l];
+		data_l[index_l] = delta_value_l * ENCODER_CONST
+						/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
+		sum_l += data_l[index_l];
+		// リングQみたいにする。　MAXまでいったら0に戻る
+		if( index_l >= (MOVING_AVERAGE-1) ){
+			index_l = 0;
+		}else{
+			index_l++;
+		}
 		//配列の最後に入れる
-		data_l[(MOVING_AVERAGE - 1)] = delta_value_l * ENCODER_CONST
-				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
-		sum_l += data_l[(MOVING_AVERAGE - 1)];
 		left_velocity = sum_l / MOVING_AVERAGE;
 	}
 
@@ -871,9 +897,9 @@ float encoder::raw_to_correct(ENC_SIDE enc_side, int16_t raw_delta) {
 volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	mouse::run_init(false, false);
 	if (enc_side == enc_right)
-		motor::set_duty(MOTOR_SIDE::m_right, 30);
+		motor::set_duty(MOTOR_SIDE::m_right, 40);
 	else
-		motor::set_duty(MOTOR_SIDE::m_left, 30);
+		motor::set_duty(MOTOR_SIDE::m_left, 40);
 
 	//補正テーブルを全消去
 	isCorrect[enc_side] = false;	//Y.I.式補正は中止
@@ -938,8 +964,8 @@ void encoder::yi_correct() {
 	control::ignore_failsafe(true);		//補正中はフェイルセーフを切る
 
 	//左右で補正を行う
-	yi_correct(enc_left);
 	yi_correct(enc_right);
+	yi_correct(enc_left);
 	control::reset_delta(sen_encoder);
 
 	control::ignore_failsafe(false);		//フェイルセーフを復活
@@ -1233,7 +1259,7 @@ void photo::interrupt(bool is_light) {
 	photo::turn_off(PHOTO_TYPE::right);
 	photo::turn_off(PHOTO_TYPE::left);
 
-	// おそらく
+	// おそらく独立と見なして良い
 	if (is_light) {
 		photo::light(PHOTO_TYPE::front_right);
 		photo::light(PHOTO_TYPE::front_left);
@@ -1345,6 +1371,7 @@ float photo::get_value(PHOTO_TYPE sensor_type) {
 	return static_cast<float>(ad) * 4.0 / get_battery();	//電圧で値が減っている気がするので補正
 }
 
+#if (MOUSE_NAME == KOIZUMI_FISH)
 float photo::get_displa_from_center(PHOTO_TYPE type) {
 	return get_displa_from_center(type, (photo::get_value(type)));//現在のセンサ値に対して求める
 }
@@ -1478,6 +1505,112 @@ bool photo::check_wall(PHOTO_TYPE type) {
 		return false;
 
 }
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+float photo::get_displa_from_center(PHOTO_TYPE type) {
+	float ans;
+	if(type == front){	/* 越頭見には前センサは存在しないので斜めセンサの平均を使う */
+		ans = get_displa_from_center(type, (photo::get_value(front_right)));
+		ans += get_displa_from_center(type, (photo::get_value(front_left)));
+		ans /= 2.0;
+	}else{
+		ans = get_displa_from_center(type, (photo::get_value(type)));//現在のセンサ値に対して求める
+	}
+	return ans;
+}
+
+float photo::get_displa_from_center(PHOTO_TYPE sensor_type, float val) {
+	static bool reent = false;		/* リエントラント性担保 */
+
+	if (reent){		/* 実行中なので、適当な値返して抜ける */
+		return 0;
+	}else{
+		reent = true;
+	}
+
+	float f = val;		//対称のセンサ値
+	float f_c;
+	float ans = 0;
+
+	/* 本来あり得ない値が来た場合は上限下限に張り付かせる */
+	if (f <= 0) {
+		f = 0.1;
+	} else if (f > 5000) {
+		f = 5000;
+	}
+
+	switch (sensor_type) {
+	case PHOTO_TYPE::right:
+	case PHOTO_TYPE::front_right:
+	case PHOTO_TYPE::front_left:
+		f_c = (parameter::get_correct_photo(sensor_type));
+		ans = f/f_c - 1.0;	/* 区画中心での値との比率を求める。おそらく　f/f_c＝0.1~10のオーダー */
+		break;
+
+	case PHOTO_TYPE::left:	/* 左はセンサの大小関係と距離の大小関係が反対なので反転 */
+		f_c = (parameter::get_correct_photo(sensor_type));
+		ans = -f/f_c + 1.0;	/* 区画中心での値との比率を求める。おそらく　f/f_c＝0.1~10のオーダー */
+		break;
+
+	case PHOTO_TYPE::front: /* 越頭見には前センサは存在しないのでなにもしない*/
+		return 0;
+		break;
+
+	default:
+		return 0;
+		break;
+	}
+
+	reent = false;	//終了する前にリエントラントをオフに
+	return ans * 2 * 0.001;
+}
+
+bool photo::check_wall(unsigned char muki) {
+	PHOTO_TYPE type;
+	switch (muki) {
+	case MUKI_RIGHT:
+		type = right;
+		break;
+
+	case MUKI_LEFT:
+		type = left;
+		break;
+
+	case MUKI_UP:
+		type = front;
+		break;
+
+	default:
+		return false;
+		break;
+	}
+
+	return check_wall(type);
+
+}
+
+bool photo::check_wall(PHOTO_TYPE type) {
+	if(type == PHOTO_TYPE::front){		/* 越頭見には前センサは存在しないので斜めセンサで代用 */
+		/* 壁は無い方に誤認するとぶつかって死ぬので、安全側に倒す。どちらかが反応すればあり。 */
+		if (photo::get_value(PHOTO_TYPE::front_right) >= parameter::get_min_wall_photo(PHOTO_TYPE::front_right)){
+			return true;
+		}else if (photo::get_value(PHOTO_TYPE::front_left) >= parameter::get_min_wall_photo(PHOTO_TYPE::front_left)){
+			return true;
+		}else{
+			return false;
+		}
+
+	}else{
+		if (photo::get_value(type) >= parameter::get_min_wall_photo(type))
+			return true;
+		else
+			return false;
+	}
+	return false;
+}
+
+#endif	/* MOUSE_NAME */
+
 /*
  int8_t photo::count_wall_gap(PHOTO_TYPE type) {
  int8_t count = 0;	//負（センサ値が下がってる）の数を数える
@@ -1547,9 +1680,9 @@ const PID encoder_gain = { 200, 1000, 0, };	//カルマンフィルタでエンコーダーと加
 const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-const PID gyro_gain = { 0, 0, 0.0 };
+const PID gyro_gain = { 0,0,0 };
 PID photo_gain = { 200, 0, 0.005 };
-const PID encoder_gain = { 20, 000, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
+const PID encoder_gain = { 100, 0, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
 
 #endif /* MOUSE_NAME */
@@ -1755,7 +1888,7 @@ float control::get_feedforward(const signed char right_or_left) {
 	// V = v[m/s]/2πr[m] * ギア比  / 電圧特性[回/s/V]
 	Vinv = (velocity / (2 * PI() * tire_R) * SPAR / PINION / MOTOR_CONST);
 
-	float mu = 0.00035;	//摩擦力
+	static const float mu = 0.00035;	//摩擦力
 	// V = 加速に必要な分 + 摩擦力を打ち消す分
 	Vt = ((PI() * tire_R * MASS * MOTOR_ORM * MOTOR_CONST) * accel
 			+ (2 * PI() * MOTOR_ORM * MOTOR_CONST * mu)) * PINION / SPAR;

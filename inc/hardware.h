@@ -20,8 +20,13 @@
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
 	const std::pair<GPIO_TypeDef* const, uint16_t> UI_INPUT = std::make_pair(GPIOB, GPIO_Pin_14);
+	const PHOTO_TYPE MOD_SEL_SEN = right;			/* モード送りに使うフォトセンサ */
+	const PHOTO_TYPE MOD_ACT_SEN = front;		/* 実行トリガになるフォトセンサ */
+
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 	const std::pair<GPIO_TypeDef* const, uint16_t> UI_INPUT = std::make_pair(GPIOB, GPIO_Pin_12);
+	const PHOTO_TYPE MOD_SEL_SEN = left;			/* モード送りに使うフォトセンサ */
+	const PHOTO_TYPE MOD_ACT_SEN = front_right;		/* 実行トリガになるフォトセンサ */
 #endif	/* MOUSE_NAME */
 
 
