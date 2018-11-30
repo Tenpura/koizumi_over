@@ -568,7 +568,7 @@ const float accelmeter::REF_TIME = 1;			//加速度計のリファレンスとる時間[s]
 #if (MOUSE_NAME == KOIZUMI_FISH)
 const uint8_t accelmeter::AVERAGE_COUNT = 10;			//加速度計の平均回数[回]
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-const uint8_t accelmeter::AVERAGE_COUNT = 1;			//加速度計の平均回数[回]
+const uint8_t accelmeter::AVERAGE_COUNT = 10;			//加速度計の平均回数[回]
 #endif	/* MOUSE_NAME */
 float accelmeter::accel_ad[AXIS_t::dim_num] = { 0 },
 		accelmeter::accel_ref[AXIS_t::dim_num] = { 0 };
@@ -631,10 +631,17 @@ void accelmeter::cal_accel() {
 	for (int j = 0; j < AXIS_t::dim_num; j++)
 		accel[j] = (accel_ad[j] - accel_ref[j]) / ACCEL_SENSITIVITY * 9.8;//加速度[g]を[m/ss]に直すため重力加速度をかける
 }
-
+#if (MOUSE_NAME == KOIZUMI_FISH)
 float accelmeter::get_accel() {
 	return accel[axis_y];		//進行方向の加速度
 }
+
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+float accelmeter::get_accel() {
+	return accel[axis_x];		//進行方向の加速度
+}
+
+#endif
 
 float accelmeter::get_accel(AXIS_t xyz) {
 	return accel[xyz];

@@ -514,7 +514,7 @@ void mouse::interrupt() {
 void mouse::interrupt() {
 
 	//XXX カルマンフィルタの推定値（加速度センサ）と観測値（エンコーダー）の分散
-	static kalman v_kal(0.0101, 630);		//速度用のカルマンフィルタクラスを呼び出す
+	static kalman v_kal(0.101, 630);		//速度用のカルマンフィルタクラスを呼び出す
 
 	if (get_spin_flag()) {		//超信地中なら
 		v_kal.update(encoder::get_velocity(), encoder::get_velocity());	//加速度センサは無視してカルマンフィルタをかける
