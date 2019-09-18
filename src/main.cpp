@@ -64,16 +64,18 @@ int main(void) {
 //	wait::ms(2000);
 //	motor::sleep_motor();
 
+	myprintf("batt %4.3f  ", get_battery());
+	myprintf("\n\r");
 
 
 
 	//encoder::yi_correct();		//YI式補正
 
 	while (1) {
-		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
-		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
-		myprintf("f_right %4.3f  ", photo::get_value(PHOTO_TYPE::front_right));
-		myprintf("f_left %4.3f  ", photo::get_value(PHOTO_TYPE::front_left));
+//		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
+//		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
+//		myprintf("f_right %4.3f  ", photo::get_value(PHOTO_TYPE::front_right));
+//		myprintf("f_left %4.3f  ", photo::get_value(PHOTO_TYPE::front_left));
 
 //		myprintf("right %4.3f  ", encoder::right_velocity);
 //		myprintf("left %4.3f  ", encoder::left_velocity);
@@ -84,9 +86,9 @@ int main(void) {
 
 //		myprintf("left = %5d  ",ENC_TIM.at(enc_left)->CNT);
 //		myprintf("right = %5d  ",ENC_TIM.at(enc_right)->CNT);
-
-		myprintf("batt %4.3f  ", get_battery());
-		myprintf("\n\r");
+//
+//		myprintf("batt %4.3f  ", get_battery());
+//		myprintf("\n\r");
 		wait::ms(100);
 		if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
 			break;
@@ -166,12 +168,17 @@ int main(void) {
 		case 0:		//壁の値を読むだけ	事故防止のためにモード0は実害ない奴にしとく
 			while (1) {
 				myprintf("mode 0  ");
+				myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
 				myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
 				myprintf("f_r %4.3f  ",
 						photo::get_value(PHOTO_TYPE::front_right));
 				myprintf("f_l %4.3f  ",
 						photo::get_value(PHOTO_TYPE::front_left));
 				myprintf("front %4.3f  ", photo::get_value(PHOTO_TYPE::front));
+
+				myprintf(" right %d ",encoder::raw_cnt_watch[enc_right]);
+				myprintf(" left %d \n\r",encoder::raw_cnt_watch[enc_left]);
+
 				myprintf("\n\r");
 
 				wait::ms(100);
@@ -222,14 +229,23 @@ int main(void) {
 			}
 			my7seg::count_down(3, 500);
 			mouse::run_init(true, false);
-			mouse::set_place(0,0);
+//			mouse::set_place(0,0);
+
+//			mouse::run_init(false, false);
+//			control::ignore_failsafe(true);		//フェイルセーフを切る
+//			motor::set_duty(MOTOR_SIDE::m_left, 50);
+//			wait::ms(3000);
 
 			flog[0][0] = -1;
 
 //			run::accel_run(0.09*5,SEARCH_VELOCITY,0);
 //			run::wall_edge_run_for_search(0.09, SEARCH_VELOCITY, 0,0.09);
-			run::accel_run(0.09*3,0,0);
-//			run::spin_turn(360);
+//			run::accel_run(0.09*5,0,0);
+			run::spin_turn(90);
+			run::spin_turn(-90);
+
+			run::spin_turn(180);
+			run::spin_turn(-180);
 
 			wait::ms(2000);
 
@@ -287,8 +303,9 @@ int main(void) {
 				a_dis *= SQRT2;		//斜めなので√2倍
 				break;
 			}
-			if (b_dis != 0) {		//前距離0のパターン(none,spin_turn)は調整しない
-
+			if ( b_dis == 0 ) {
+				//前距離0のパターン(none,spin_turn)は調整しない
+			} else {
 				select = mode::select_mode(3, MOD_SEL_SEN);
 
 				while (1) {
@@ -399,10 +416,10 @@ void interrupt_timer() {
 		}
 	} else if (i < flog_number) {
 		flog[0][i] = mouse::get_place().y;
-		flog[1][i] = photo::get_value(PHOTO_TYPE::front);
-		flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::front);
-		//flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
-		//flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
+//		flog[1][i] = photo::get_value(PHOTO_TYPE::front);
+//		flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::front);
+		flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
+		flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
 		i++;
 	} else if (i == flog_number) {
 		flog[0][0] = 0;
@@ -425,7 +442,8 @@ void interrupt_timer() {
 	control::cal_delta();			//姿勢制御に用いる偏差を計算
 	control::posture_control();
 
-	//control::fail_safe();
+	control::fail_safe();
+
 
 	static volatile uint16_t i = 0;
 	if (i == 0) {
@@ -433,22 +451,28 @@ void interrupt_timer() {
 			i++;
 		}
 	} else if (i < flog_number) {
-		flog[0][i] = mouse::get_angle_degree();
 
-		flog[1][i] = encoder::left_velocity;
-		flog[2][i] = encoder::right_velocity;;
+		flog[0][i] = accelmeter::get_accel() * CONTORL_PERIOD;	// 暫定的な加速度から求めた速度
 
-		flog[1][i] = mouse::get_ideal_velocity();
-		flog[2][i] = mouse::get_velocity();
+		flog[1][i] = static_cast<float>( encoder::raw_cnt_watch[0] );
+		flog[2][i] = static_cast<float>( encoder::raw_cnt_watch[1] );
+
+//		flog[1][i] = mouse::get_ideal_velocity();
+//		flog[2][i] = mouse::get_velocity();
+//
+//		flog[0][i] = mouse::get_velocity();
+//		flog[1][i] = motor::get_duty_left();
+//		flog[2][i] = motor::get_duty_right();
 
 //		flog[1][i] = mouse::get_ideal_angular_velocity();
 //		flog[2][i] = mouse::get_angular_velocity();
-		//flog[1][i] = photo::get_displa_from_center(PHOTO_TYPE::right);
-		//flog[2][i] = photo::get_displa_from_center(PHOTO_TYPE::left);
+
 		i++;
+
 	} else if (i == flog_number) {
 		flog[0][0] = 0;
 		i = 0;
+
 	}
 
 
@@ -457,5 +481,6 @@ void interrupt_timer() {
 
 #ifdef __cplusplus
 void abort(void) {
+	return;
 }
 #endif

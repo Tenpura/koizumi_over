@@ -9,9 +9,9 @@
 //ideal_photo[x][y]	xは0がハーフ,1がクラシック	yが光学センサの向きに対応。
 //right left front_right front_left,front
 #if (MOUSE_NAME == KOIZUMI_FISH)
-float parameter::correct_photo[2][5] = { { 9, -2, 0, 0, -5/*中心からどれだけオフセットがあるか[mm]*/ },
+float parameter::correct_photo[2][5] = { { 15, -15, 0, 0, -4/*中心からどれだけオフセットがあるか[mm]*/ },
 		{ 3250, 3200, 10815, 10100, 0 } };
-int16_t parameter::min_wall_photo[2][5] = { { 20, 70, 1400, 130, 500 }, {
+int16_t parameter::min_wall_photo[2][5] = { { 15, 70, 1400, 130, 2500 }, {
 		20000, 20000, 0, 0, 0 } };
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
@@ -242,23 +242,23 @@ float parameter::get_slalom(const SLALOM_TYPE slalom_type,
 
 const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		bool _is_right, uint8_t _mode) {
+	const INIT_SLALOM* ans;
+
 	switch (_type) {
-	case none:
-		break;
 	case small:
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_small_half.size())		//配列外アクセス時は最大のを返す
-					return &right_small_half.back();
+					ans = &right_small_half.back();
 				else
-					return &right_small_half.at(_mode);
+					ans = &right_small_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_small_half.size())		//配列外アクセス時は最大のを返す
-					return &left_small_half.back();
+					ans = &left_small_half.back();
 				else
-					return &left_small_half.at(_mode);
+					ans = &left_small_half.at(_mode);
 			}
 		}
 		break;
@@ -266,16 +266,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_big90_half.size())		//配列外アクセス時は最大のを返す
-					return &right_big90_half.back();
+					ans = &right_big90_half.back();
 				else
-					return &right_big90_half.at(_mode);
+					ans = &right_big90_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_big90_half.size())		//配列外アクセス時は最大のを返す
-					return &left_big90_half.back();
+					ans = &left_big90_half.back();
 				else
-					return &left_big90_half.at(_mode);
+					ans = &left_big90_half.at(_mode);
 			}
 		}
 		break;
@@ -283,16 +283,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_big180_half.size())		//配列外アクセス時は最大のを返す
-					return &right_big180_half.back();
+					ans = &right_big180_half.back();
 				else
-					return &right_big180_half.at(_mode);
+					ans = &right_big180_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_big180_half.size())		//配列外アクセス時は最大のを返す
-					return &left_big180_half.back();
+					ans = &left_big180_half.back();
 				else
-					return &left_big180_half.at(_mode);
+					ans = &left_big180_half.at(_mode);
 			}
 		}
 		break;
@@ -300,16 +300,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_begin45_half.size())		//配列外アクセス時は最大のを返す
-					return &right_begin45_half.back();
+					ans = &right_begin45_half.back();
 				else
-					return &right_begin45_half.at(_mode);
+					ans = &right_begin45_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_begin45_half.size())		//配列外アクセス時は最大のを返す
-					return &left_begin45_half.back();
+					ans = &left_begin45_half.back();
 				else
-					return &left_begin45_half.at(_mode);
+					ans = &left_begin45_half.at(_mode);
 			}
 		}
 		break;
@@ -317,16 +317,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_end45_half.size())		//配列外アクセス時は最大のを返す
-					return &right_end45_half.back();
+					ans = &right_end45_half.back();
 				else
-					return &right_end45_half.at(_mode);
+					ans = &right_end45_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_end45_half.size())		//配列外アクセス時は最大のを返す
-					return &left_end45_half.back();
+					ans = &left_end45_half.back();
 				else
-					return &left_end45_half.at(_mode);
+					ans = &left_end45_half.at(_mode);
 			}
 		}
 		break;
@@ -334,16 +334,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_big90_half.size())		//配列外アクセス時は最大のを返す
-					return &right_begin135_half.back();
+					ans = &right_begin135_half.back();
 				else
-					return &right_begin135_half.at(_mode);
+					ans = &right_begin135_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_begin135_half.size())		//配列外アクセス時は最大のを返す
-					return &left_begin135_half.back();
+					ans = &left_begin135_half.back();
 				else
-					return &left_begin135_half.at(_mode);
+					ans = &left_begin135_half.at(_mode);
 			}
 		}
 		break;
@@ -351,16 +351,16 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_end135_half.size())		//配列外アクセス時は最大のを返す
-					return &right_end135_half.back();
+					ans = &right_end135_half.back();
 				else
-					return &right_end135_half.at(_mode);
+					ans = &right_end135_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_end135_half.size())		//配列外アクセス時は最大のを返す
-					return &left_end135_half.back();
+					ans = &left_end135_half.back();
 				else
-					return &left_end135_half.at(_mode);
+					ans = &left_end135_half.at(_mode);
 			}
 		}
 		break;
@@ -368,24 +368,27 @@ const INIT_SLALOM* const parameter::get_slalom_para(const SLALOM_TYPE _type,
 		if (_is_right) {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= right_obli90_half.size())		//配列外アクセス時は最大のを返す
-					return &right_obli90_half.back();
+					ans = &right_obli90_half.back();
 				else
-					return &right_obli90_half.at(_mode);
+					ans = &right_obli90_half.at(_mode);
 			}
 		} else {
 			if (MOUSE_MODE == 1) {
 				if (_mode >= left_obli90_half.size())		//配列外アクセス時は最大のを返す
-					return &left_obli90_half.back();
+					ans = &left_obli90_half.back();
 				else
-					return &left_obli90_half.at(_mode);
+					ans = &left_obli90_half.at(_mode);
 			}
 		}
 		break;
 	default:
+		mouse::error();
+		myprintf("Error! Not expected SLALOM_TYPE at get_slalom_para() \n\r");
+		myprintf("SLALOM_TYPE is [%d] \n\r", _type );
+		ans = &right_small_half.back();
 		break;
 	}
 
-	INIT_SLALOM temp = { 0 };
-	return &temp;
+	return ans;
 }
 

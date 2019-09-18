@@ -125,6 +125,11 @@ void mouse::reset_angle() {
 	case south_west:
 		rad = -PI() * 3 / 4;
 		break;
+	default:
+		mouse::error();
+		myprintf(" Error! Not expected direction at reset_angle() \n\r");
+		myprintf(" direction is [%d] \n\r", get_compas());
+		break;
 	}
 	set_ang(rad);	//絶対角度を変更
 	set_relative_rad(0, false);	//基準はリセットする
@@ -221,6 +226,11 @@ float mouse::get_relative_side() {
 			ans -= 2 * quart_sqrt * SIGN(ans);
 		}
 		break;
+	default:
+		mouse::error();
+		myprintf(" Error! Not expected direction at get_relative_side() \n\r");
+		myprintf(" direction is [%d] \n\r", mouse::direction);
+		break;
 	}
 	return ans;
 
@@ -247,6 +257,11 @@ float mouse::get_relative_go() {
 		while (ABS(ans) > quart_sqrt) {		//±1/4区間*√2にする
 			ans -= 2 * quart_sqrt * SIGN(ans);
 		}
+		break;
+	default:
+		mouse::error();
+		myprintf(" Error! Not expected direction at get_relative_go() \n\r");
+		myprintf(" direction is [%d] \n\r", mouse::direction);
 		break;
 	}
 	return ans;
@@ -404,6 +419,11 @@ void mouse::get_direction(float *dir_x, float *dir_y) {
 		*dir_x = -SQRT2 / 2;
 		*dir_y = -SQRT2 / 2;
 		break;
+	default:
+		mouse::error();
+		myprintf(" Error! Not expected direction at get_direction() \n\r");
+		myprintf(" direction is [%d] \n\r", direction);
+		break;
 	}
 
 }
@@ -513,17 +533,18 @@ void mouse::interrupt() {
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 void mouse::interrupt() {
 
-	//XXX カルマンフィルタの推定値（加速度センサ）と観測値（エンコーダー）の分散
-	static kalman v_kal(0.101, 630);		//速度用のカルマンフィルタクラスを呼び出す
-
-	if (get_spin_flag()) {		//超信地中なら
-		v_kal.update(encoder::get_velocity(), encoder::get_velocity());	//加速度センサは無視してカルマンフィルタをかける
-	} else {
-		v_kal.update(accelmeter::get_accel(axis_x) * CONTORL_PERIOD,
-				encoder::get_velocity());		//カルマンフィルタをかける
-
-	}
-	velocity = v_kal.get_value();		//現在速度として補正後の速度を採用する
+//	//XXX カルマンフィルタの推定値（加速度センサ）と観測値（エンコーダー）の分散
+//	static kalman v_kal(0.101, 630);		//速度用のカルマンフィルタクラスを呼び出す
+//
+//	if (get_spin_flag()) {		//超信地中なら
+//		v_kal.update(encoder::get_velocity(), encoder::get_velocity());	//加速度センサは無視してカルマンフィルタをかける
+//	} else {
+//		v_kal.update(accelmeter::get_accel(axis_y) * CONTORL_PERIOD,
+//				encoder::get_velocity());		//カルマンフィルタをかける
+//
+//	}
+//	velocity = v_kal.get_value();		//現在速度として補正後の速度を採用する
+	velocity = encoder::get_velocity();
 	//速度と距離を計算
 	mouse::cal_velocity();
 	mouse::cal_distance();
@@ -894,6 +915,11 @@ void mouse::turn_45_dir(bool is_right) {
 		case north_west:
 			direction = north;
 			break;
+		default:
+			mouse::error();
+			myprintf(" Error! Not expected direction at turn_45_dir() \n\r");
+			myprintf(" direction is [%d] \n\r", direction);
+			break;
 		}
 	} else {
 		switch (direction) {
@@ -920,6 +946,11 @@ void mouse::turn_45_dir(bool is_right) {
 			break;
 		case north_east:
 			direction = north;
+			break;
+		default:
+			mouse::error();
+			myprintf(" Error! Not expected direction at turn_45_dir() \n\r");
+			myprintf(" direction is [%d] \n\r", direction);
 			break;
 		}
 	}
@@ -2320,8 +2351,8 @@ void run::slalom_for_search(const SLALOM_TYPE slalom_type,
 }
 
 void run::spin_turn(const float target_degree) {
-	float max_angular_velocity = 5.0;	//rad/s
-	float angular_acceleration = 50.0;	//rad/s^2
+	float max_angular_velocity = 10.0;	//rad/s
+	float angular_acceleration = 100.0;	//rad/s^2
 	float angle_degree = 0;
 	float init_angle = mouse::get_angle_degree();//引数のtarget_degreeは相対的な角度なので、最初の角度を記録しておく
 	bool wall_flag = control::get_wall_control_phase();
@@ -2343,6 +2374,8 @@ void run::spin_turn(const float target_degree) {
 	control::reset_delta(sen_encoder);
 	control::reset_delta(sen_gyro);
 	mouse::set_ideal_angular_velocity(0);
+
+
 
 //角加速区間
 	mouse::set_ideal_angular_accel(angular_acceleration);
@@ -2695,7 +2728,7 @@ void adachi::run_next_action(const ACTION_TYPE next_action, bool slalom) {
 			correct = 0.045 * MOUSE_MODE - 0.016;
 		run::accel_run((0.045 * MOUSE_MODE) - correct, 0, 0);	//半区間直進
 
-		run::spin_turn(181);// - degree(mouse::get_relative_rad()));//相対角度から上手く合うように変更する
+		run::spin_turn(-180);// - degree(mouse::get_relative_rad()));//相対角度から上手く合うように変更する
 		static flash_maze flash_l;
 		static MAP_DATA temp;
 		map::output_map_data(&temp);
@@ -3209,6 +3242,11 @@ bool adachi::node_adachi(std::vector<std::pair<uint8_t, uint8_t> > finish,
 
 	mouse::get_direction(&direction_x, &direction_y);		//向きを取得
 
+	//座標を更新
+	now_x = mouse::get_x_position() + direction_x;
+	now_y = mouse::get_y_position() + direction_y;
+	mouse::set_position(now_x, now_y);
+
 	mouse::run_init(true, true);
 
 	my7seg::count_down(3, 500);
@@ -3216,7 +3254,7 @@ bool adachi::node_adachi(std::vector<std::pair<uint8_t, uint8_t> > finish,
 	run::accel_run((0.045 * MOUSE_MODE), SEARCH_VELOCITY, 0);
 
 	//半区間進んだノードが0なら、目の前のマスがゴールなので終了
-	if (search.get_step(now_x, now_y, mouse::get_compas()) == 0) {
+	if ( search.get_step(now_x, now_y, mouse::get_compas()) == 0 ) {
 		run_next_action(stop, true);
 		//足立法成功なのでマップを保存する
 		map::output_map_data(&mouse::now_map);

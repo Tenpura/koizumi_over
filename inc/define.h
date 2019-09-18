@@ -20,8 +20,8 @@
 
 #define MAZE_SIZE	32
 
-#define GOAL_x 12
-#define GOAL_y 12
+#define GOAL_x 4
+#define GOAL_y 4
 
 #define PATH_MAX 500
 
@@ -264,7 +264,7 @@ typedef struct {
 } COORDINATE;
 
 typedef enum {
-	east=0, west=1, north=2, south=3, north_east=4, south_east=5, south_west=6, north_west=7, center = 8
+	east = 0, west, north, south, north_east, south_east, south_west, north_west, center, compas_N
 } compas;
 
 typedef enum {

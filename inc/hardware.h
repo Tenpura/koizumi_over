@@ -34,6 +34,7 @@
 //©ì7ƒZƒOŠÖ˜A
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
+	#define UI_MODE_N	(9U)				/*	User Interface LED ‚Å•\‚·ƒ‚[ƒh‚Ì”	*/
 	#define UI_GPIO_N	(7U)	/*	User Interface ‚Ég‚¤LED‚ÌŒÂ”	*/
 	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA )
 	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOH )
@@ -50,6 +51,7 @@
 	enum {
 		btm_left=0, btm_right, top_left, top_right, top_front, UI_LED_N
 	}UI_LED_TYPE;
+	#define UI_MODE_N	(9U)				/*	User Interface LED ‚Å•\‚·ƒ‚[ƒh‚Ì”	*/
 	#define UI_GPIO_N	(CAST_UI(UI_LED_N))	/*	User Interface ‚Ég‚¤LED‚ÌŒÂ”	*/
 	#define UI_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOD )
 	static const std::array< const std::pair<GPIO_TypeDef* const, uint16_t>, UI_GPIO_N> UI_GPIO = {
@@ -59,8 +61,8 @@
 		std::make_pair(GPIOA, GPIO_Pin_14),		/* top right */
 		std::make_pair(GPIOB, GPIO_Pin_10)		/* top front */
 	};
-	static const std::array< const std::array<const uint16_t, UI_GPIO_N>, 9> UI_GPIO_LIGHT_PTN = {{
-			/*	btm_l, btm_r, top_l, top_r, top_f	*/
+	static const std::array< const std::array<const uint16_t, UI_GPIO_N>, UI_MODE_N> UI_GPIO_LIGHT_PTN = {{
+			/*	btm_l,	btm_r,	top_l,	top_r,	top_f	*/
 			{	0,		0,		0,		0,		1	},		/*	0	*/
 			{	0,		1,		0,		0,		0	},		/*	1	*/
 			{	0,		0,		0,		1,		0	},		/*	2	*/
@@ -102,7 +104,6 @@ public:
 };
 
 //motorŠÖ˜A
-const uint16_t MAX_PERIOD = (840 - 1); //PWM‚Ìü”g”Œˆ‚ß‚Ì‚½‚ß‚ÌÅ‘åƒJƒEƒ“ƒg		84MHz‚Å100kHz‚É‚È‚é
 
 enum MOTOR_SIDE {
 	m_left = 0, m_right = 1, motor_count
@@ -111,6 +112,8 @@ static const unsigned int MOTOR_N = CAST_UI(motor_count);
 static const int PWM_IN_N = 2*MOTOR_N;
 
 #if (MOUSE_NAME == KOIZUMI_FISH)
+	const uint16_t MAX_PERIOD = (840 - 1); //FIXME ü”g”‚ªƒzƒ“ƒg‚Í168MHz16800-1‚ª³‚µ‚¢‚Í‚¸@//PWM‚Ìü”g”Œˆ‚ß‚Ì‚½‚ß‚ÌÅ‘åƒJƒEƒ“ƒg		84MHz‚Å100kHz‚É‚È‚é
+
 	#define SLEEP_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOA )
 	static GPIO_TypeDef* const SLEEP_GPIO = GPIOA;
 	static const uint16_t SLEEP_GPIO_PIN = GPIO_Pin_2;
@@ -126,6 +129,7 @@ static const int PWM_IN_N = 2*MOTOR_N;
 	static std::array<TIM_TypeDef* const, MOTOR_N> PWM_TIM = {TIM5, TIM4};
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
+	const uint16_t MAX_PERIOD = (1680 - 1);	//PWM‚Ìü”g”Œˆ‚ß‚Ì‚½‚ß‚ÌÅ‘åƒJƒEƒ“ƒg	100kHz‚É‚È‚é
 
 	#define SLEEP_GPIO_AHB1Periph ( RCC_AHB1Periph_GPIOB )
 	static GPIO_TypeDef* const SLEEP_GPIO = GPIOB;
@@ -295,6 +299,8 @@ static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1‚Â‚ÌƒGƒ“ƒR[ƒ_‚É‚Â‚«2ƒ`ƒƒƒ
 	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 )
 	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM2};
 
+	static const uint16_t ENC_RES = (4096U);		//ƒGƒ“ƒR[ƒ_‚Ì•ª‰ğ”\@12bit		//TODO Å“K‰»‚É”º‚¢10bit‚©‚ç©“®ŒvZ‚É‚µ‚½‚¢B
+
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 	#define ENCODER_CONST	(6.133 * 0.001)			//encoder‚Ì•ª‰ğ”\[rad/count]
 
@@ -307,13 +313,16 @@ static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1‚Â‚ÌƒGƒ“ƒR[ƒ_‚É‚Â‚«2ƒ`ƒƒƒ
 
 	#define ENC_TIM_AHB1Periph ( RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM5 )
 	static const std::array<TIM_TypeDef* , ENC_N> ENC_TIM = {TIM3, TIM5};
+
+	static const uint16_t ENC_RES = (1024U);		//ƒGƒ“ƒR[ƒ_‚Ì•ª‰ğ”\@10bit	//TODO Å“K‰»‚É”º‚¢10bit‚©‚ç©“®ŒvZ‚É‚µ‚½‚¢B
+
 #endif
 
 class encoder {
 private:
 	const static uint8_t MOVING_AVERAGE;	//ˆÚ“®•½‹Ï‚ğ‚Æ‚éŠÔ@’PˆÊ‚Í§ŒäüŠú
 	const static uint32_t MEDIAN;		//ƒJƒEƒ“ƒg‚Ì’†‰›’l
-	static float correct[2][4097];	//•â³—p‚Ìƒe[ƒuƒ‹
+	static float correct[2][ ENC_RES + 1 ];	//•â³—p‚Ìƒe[ƒuƒ‹
 	static bool correct_flag[2];	//•â³’†‚©”Û‚©
 	static uint32_t init_time[2];	//•â³‚ÌŠJnŠÔ
 	static int16_t finish_time[2];	//•â³I—¹‚ÌŠÔ
@@ -327,6 +336,7 @@ private:
 public:
 	static float right_velocity, left_velocity, velocity;
 	static int16_t raw_count[2];	//ƒGƒ“ƒR[ƒ_\‚Ì¶’l
+	static int16_t raw_cnt_watch[2];	//ƒGƒ“ƒR[ƒ_\‚Ì¶’lŠÏ‘ª—p
 
 	static void interrupt();		//ƒ‚[ƒ^[‚ÌEncoder‚Ì’lŒvZ
 	static float get_velocity();	//¶‰E‚Ì•½‹Ï(dS‘¬“x)‚ÌEncoderæ“¾[m/s]@ ˆÚ“®•½‹Ïæ‚Á‚Ä‚é‚±‚Æ‚É’ˆÓI

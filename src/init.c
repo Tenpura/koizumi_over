@@ -20,7 +20,7 @@ void init_all(void) {
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 void init_all(void) {
 	init_system();
-	//init_tim();
+	init_tim();
 	//init_gpio();
 	init_adc();
 	init_usart();
@@ -50,32 +50,31 @@ void init_system() {
 	//SysTick割り込みの優先度は15で最低。忘れそうだからメモしておく。
 
 }
-/*
+
  void init_tim(void) {
 
- //割り込みコントローラー
- NVIC_InitTypeDef NVIC_InitStructure;
- NVIC_InitStructure.NVIC_IRQChannel = TIM1_BRK_TIM9_IRQn;
- NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;
- NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
- NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
- NVIC_Init(&NVIC_InitStructure);
+	//割り込みコントローラー
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_BRK_TIM9_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
- TIM_TimeBaseInitTypeDef TIM_TimeBaseInitSturcture;	//初期化用構造体を宣言
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);	//TIM9にクロック供給
 
- RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);	//TIM9にクロック供給
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitSturcture;	//初期化用構造体を宣言
+	TIM_TimeBaseInitSturcture.TIM_Period = 8400 - 1;	//カウンタクリア要因
+	TIM_TimeBaseInitSturcture.TIM_Prescaler = 10 - 1; //プリスケーラ(カウンタがPrescaler回カウントされたタイミングで，TIM9のカウンタが1加算される)
+	TIM_TimeBaseInitSturcture.TIM_ClockDivision = 0; //デットタイム発生回路用の分周。通常0(分周しない)。
+	TIM_TimeBaseInitSturcture.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
+	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitSturcture);	//設定
 
- TIM_TimeBaseInitSturcture.TIM_Period = 420 - 1;	//カウンタクリア要因
- TIM_TimeBaseInitSturcture.TIM_Prescaler = 10 - 1; //プリスケーラ(カウンタがPrescaler回カウントされたタイミングで，TIM9のカウンタが1加算される)
- TIM_TimeBaseInitSturcture.TIM_ClockDivision = 0; //デットタイム発生回路用の分周。通常0(分周しない)。
- TIM_TimeBaseInitSturcture.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
- TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitSturcture);	//設定
+	TIM_ClearITPendingBit(TIM9, TIM_IT_Update); //タイマ更新イベントでの割り込みフラグをクリア
+	TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE); //タイマ更新イベントでの割り込みを許可
 
- TIM_ClearITPendingBit(TIM9, TIM_IT_Update); //タイマ更新イベントでの割り込みフラグをクリア
- TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE); //タイマ更新イベントでの割り込みを許可
+}
 
- }
- */
 void init_gpio(void) {
 	//IOの出力設定
 	GPIO_InitTypeDef GPIO_InitStructure;	//初期設定のための構造体を宣言
@@ -168,8 +167,7 @@ void init_adc(void) {
 	ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;	//PCLK/4 = 16/4 MHz?
 	ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;	//DMAは使用しない
-	ADC_CommonInitStructure.ADC_TwoSamplingDelay =
-	ADC_TwoSamplingDelay_20Cycles;//連続スキャンとかで使用？　ADC_delay_between_2_sampling_phases
+	ADC_CommonInitStructure.ADC_TwoSamplingDelay =	ADC_TwoSamplingDelay_20Cycles;//連続スキャンとかで使用？　ADC_delay_between_2_sampling_phases
 	ADC_CommonInit(&ADC_CommonInitStructure);
 
 	//ADC1の設定
@@ -178,7 +176,7 @@ void init_adc(void) {
 	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;		//シングルモードで動作
 	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;	//AD変換の開始に外部トリガは使用しない
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;	//右詰め左詰め
-	ADC_InitStructure.ADC_NbrOfConversion = 9;		//AD変換の入力は9チャンネル
+	ADC_InitStructure.ADC_NbrOfConversion = 7;		//AD変換の入力は9チャンネル
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	ADC_Cmd(ADC1, ENABLE);		//ADC1をEnableに

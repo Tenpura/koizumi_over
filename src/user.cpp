@@ -16,35 +16,48 @@ float radian(float degree) {
 }
 
 compas muki_to_compas(uint8_t muki) {
+	compas ans = compas_N;
+
 	switch (muki) {
 	case MUKI_UP:
-		return north;
+		ans = north;
 		break;
 	case MUKI_DOWN:
-		return south;
+		ans = south;
 		break;
 	case MUKI_RIGHT:
-		return east;
+		ans = east;
 		break;
 	case MUKI_LEFT:
-		return west;
+		ans = west;
 		break;
 	}
-	return north;
+	return ans;
 }
 
 uint8_t compas_to_muki(compas from) {
+	uint8_t ans = 0;
+
 	switch (from) {
 	case east:
-		return MUKI_RIGHT;
+		ans = MUKI_RIGHT;
+		break;
 	case west:
-		return MUKI_LEFT;
+		ans = MUKI_LEFT;
+		break;
 	case north:
-		return MUKI_UP;
+		ans = MUKI_UP;
+		break;
 	case south:
-		return MUKI_DOWN;
+		ans = MUKI_DOWN;
+		break;
+	default:
+		mouse::error();
+		myprintf(" Error! Not expected turn type at compas_to_muki() \n\r");
+		myprintf(" turn type is [%d] \n\r", from);
+		break;
 	}
-	return 0;
+	return ans;
 }
 
 uint32_t wait::counter = 0;

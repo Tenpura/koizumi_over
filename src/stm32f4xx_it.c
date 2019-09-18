@@ -30,6 +30,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
 
+//#include "hardware.h"
+
 /** @addtogroup Template_Project
  * @{
  */

@@ -158,21 +158,21 @@ void my7seg::light(const unsigned char number) {
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 void my7seg::light(const unsigned char number) {
 	//7セグで表示できるわけねえだろ！
-	if (number > 9) {
+	if (number >= UI_MODE_N) {
 		//error
 		light_error();
 		return;
-	}
-	//XXX	TBD 将来は関数ポインタ＆Reset or SETを LED ON/OFFみたいに意味でラッピングする
-	for(int i=0; i<UI_GPIO_N;i++){
-		if( UI_GPIO_LIGHT_PTN.at(number).at(i) ==1 ){
-			GPIO_ResetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　ON */
-		}else{
-			GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　OFF */
+	} else {
+		//XXX	TBD 将来は関数ポインタ＆Reset or SETを LED ON/OFFみたいに意味でラッピングする
+		for(int i=0; i<UI_GPIO_N;i++){
+			if( UI_GPIO_LIGHT_PTN.at(number).at(i) ==1 ){
+				GPIO_ResetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　ON */
+			}else{
+				GPIO_SetBits(UI_GPIO.at(i).first, UI_GPIO.at(i).second);		/* LED　OFF */
+			}
 		}
 	}
 
-	return;
 }
 #endif	/* MOUSE_NAME */
 
@@ -244,7 +244,7 @@ const char motor::MAX_DUTY = 100;
 bool motor::motor_state = false;
 
 void motor::set_duty(const MOTOR_SIDE side, const float set_duty) {
-	signed short duty = 0;		//一時的な保存
+	float duty = 0;		//一時的な保存
 
 	//Dutyに絶対値をとる
 	//上限を切る
@@ -275,11 +275,11 @@ void motor::set_duty(const MOTOR_SIDE side, const float set_duty) {
 	}
 
 	if (side == MOTOR_SIDE::m_right) {
-		right_duty = duty;
+		right_duty = duty * SIGN(set_duty);
 	}
 
 	if (side == MOTOR_SIDE::m_left) {
-		left_duty = duty;
+		left_duty = duty * SIGN(set_duty);
 	}
 
 }
@@ -294,7 +294,7 @@ signed short motor::get_duty_right() {
 
 void motor::sleep_motor() {
 	GPIO_ResetBits(SLEEP_GPIO, SLEEP_GPIO_PIN);	//モータードライバースリープ
-	for( int side = 0; side < MOTOR_N; side++){
+	for( uint32_t side = 0; side < MOTOR_N; side++){
 		TIM_Cmd(PWM_TIM.at(side), DISABLE);
 		motor::set_duty(static_cast<MOTOR_SIDE>(side), 0);
 	}
@@ -304,7 +304,7 @@ void motor::sleep_motor() {
 
 void motor::stanby_motor() {
 	GPIO_SetBits(SLEEP_GPIO, SLEEP_GPIO_PIN);	//モータードライバースタンバイ
-	for( int side = 0; side < MOTOR_N; side++){
+	for( uint32_t side = 0; side < MOTOR_N; side++){
 		TIM_Cmd(PWM_TIM.at(side), ENABLE);
 	}
 	motor_state = true;
@@ -352,7 +352,7 @@ void motor::init_PWM() {
 	TIM_InitStructure.TIM_ClockDivision = 0;	//デットタイム発生回路用の分周。通常0(分周しない)。
 	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;	//アップカウント
 	TIM_InitStructure.TIM_RepetitionCounter = 0;
-	for(int i=0; i<MOTOR_N; i++){
+	for(uint32_t i=0; i<MOTOR_N; i++){
 		TIM_TimeBaseInit(PWM_TIM.at(i), &TIM_InitStructure);
 	}
 
@@ -362,7 +362,7 @@ void motor::init_PWM() {
 	TIM_OC_InitStructure.TIM_OutputState = TIM_OutputState_Enable;//たぶんいらない。This parameter is valid only for TIM1 and TIM8.
 	TIM_OC_InitStructure.TIM_Pulse = 0;	//パルス幅。Duty比に関係。
 
-	for(int i=0; i<MOTOR_N; i++){
+	for(uint32_t i=0; i<MOTOR_N; i++){
 		//PWM出力が4本必要なので各タイマ2つずつ
 		TIM_OC1Init(PWM_TIM.at(i), &TIM_OC_InitStructure);		//TIM2のCH1
 		TIM_OC1PreloadConfig(PWM_TIM.at(i), TIM_OCPreload_Enable);
@@ -376,7 +376,7 @@ void motor::init_PWM() {
 
 
 	//TIM起動
-	for(int i=0; i<MOTOR_N; i++){
+	for(uint32_t i=0; i<MOTOR_N; i++){
 		TIM_ARRPreloadConfig(PWM_TIM.at(i), ENABLE);
 		TIM_Cmd(PWM_TIM.at(i), ENABLE);
 	}
@@ -757,11 +757,13 @@ const uint8_t encoder::MOVING_AVERAGE = 30;
 const uint32_t encoder::MEDIAN = 32762;
 float encoder::left_velocity, encoder::right_velocity, encoder::velocity;
 int16_t encoder::raw_count[2] = { 0 };
-float encoder::correct[2][4097] = { 0 };
+int16_t encoder::raw_cnt_watch[2] = { 0 };
+float encoder::correct[2][ ENC_RES + 1 ] = { 0 };
 bool encoder::correct_flag[2] = { false, false };
 uint32_t encoder::init_time[2] = { 0 };
 bool encoder::isCorrect[2] = { false, false };		//Y.I.式補正を行っているかどうかのフラグ
 
+#if (MOUSE_NAME == KOIZUMI_FISH)
 void encoder::interrupt() {
 	static float data_r[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
 	static unsigned int index_r=0;
@@ -781,16 +783,12 @@ void encoder::interrupt() {
 	//エンコーダ―の値を取得
 	delta_value_r = 32762 - static_cast<float>(ENC_TIM.at(enc_right)->CNT);
 	ENC_TIM.at(enc_right)->CNT = 32762;
-#if (MOUSE_NAME == KOIZUMI_FISH)
 	delta_value_l = static_cast<float>(ENC_TIM.at(enc_left)->CNT) - 32762;
-#elif (MOUSE_NAME == KOIZUMI_OVER)
-	delta_value_l = 32762 - static_cast<float>(ENC_TIM.at(enc_left)->CNT);
-#endif	/* MOUSE_NAME */
 	ENC_TIM.at(enc_left)->CNT = 32762;
 
 	//FIX_ME
-	mouse::debag_val_enc_r += delta_value_r;
-	mouse::debag_val_enc_l += delta_value_l;
+	mouse::debag_val_enc_r = delta_value_r;
+	mouse::debag_val_enc_l = delta_value_l;
 
 	//Y.I.式補正テーブルが完成していたら、Y.I.式補正をする.してなかったら移動平均をとる
 	if (isCorrect[enc_right]){
@@ -839,9 +837,9 @@ void encoder::interrupt() {
 	if (correct_flag[enc_right]) {
 		raw_count[enc_right] += static_cast<int16_t>(delta_value_r);//正転で増えていく方向に
 		if (raw_count[enc_right] < 0)
-			raw_count[enc_right] += 4096;
-		else if (raw_count[enc_right] > 4096) {
-			raw_count[enc_right] -= 4096;
+			raw_count[enc_right] += ENC_RES;
+		else if (raw_count[enc_right] > ENC_RES) {
+			raw_count[enc_right] -= ENC_RES;
 			correct_flag[enc_right] = false;	//補正テーブル作成完了
 			isCorrect[enc_right] = true;		//補正フラグを建てる
 			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
@@ -854,9 +852,9 @@ void encoder::interrupt() {
 	if (correct_flag[enc_left]) {
 		raw_count[enc_left] += static_cast<int16_t>(delta_value_l);	//正転で増えていく方向に
 		if (raw_count[enc_left] < 0)
-			raw_count[enc_left] += 4096;
-		else if (raw_count[enc_left] > 4096) {
-			raw_count[enc_left] -= 4096;
+			raw_count[enc_left] += ENC_RES;
+		else if (raw_count[enc_left] > ENC_RES) {
+			raw_count[enc_left] -= ENC_RES;
 			correct_flag[enc_left] = false;
 			isCorrect[enc_left] = true;		//補正を完了フラグを建てる
 			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
@@ -868,6 +866,107 @@ void encoder::interrupt() {
 	}
 
 }
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+void encoder::interrupt() {
+	static float data_r[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
+	static unsigned int index_r=0;
+	static float sum_r = 0;
+	static float data_l[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
+	static unsigned int index_l=0;
+	static float sum_l = 0;
+	float delta_value_r, delta_value_l;
+
+//	//エンコーダ―の値を取得
+	delta_value_r = 32762 - static_cast<float>(ENC_TIM.at(enc_right)->CNT);
+	ENC_TIM.at(enc_right)->CNT = 32762;
+	raw_cnt_watch[enc_right] = delta_value_r;
+
+	//Y.I.式補正テーブルが完成していたら、Y.I.式補正をする.してなかったら移動平均をとる
+	if (isCorrect[enc_right]){
+		//補正した差分を使って速度をとる
+		right_velocity = raw_to_correct(enc_right, delta_value_r)
+				* ENCODER_CONST / CONTROL_PERIOD * tire_R;//count*[rad/count]/[sec]*[m]
+	}else {
+		right_velocity = delta_value_r * ENCODER_CONST
+				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
+	}
+	/* 移動平均をとる */
+	//配列の最古の奴を取り出し（sumから引く）、最新の値で更新（sumに加算）
+	sum_r -= data_r[index_r];
+	data_r[index_r] = right_velocity;
+	sum_r += data_r[index_r];
+	// リングQみたいにする。　MAXまでいったら0に戻る
+	if( index_r >= (MOVING_AVERAGE-1) ){
+		index_r = 0;
+	}else{
+		index_r++;
+	}
+	right_velocity = sum_r / MOVING_AVERAGE;
+
+
+	delta_value_l = 32762 - static_cast<float>(ENC_TIM.at(enc_left)->CNT);
+	ENC_TIM.at(enc_left)->CNT = 32762;
+	raw_cnt_watch[enc_left] = delta_value_l;
+
+	if (isCorrect[enc_left])
+		//補正した差分を使って速度をとる
+		left_velocity = raw_to_correct(enc_left, delta_value_l) * ENCODER_CONST
+				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
+	else {
+		left_velocity = delta_value_l * ENCODER_CONST
+						/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
+	}
+	/* 移動平均をとる */
+	//配列の最古の奴を取り出し（sumから引く）、最新の値で更新（sumに加算）
+	sum_l -= data_l[index_l];
+	data_l[index_l] = left_velocity;		//count*[rad/count]/[sec]*[m]
+	sum_l += data_l[index_l];
+	// リングQみたいにする。　MAXまでいったら0に戻る
+	if( index_l >= (MOVING_AVERAGE-1) ){
+		index_l = 0;
+	}else{
+		index_l++;
+	}
+	left_velocity = sum_l / MOVING_AVERAGE;
+
+	velocity = (right_velocity + left_velocity) / 2;
+
+	//補正用にデータを保存
+	if (correct_flag[enc_right]) {
+		raw_count[enc_right] += static_cast<int16_t>(delta_value_r);//正転で増えていく方向に
+		if (raw_count[enc_right] < 0)
+			raw_count[enc_right] += ENC_RES;
+		else if (raw_count[enc_right] > ENC_RES) {
+			raw_count[enc_right] -= ENC_RES;
+			correct_flag[enc_right] = false;	//補正テーブル作成完了
+			isCorrect[enc_right] = true;		//補正フラグを建てる
+			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
+		} else {
+			//オーバーフローしないときは保存していく
+			correct[enc_right][raw_count[enc_right]] =
+					static_cast<float>(wait::get_count() - init_time[enc_right]);//時間を保存
+		}
+	}
+	if (correct_flag[enc_left]) {
+		raw_count[enc_left] += static_cast<int16_t>(delta_value_l);	//正転で増えていく方向に
+		if (raw_count[enc_left] < 0)
+			raw_count[enc_left] += ENC_RES;
+		else if (raw_count[enc_left] > ENC_RES) {
+			raw_count[enc_left] -= ENC_RES;
+			correct_flag[enc_left] = false;
+			isCorrect[enc_left] = true;		//補正を完了フラグを建てる
+			//（厳密には補正テーブルはまだできていないが作成途中ではエンコーダーの値を参照しないのでこの時点で建てる）
+		} else {
+			//オーバーフローしないときは保存していく
+			correct[enc_left][raw_count[enc_left]] =
+					static_cast<float>(wait::get_count() - init_time[enc_left]);//時間を保存
+		}
+	}
+
+}
+#endif	/* MOUSE_NAME */
+
+
 
 float encoder::get_velocity() {
 	return velocity;
@@ -885,17 +984,16 @@ float encoder::raw_to_correct(ENC_SIDE enc_side, int16_t raw_delta) {
 	float temp_delta = 0;						//エンコーダーの前回との差分をとる
 	static float correct_cnt[2] = { 0 };		//補正後の値を記録
 
-	raw_count[enc_right] += raw_delta;
-	if (raw_count[enc_right] > 4096) {
-		raw_count[enc_right] -= 4096;
-		temp_delta += 4096;	//上方向のオーバーフローしたので差分値も先に補正しておく
-	} else if (raw_count[enc_right] < 0) {
-		raw_count[enc_right] += 4096;
-		temp_delta -= 4096;	//下方向のオーバーフローしたので差分値も先に補正しておく
+	raw_count[enc_side] += raw_delta;
+	if (raw_count[enc_side] > ENC_RES) {
+		raw_count[enc_side] -= ENC_RES;
+		temp_delta += ENC_RES;	//上方向のオーバーフローしたので差分値も先に補正しておく
+	} else if (raw_count[enc_side] < 0) {
+		raw_count[enc_side] += ENC_RES;
+		temp_delta -= ENC_RES;	//下方向のオーバーフローしたので差分値も先に補正しておく
 	}
-	temp_delta += (correct[enc_right][raw_count[enc_right]]
-			- correct_cnt[enc_right]);	//YI式補正テーブルで補正し、前回との差分をとる
-	correct_cnt[enc_right] = correct[enc_right][raw_count[enc_right]];	//値を更新
+	temp_delta += ( correct[ enc_side ][ raw_count[enc_side] ] - correct_cnt[enc_side] );	//YI式補正テーブルで補正し、前回との差分をとる
+	correct_cnt[enc_side] = correct[enc_side][raw_count[enc_side]];	//値を更新
 	//補正直後の1msだけエンコーダーの差分を求める式が初期値の問題でバグる。そんなすぐにはエンコーダー参照しないので問題ないはず
 
 	return temp_delta;	//速度を求めるために補正した差分を使う
@@ -906,11 +1004,11 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	if (enc_side == enc_right)
 		motor::set_duty(MOTOR_SIDE::m_right, 40);
 	else
-		motor::set_duty(MOTOR_SIDE::m_left, 40);
+		motor::set_duty(MOTOR_SIDE::m_left, 50);
 
 	//補正テーブルを全消去
 	isCorrect[enc_side] = false;	//Y.I.式補正は中止
-	for (int i = 0; i < 4097; i++) {
+	for (int i = 0; i <= ENC_RES; i++) {
 		correct[enc_side][i] = -1;
 	}
 
@@ -923,7 +1021,7 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	init_time[enc_side] = wait::get_count();
 	while (correct_flag[enc_side])
 		;	//一周分測定
-	int16_t finish_val = raw_count[enc_side];	//4096を少し超えて終了するので、0より少し大きい値のはず
+	int16_t finish_val = raw_count[enc_side];	//ENC_RESを少し超えて終了するので、0より少し大きい値のはず
 	float finish_time = static_cast<float>(wait::get_count()
 			- init_time[enc_side]);	//終了した時間を保存
 
@@ -932,23 +1030,23 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	//とびとびで値が保存されているはずなので、補完する
 	int16_t bigger_val = 0;		//線系補完するときの、大きいほうのエンコーダ―の生値
 	float bigger_time = 0;		//線系補完するときの、大きいほうの時間
-	if (correct[enc_side][4096] == -1) {	//ぴったり4096で終わってなかったら
-		bigger_val = 4096 + finish_val;
+	if (correct[enc_side][ENC_RES] == -1) {	//ぴったりENC_RESで終わってなかったら
+		bigger_val = ENC_RES + finish_val;
 		bigger_time = finish_time;
 	} else {								//ぴったり終わっていれば、最後の値をそのまま入れる
-		bigger_val = 4096;
-		bigger_time = correct[enc_side][4096];
+		bigger_val = ENC_RES;
+		bigger_time = correct[enc_side][ENC_RES];
 	}
-	for (int i = 4096; i >= 0; i--) {	//おしりから値が入っていないところを探していく
+	for (int i = ENC_RES; i >= 0; i--) {	//おしりから値が入っていないところを探していく
 		if (correct[enc_side][i] != -1) {		//値が入っていたら
 			if (bigger_val - i <= 1) {
 			}
-			//値が入っているのが連続なら線系補完はしない(4096に値が入っている場合のために不等号)
+			//値が入っているのが連続なら線系補完はしない(ENC_RESに値が入っている場合のために不等号)
 			else {
 				//間のやつらを線形補完する
 				float a = (bigger_time - correct[enc_side][i])
 						/ static_cast<float>(bigger_val - i);	//傾き
-				for (int j = MIN(bigger_val - 1, 4096); j > i; j--) {//bigger_val ~ i までの間を線系補完
+				for (int j = MIN(bigger_val - 1, ENC_RES); j > i; j--) {//bigger_val ~ i までの間を線系補完
 					correct[enc_side][j] = static_cast<float>(a * (j - i)
 							+ correct[enc_side][i]);	//傾き×現在値＋切片　で線形補完
 				}
@@ -960,9 +1058,9 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	}
 
 	//ここまででcorrectに連続で値が入ったはず.なので次はcorrectを「correct[生値]=計測時間」から「correct[生値]=補正値」に直していく
-	float slope = 4096 / correct[enc_side][4096];//生値/時間の傾き。観測量は曲線だが真の値は直線のはずなのでこれで補正値を求める
+	float slope = ENC_RES / correct[enc_side][ENC_RES];//生値/時間の傾き。観測量は曲線だが真の値は直線のはずなのでこれで補正値を求める
 	//全て時間から補正値に変換
-	for (int i = 0; i < 4097; i++)
+	for (int i = 0; i <=ENC_RES; i++)
 		correct[enc_side][i] *= slope;
 
 }
@@ -970,9 +1068,16 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 void encoder::yi_correct() {
 	control::ignore_failsafe(true);		//補正中はフェイルセーフを切る
 
+#if (MOUSE_NAME == KOIZUMI_FISH)
 	//左右で補正を行う
 	yi_correct(enc_right);
 	yi_correct(enc_left);
+#elif (MOUSE_NAME == KOIZUMI_OVER)
+	// 左はエンコーダついてない
+//	yi_correct(enc_right);
+	yi_correct(enc_left);
+#endif	/* MOUSE_NAME */
+
 	control::reset_delta(sen_encoder);
 
 	control::ignore_failsafe(false);		//フェイルセーフを復活
@@ -982,11 +1087,11 @@ void encoder::draw_correct(bool right, bool left) {
 	if (!right)
 		if (!left)
 			return;
-	for (int i = 0; i < 4097; i++) {
+	for (int i = 0; i <=ENC_RES; i++) {
 		myprintf("%d", i);
-		if (right)
+		if ( right == true )
 			myprintf(", %f", correct[enc_right][i]);
-		if (left)
+		if ( left == true )
 			myprintf(", %f", correct[enc_left][i]);
 		myprintf("\n\r");
 	}
@@ -1426,10 +1531,10 @@ float photo::get_displa_from_center(PHOTO_TYPE sensor_type, float val) {
 		break;
 
 	case PHOTO_TYPE::front: {
-		a0 = -333 + f_c;
-		a1 = -0.013;
-		a2 = 0.6 * 0.000001;
-		alog = 49.5;
+		a0 = -397 + f_c;
+		a1 = -0.0085;
+		a2 = 2.2 * 0.000001;
+		alog = 51;
 		break;
 	}
 
@@ -1683,15 +1788,22 @@ photo::~photo() {
 #if (MOUSE_NAME == KOIZUMI_FISH)
 const PID gyro_gain = { 15, 750, 0.015 };
 PID photo_gain = /*{ 100,0,0.003};*/{ 200, 0, 0.005 };
-const PID encoder_gain = { 200, 1000, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
+const PID encoder_gain = { 200, 1000, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
+
+const float ff_gain_vel = 1.0;	// モータを定常回転させるために必要なFF項のゲイン
+const float ff_gain_accel = 1.0;	// モータを加速させるために必要なFF項のゲイン
+const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-const PID gyro_gain = { 0,0,0 };
+const PID gyro_gain = { 15, 750, 0.015 };
 PID photo_gain = { 200, 0, 0.005 };
-const PID encoder_gain = { 100, 0, 0, };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
-const PID accel_gain = { 0, 0, 0 };	//{50, 0, 0 };
+const PID encoder_gain = { 450, 400, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
+const PID accel_gain = { 0, 0, 0 };
 
+const float ff_gain_vel = 1.0;	// モータを定常回転させるために必要なFF項のゲイン
+const float ff_gain_accel = 3.0;	// モータを加速させるために必要なFF項のゲイン
+const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 #endif /* MOUSE_NAME */
 
 PID control::gyro_delta, control::photo_delta, control::encoder_delta,
@@ -1803,6 +1915,11 @@ void control::cal_delta() {
 
 			break;
 
+		default:
+			mouse::error();		// ここに来るはずないので、エラー
+			myprintf("Error! cal_delta()");
+			break;
+
 		}
 		//photo_delta.P = mouse::get_relative_side();		//センサを信用しない　= 推定値を突っ込んどく
 
@@ -1893,12 +2010,13 @@ float control::get_feedforward(const signed char right_or_left) {
 	float Vt;		//motorを回転させるために必要なトルクを生み出すための電圧
 
 	// V = v[m/s]/2πr[m] * ギア比  / 電圧特性[回/s/V]
-	Vinv = (velocity / (2 * PI() * tire_R) * SPAR / PINION / MOTOR_CONST);
+	Vinv = (velocity / (2 * PI() * tire_R) * SPAR / PINION / MOTOR_CONST) * ff_gain_vel;
 
-	static const float mu = 0.00035;	//摩擦力
-	// V = 加速に必要な分 + 摩擦力を打ち消す分
-	Vt = ((PI() * tire_R * MASS * MOTOR_ORM * MOTOR_CONST) * accel
-			+ (2 * PI() * MOTOR_ORM * MOTOR_CONST * mu)) * PINION / SPAR;
+	// V = 加速に必要な分
+	Vt = ( (PI() * tire_R * MASS * MOTOR_ORM * MOTOR_CONST) * accel * ff_gain_accel ) * PINION / SPAR;
+
+	// V = 摩擦力を打ち消す分	モータの回転方向（≠駆動方向）にかかる
+	Vt += ( (2 * PI() * MOTOR_ORM * MOTOR_CONST * ff_gain_mu) )	* PINION / SPAR * SIGN(velocity);
 
 	return ((Vinv + Vt) * M_SUM_ORM / MOTOR_ORM / get_battery()) * 100;
 }
@@ -1979,7 +2097,7 @@ void control::fail_safe() {
 		return;
 
 	//閾値どのくらいかわからない。Gyroも参照すべき？
-	if (ABS(encoder_delta.P) > 0.8) {
+	if (ABS(encoder_delta.P) > 1.0) {
 //		if (ABS(gyro_delta.P) > 1) {
 		motor::sleep_motor();
 		mouse::set_fail_flag(true);

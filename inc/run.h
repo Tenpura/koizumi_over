@@ -150,7 +150,6 @@ public:
 	static void turn_direction_slalom(const SLALOM_TYPE slalom_type, const unsigned char right_or_left);
 
 	static void error();	//フェイルセーフとか、かかった時に、ここに飛びますよ
-
 	~mouse();
 
 };
