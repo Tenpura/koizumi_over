@@ -67,10 +67,8 @@ int main(void) {
 	myprintf("batt %4.3f  ", get_battery());
 	myprintf("\n\r");
 
-
-
-	//encoder::yi_correct();		//YIéÆï‚ê≥
-
+	encoder::yi_correct();		//YIéÆï‚ê≥
+	
 	while (1) {
 //		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
 //		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
@@ -93,9 +91,9 @@ int main(void) {
 		if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
 			break;
 		}
-
-
 	}
+
+	encoder::draw_correct( true, true );
 
 #endif
 
@@ -176,9 +174,6 @@ int main(void) {
 						photo::get_value(PHOTO_TYPE::front_left));
 				myprintf("front %4.3f  ", photo::get_value(PHOTO_TYPE::front));
 
-				myprintf(" right %d ",encoder::raw_cnt_watch[enc_right]);
-				myprintf(" left %d \n\r",encoder::raw_cnt_watch[enc_left]);
-
 				myprintf("\n\r");
 
 				wait::ms(100);
@@ -240,12 +235,11 @@ int main(void) {
 
 //			run::accel_run(0.09*5,SEARCH_VELOCITY,0);
 //			run::wall_edge_run_for_search(0.09, SEARCH_VELOCITY, 0,0.09);
-//			run::accel_run(0.09*5,0,0);
-			run::spin_turn(90);
-			run::spin_turn(-90);
-
-			run::spin_turn(180);
-			run::spin_turn(-180);
+			run::accel_run(0.09*5,0,0);
+			// run::spin_turn(90);
+			// run::spin_turn(-90);
+			// run::spin_turn(180);
+			// run::spin_turn(-180);
 
 			wait::ms(2000);
 
@@ -454,12 +448,10 @@ void interrupt_timer() {
 
 		flog[0][i] = accelmeter::get_accel() * CONTORL_PERIOD;	// ébíËìIÇ»â¡ë¨ìxÇ©ÇÁãÅÇﬂÇΩë¨ìx
 
-		flog[1][i] = static_cast<float>( encoder::raw_cnt_watch[0] );
-		flog[2][i] = static_cast<float>( encoder::raw_cnt_watch[1] );
 
-//		flog[1][i] = mouse::get_ideal_velocity();
-//		flog[2][i] = mouse::get_velocity();
-//
+		flog[1][i] = mouse::get_ideal_velocity();
+		flog[2][i] = mouse::get_velocity();
+
 //		flog[0][i] = mouse::get_velocity();
 //		flog[1][i] = motor::get_duty_left();
 //		flog[2][i] = motor::get_duty_right();

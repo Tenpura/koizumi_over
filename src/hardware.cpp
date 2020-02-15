@@ -754,10 +754,9 @@ gyro::~gyro() {
 
 //encoder関連
 const uint8_t encoder::MOVING_AVERAGE = 30;
-const uint32_t encoder::MEDIAN = 32762;
+const uint32_t encoder::MID_CNT = 32762;
 float encoder::left_velocity, encoder::right_velocity, encoder::velocity;
 int16_t encoder::raw_count[2] = { 0 };
-int16_t encoder::raw_cnt_watch[2] = { 0 };
 float encoder::correct[2][ ENC_RES + 1 ] = { 0 };
 bool encoder::correct_flag[2] = { false, false };
 uint32_t encoder::init_time[2] = { 0 };
@@ -874,20 +873,25 @@ void encoder::interrupt() {
 	static float data_l[MOVING_AVERAGE] = { 0 };	//データを保存しておく配列
 	static unsigned int index_l=0;
 	static float sum_l = 0;
-	float delta_value_r, delta_value_l;
+	int32_t r_cnt_delt, l_cnt_delt;
+	uint32_t r_cnt_saved, l_cnt_saved;
 
-//	//エンコーダ―の値を取得
-	delta_value_r = 32762 - static_cast<float>(ENC_TIM.at(enc_right)->CNT);
-	ENC_TIM.at(enc_right)->CNT = 32762;
-	raw_cnt_watch[enc_right] = delta_value_r;
+	/*	エンコーダ―の値を保存 */
+	r_cnt_saved = ENC_TIM.at(enc_right)->CNT;
+	l_cnt_saved = ENC_TIM.at(enc_left)->CNT;
+	ENC_TIM.at(enc_right)->CNT = MID_CNT;
+	ENC_TIM.at(enc_left)->CNT = MID_CNT;
+
+	/* 差分を計算 */
+	r_cnt_delt = static_cast<int32_t>(MID_CNT) - r_cnt_saved;
 
 	//Y.I.式補正テーブルが完成していたら、Y.I.式補正をする.してなかったら移動平均をとる
 	if (isCorrect[enc_right]){
 		//補正した差分を使って速度をとる
-		right_velocity = raw_to_correct(enc_right, delta_value_r)
+		right_velocity = raw_to_correct(enc_right, r_cnt_delt)
 				* ENCODER_CONST / CONTROL_PERIOD * tire_R;//count*[rad/count]/[sec]*[m]
 	}else {
-		right_velocity = delta_value_r * ENCODER_CONST
+		right_velocity = r_cnt_delt * ENCODER_CONST
 				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
 	}
 	/* 移動平均をとる */
@@ -904,16 +908,14 @@ void encoder::interrupt() {
 	right_velocity = sum_r / MOVING_AVERAGE;
 
 
-	delta_value_l = 32762 - static_cast<float>(ENC_TIM.at(enc_left)->CNT);
-	ENC_TIM.at(enc_left)->CNT = 32762;
-	raw_cnt_watch[enc_left] = delta_value_l;
+	l_cnt_delt = static_cast<int32_t>(MID_CNT) - l_cnt_saved;
 
-	if (isCorrect[enc_left])
+	if (isCorrect[enc_left]) {
 		//補正した差分を使って速度をとる
-		left_velocity = raw_to_correct(enc_left, delta_value_l) * ENCODER_CONST
+		left_velocity = raw_to_correct(enc_left, l_cnt_delt) * ENCODER_CONST
 				/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
-	else {
-		left_velocity = delta_value_l * ENCODER_CONST
+	} else {
+		left_velocity = l_cnt_delt * ENCODER_CONST
 						/ CONTROL_PERIOD * tire_R;		//count*[rad/count]/[sec]*[m]
 	}
 	/* 移動平均をとる */
@@ -933,7 +935,7 @@ void encoder::interrupt() {
 
 	//補正用にデータを保存
 	if (correct_flag[enc_right]) {
-		raw_count[enc_right] += static_cast<int16_t>(delta_value_r);//正転で増えていく方向に
+		raw_count[enc_right] += static_cast<int16_t>(r_cnt_delt);//正転で増えていく方向に
 		if (raw_count[enc_right] < 0)
 			raw_count[enc_right] += ENC_RES;
 		else if (raw_count[enc_right] > ENC_RES) {
@@ -948,7 +950,7 @@ void encoder::interrupt() {
 		}
 	}
 	if (correct_flag[enc_left]) {
-		raw_count[enc_left] += static_cast<int16_t>(delta_value_l);	//正転で増えていく方向に
+		raw_count[enc_left] += static_cast<int16_t>(l_cnt_delt);	//正転で増えていく方向に
 		if (raw_count[enc_left] < 0)
 			raw_count[enc_left] += ENC_RES;
 		else if (raw_count[enc_left] > ENC_RES) {
@@ -1001,10 +1003,11 @@ float encoder::raw_to_correct(ENC_SIDE enc_side, int16_t raw_delta) {
 
 volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 	mouse::run_init(false, false);
-	if (enc_side == enc_right)
+	if (enc_side == enc_right) {
 		motor::set_duty(MOTOR_SIDE::m_right, 40);
-	else
+	} else {
 		motor::set_duty(MOTOR_SIDE::m_left, 50);
+	}
 
 	//補正テーブルを全消去
 	isCorrect[enc_side] = false;	//Y.I.式補正は中止
@@ -1014,22 +1017,21 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 
 	wait::ms(3000);	//回転が平衡状態に達するまで待機
 
-	correct_flag[enc_side] = true;
 	//初期値代入
 	raw_count[enc_side] = 0;
 	correct[enc_side][0] = 0;
 	init_time[enc_side] = wait::get_count();
+	correct_flag[enc_side] = true;
 	while (correct_flag[enc_side])
 		;	//一周分測定
 	int16_t finish_val = raw_count[enc_side];	//ENC_RESを少し超えて終了するので、0より少し大きい値のはず
-	float finish_time = static_cast<float>(wait::get_count()
-			- init_time[enc_side]);	//終了した時間を保存
+	uint32_t finish_time = (wait::get_count() - init_time[enc_side]);	//終了した時間を保存
 
 	motor::sleep_motor();
 
 	//とびとびで値が保存されているはずなので、補完する
 	int16_t bigger_val = 0;		//線系補完するときの、大きいほうのエンコーダ―の生値
-	float bigger_time = 0;		//線系補完するときの、大きいほうの時間
+	uint32_t bigger_time = 0;		//線系補完するときの、大きいほうの時間
 	if (correct[enc_side][ENC_RES] == -1) {	//ぴったりENC_RESで終わってなかったら
 		bigger_val = ENC_RES + finish_val;
 		bigger_time = finish_time;
@@ -1037,15 +1039,14 @@ volatile void encoder::yi_correct(ENC_SIDE enc_side) {
 		bigger_val = ENC_RES;
 		bigger_time = correct[enc_side][ENC_RES];
 	}
-	for (int i = ENC_RES; i >= 0; i--) {	//おしりから値が入っていないところを探していく
-		if (correct[enc_side][i] != -1) {		//値が入っていたら
-			if (bigger_val - i <= 1) {
-			}
-			//値が入っているのが連続なら線系補完はしない(ENC_RESに値が入っている場合のために不等号)
-			else {
-				//間のやつらを線形補完する
-				float a = (bigger_time - correct[enc_side][i])
-						/ static_cast<float>(bigger_val - i);	//傾き
+	for (int i = ENC_RES; i >= 0; i--) {	/* おしりから値が入っていないところを探していく */
+		if (correct[enc_side][i] != -1) {	/* 値が入っていたら */
+			if (bigger_val - i <= 1) {	/* 値が入っているのが連続なら(ENC_RESに値が入っている場合のために不等号) */
+				/* 線系補完はしない */
+			} else {
+				/* 間のやつらを線形補完する */
+				float a = static_cast<float>(bigger_time - correct[enc_side][i])
+						/ (bigger_val - i);	//傾き
 				for (int j = MIN(bigger_val - 1, ENC_RES); j > i; j--) {//bigger_val ~ i までの間を線系補完
 					correct[enc_side][j] = static_cast<float>(a * (j - i)
 							+ correct[enc_side][i]);	//傾き×現在値＋切片　で線形補完
@@ -1074,7 +1075,7 @@ void encoder::yi_correct() {
 	yi_correct(enc_left);
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 	// 左はエンコーダついてない
-//	yi_correct(enc_right);
+	yi_correct(enc_right);
 	yi_correct(enc_left);
 #endif	/* MOUSE_NAME */
 
@@ -1084,16 +1085,17 @@ void encoder::yi_correct() {
 }
 
 void encoder::draw_correct(bool right, bool left) {
-	if (!right)
-		if (!left)
-			return;
-	for (int i = 0; i <=ENC_RES; i++) {
-		myprintf("%d", i);
-		if ( right == true )
-			myprintf(", %f", correct[enc_right][i]);
-		if ( left == true )
-			myprintf(", %f", correct[enc_left][i]);
-		myprintf("\n\r");
+	if ( ( right == true ) && ( left == true ) ) {
+		for (int i = 0; i <=ENC_RES; i++) {
+			myprintf("%d", i);
+			if ( right == true ) {
+				myprintf(", %f", correct[enc_right][i]);
+			}
+			if ( left == true ) {
+				myprintf(", %f", correct[enc_left][i]);
+			}
+			myprintf("\n\r");
+		}
 	}
 }
 

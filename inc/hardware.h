@@ -321,7 +321,7 @@ static const unsigned int ENC_GPIO_N = ENC_N * 2;		//1‚Â‚ÌƒGƒ“ƒR[ƒ_‚É‚Â‚«2ƒ`ƒƒƒ
 class encoder {
 private:
 	const static uint8_t MOVING_AVERAGE;	//ˆÚ“®•½‹Ï‚ğ‚Æ‚éŠÔ@’PˆÊ‚Í§ŒäüŠú
-	const static uint32_t MEDIAN;		//ƒJƒEƒ“ƒg‚Ì’†‰›’l
+	const static uint32_t MID_CNT;		//ƒJƒEƒ“ƒg‚Ì’†‰›’l
 	static float correct[2][ ENC_RES + 1 ];	//•â³—p‚Ìƒe[ƒuƒ‹
 	static bool correct_flag[2];	//•â³’†‚©”Û‚©
 	static uint32_t init_time[2];	//•â³‚ÌŠJnŠÔ
@@ -336,7 +336,6 @@ private:
 public:
 	static float right_velocity, left_velocity, velocity;
 	static int16_t raw_count[2];	//ƒGƒ“ƒR[ƒ_\‚Ì¶’l
-	static int16_t raw_cnt_watch[2];	//ƒGƒ“ƒR[ƒ_\‚Ì¶’lŠÏ‘ª—p
 
 	static void interrupt();		//ƒ‚[ƒ^[‚ÌEncoder‚Ì’lŒvZ
 	static float get_velocity();	//¶‰E‚Ì•½‹Ï(dS‘¬“x)‚ÌEncoderæ“¾[m/s]@ ˆÚ“®•½‹Ïæ‚Á‚Ä‚é‚±‚Æ‚É’ˆÓI
