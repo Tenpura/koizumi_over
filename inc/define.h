@@ -53,7 +53,7 @@ static const uint16_t buf_count = 1;	//バッファ式ログのバッファ数。
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 	#define MASS	(15 * 0.001)			//マウスの重さ[kg]
-	#define tire_R (6.00 * 0.001)	//タイヤの半径　[m]
+	#define tire_R	(6.57 * 0.001)	//タイヤの半径　[m]
 	#define TREAD_W	(44*0.001)		//トレッド幅[m]
 
 	#define LOGIK_V 3.3

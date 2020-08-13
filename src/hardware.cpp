@@ -1085,14 +1085,23 @@ void encoder::yi_correct() {
 }
 
 void encoder::draw_correct(bool right, bool left) {
-	if ( ( right == true ) && ( left == true ) ) {
+	if ( ( right == true ) || ( left == true ) ) {
+		myprintf("Res");
+		if ( left == true ) {
+			myprintf(", Left");
+		}
+		if ( right == true ) {
+			myprintf(", Right");
+		}
+		myprintf("\n\r");
+
 		for (int i = 0; i <=ENC_RES; i++) {
 			myprintf("%d", i);
-			if ( right == true ) {
-				myprintf(", %f", correct[enc_right][i]);
-			}
 			if ( left == true ) {
 				myprintf(", %f", correct[enc_left][i]);
+			}
+			if ( right == true ) {
+				myprintf(", %f", correct[enc_right][i]);
 			}
 			myprintf("\n\r");
 		}
@@ -1800,7 +1809,7 @@ const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 #elif (MOUSE_NAME == KOIZUMI_OVER)
 const PID gyro_gain = { 15, 750, 0.015 };
 PID photo_gain = { 200, 0, 0.005 };
-const PID encoder_gain = { 450, 400, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
+const PID encoder_gain = { 200, 50, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };
 
 const float ff_gain_vel = 1.0;	// モータを定常回転させるために必要なFF項のゲイン

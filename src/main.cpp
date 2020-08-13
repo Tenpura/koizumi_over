@@ -51,54 +51,7 @@ int main(void) {
 	my7seg::init();
 
 
-
-#if (MOUSE_NAME == KOIZUMI_OVER)
-
-	my7seg::count_down(8,500);
-	my7seg::turn_off();
-
-//	mouse::run_init(true, false);
-//	control::ignore_failsafe(true);
-//	run::accel_run(0.09,0,0);
-//
-//	wait::ms(2000);
-//	motor::sleep_motor();
-
-	myprintf("batt %4.3f  ", get_battery());
-	myprintf("\n\r");
-
-	encoder::yi_correct();		//YI式補正
-	
-	while (1) {
-//		myprintf("right %4.3f  ", photo::get_value(PHOTO_TYPE::right));
-//		myprintf("left %4.3f  ", photo::get_value(PHOTO_TYPE::left));
-//		myprintf("f_right %4.3f  ", photo::get_value(PHOTO_TYPE::front_right));
-//		myprintf("f_left %4.3f  ", photo::get_value(PHOTO_TYPE::front_left));
-
-//		myprintf("right %4.3f  ", encoder::right_velocity);
-//		myprintf("left %4.3f  ", encoder::left_velocity);
-//		myprintf("v %4.3f  ", encoder::get_velocity());
-
-//		myprintf("ang v %4.3f", (gyro::get_angular_velocity()));
-//		myprintf("angle v %4.3f", degree(gyro::get_angle_radian()));
-
-//		myprintf("left = %5d  ",ENC_TIM.at(enc_left)->CNT);
-//		myprintf("right = %5d  ",ENC_TIM.at(enc_right)->CNT);
-//
-//		myprintf("batt %4.3f  ", get_battery());
-//		myprintf("\n\r");
-		wait::ms(100);
-		if (GPIO_ReadInputDataBit(UI_INPUT.first, UI_INPUT.second) == 0) {
-			break;
-		}
-	}
-
-	encoder::draw_correct( true, true );
-
-#endif
-
 	my7seg::blink(8, 200, 5);
-
 	my7seg::turn_off();
 
 	//マップをリセットする
@@ -235,11 +188,9 @@ int main(void) {
 
 //			run::accel_run(0.09*5,SEARCH_VELOCITY,0);
 //			run::wall_edge_run_for_search(0.09, SEARCH_VELOCITY, 0,0.09);
-			run::accel_run(0.09*5,0,0);
-			// run::spin_turn(90);
-			// run::spin_turn(-90);
-			// run::spin_turn(180);
-			// run::spin_turn(-180);
+			run::accel_run(0.09*3,0,0);
+			run::spin_turn(180);
+			run::spin_turn(-180);
 
 			wait::ms(2000);
 
