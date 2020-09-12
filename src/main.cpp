@@ -397,18 +397,17 @@ void interrupt_timer() {
 		}
 	} else if (i < flog_number) {
 
-		flog[0][i] = accelmeter::get_accel() * CONTORL_PERIOD;	// 暫定的な加速度から求めた速度
-
-
-		flog[1][i] = mouse::get_ideal_velocity();
-		flog[2][i] = mouse::get_velocity();
+//		flog[0][i] = accelmeter::get_accel() * CONTORL_PERIOD;	// 暫定的な加速度から求めた速度
+//		flog[1][i] = mouse::get_ideal_velocity();
+//		flog[2][i] = mouse::get_velocity();
 
 //		flog[0][i] = mouse::get_velocity();
 //		flog[1][i] = motor::get_duty_left();
 //		flog[2][i] = motor::get_duty_right();
 
-//		flog[1][i] = mouse::get_ideal_angular_velocity();
-//		flog[2][i] = mouse::get_angular_velocity();
+		flog[0][i] = mouse::get_velocity();
+		flog[1][i] = mouse::get_ideal_angular_velocity();
+		flog[2][i] = mouse::get_angular_velocity();
 
 		i++;
 

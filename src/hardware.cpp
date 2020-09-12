@@ -1807,7 +1807,7 @@ const float ff_gain_accel = 1.0;	// モータを加速させるために必要なFF項のゲイン
 const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-const PID gyro_gain = { 15, 750, 0.015 };
+const PID gyro_gain = { 15., 12.5, 0.0 };
 PID photo_gain = { 200, 0, 0.005 };
 const PID encoder_gain = { 200, 50, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };

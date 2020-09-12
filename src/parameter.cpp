@@ -41,11 +41,13 @@ const TRAPEZOID parameter::straight_run[RUN_MODE_NUMBER] = {
 //速度、角度、加速角度、前距離、後ろ距離、角加速度、最高角速度
 //小回り90°ターン
 const std::array<INIT_SLALOM, 2> right_small_half = { {
-		{ 0.25, 91.5, 30, 0.012, 0.02, 162.2157, 13.0335, 0 },
-		{ SEARCH_VELOCITY, 91, 30, 0.008, 0.016, 162.2157, 13.0335, 0 } } };
+		{ SEARCH_VELOCITY, 90, 40, 0.008, 0.008, 146.9717, 14.3252, 0 },
+		{ SEARCH_VELOCITY, 91, 30, 0.008, 0.016, 162.2157, 13.0335, 0 }
+} };
 const std::array<INIT_SLALOM, 2> left_small_half = { {
-		{ 0.25, 89.3, 30, 0.014, 0.008, 119.1789, 11.17156, 0 },
-		{ SEARCH_VELOCITY, 89.6, 30, 0.009, 0.005, 119.1789, 11.17156, 0 } } };
+		{ SEARCH_VELOCITY, 90, 40, 0.008, 0.008, 146.9717, 14.3252, 0 },
+		{ SEARCH_VELOCITY, 89.6, 30, 0.009, 0.005, 119.1789, 11.17156, 0 }
+} };
 
 //大まわり90°ターン
 const std::array<INIT_SLALOM, 2> right_big90_half = { {

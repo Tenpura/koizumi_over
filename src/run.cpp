@@ -2055,31 +2055,35 @@ void run::slalom(const SLALOM_TYPE slalom_type, const signed char right_or_left,
 			clothoid_angle, right_or_left, select_mode);
 	float max_angular = parameter::get_slalom(slalom_type, max_angular_velocity,
 			right_or_left, select_mode);
-	float de_accel_angle = 0;
 
+	float sign_turn = 1.;
 	bool wall_flag = control::get_wall_control_phase();
 	bool is_right = true;
+
+
+	if (slalom_type == none) {
+		return;
+	}
+
 	if (right_or_left == MUKI_LEFT) {
 		is_right = false;
 		//時計回りが正
 		angular_acceleration = -ABS(angular_acceleration);
 		max_angular = -ABS(max_angular);
+		sign_turn = -sign_turn;
 	}
 
-	if (slalom_type == none) {
-		return;
-	}
 
 	//スラロームの目標角は相対的な角度なので、最初の角度を記録しておく
 	float init_angle = mouse::get_angle_degree();
 	control::reset_delta(sen_gyro);
 
 	float correct = 0;			//補正項
-	if (slalom_type == small) {			//小回りだと前壁補正で距離合わせる
-		if (photo::check_wall(PHOTO_TYPE::front)) {
-			correct = (photo::get_displa_from_center(PHOTO_TYPE::front));//この関数で死ぬことあり
-		}
-	}
+	// if (slalom_type == small) {			//小回りだと前壁補正で距離合わせる
+	// 	if (photo::check_wall(PHOTO_TYPE::front)) {
+	// 		correct = (photo::get_displa_from_center(PHOTO_TYPE::front));//この関数で死ぬことあり
+	// 	}
+	// }
 
 	if (distance - correct > 0) {	//前距離の分走る
 		switch (slalom_type) {
@@ -2107,51 +2111,34 @@ void run::slalom(const SLALOM_TYPE slalom_type, const signed char right_or_left,
 			break;
 		}
 	}
-
 	control::stop_wall_control();
 
-	mouse::set_ideal_angular_velocity(0);
-
 //角加速区間
+	mouse::set_ideal_angular_velocity(0);
 	mouse::set_ideal_angular_accel(angular_acceleration);
-	while (ABS(mouse::get_angle_degree() - init_angle) < clothoid_angle_degree) {
-//フェイルセーフが掛かっていればそこで抜ける
+	while (1) {
+		//フェイルセーフが掛かっていればそこで抜ける
 		if (mouse::get_fail_flag()) {
 			return;
 		}
 		//最大角速度に達したら終了
 		if (ABS(mouse::get_ideal_angular_velocity()) > ABS(max_angular)) {
-			mouse::set_ideal_angular_velocity(max_angular);
 			break;
 		}
 	}
 
-//減速時にも同様の角度がずれると予想されるから
-//追従遅れで生じた加速区間の角度の理想と現実の差を記録しておく
-	float def_angle = (clothoid_angle_degree
-			- ABS(mouse::get_angle_degree() - init_angle));
-
 //等角速度
+	mouse::set_ideal_angular_velocity(max_angular);
 	mouse::set_ideal_angular_accel(0);
-
-	while (ABS(mouse::get_angle_degree() - init_angle)
-			< (target_angle_degree - clothoid_angle_degree)) {
-//フェイルセーフが掛かっていればそこで抜ける
+	const float circle_angle = target_angle_degree - clothoid_angle_degree;
+	while (1) {
+		//フェイルセーフが掛かっていればそこで抜ける
 		if (mouse::get_fail_flag()) {
 			return;
 		}
 
-		de_accel_angle = degree(
-		//(gyro::get_angular_velocity() * gyro::get_angular_velocity())
-				(mouse::get_ideal_angular_velocity()
-						* mouse::get_ideal_angular_velocity())
-						/ (2 * angular_acceleration));
-
-//減速に必要な角度が残ってなければ抜ける
-		//追従遅れのために減速には余分な角度が必要なはず
-		if ((ABS(de_accel_angle) + def_angle)
-				>= (target_angle_degree
-						- ABS(mouse::get_angle_degree() - init_angle))) {
+		// 円弧区間の分曲がったら抜ける。
+		if (ABS(mouse::get_ideal_angle_degree() - init_angle) >= circle_angle) {
 			break;
 		}
 
@@ -2159,20 +2146,15 @@ void run::slalom(const SLALOM_TYPE slalom_type, const signed char right_or_left,
 
 //角減速区間
 	mouse::set_ideal_angular_accel(-angular_acceleration);
-	while (ABS(mouse::get_angle_degree() - init_angle) < target_angle_degree) {
-		if (ABS(mouse::get_ideal_angular_velocity()) < 0.2) {
-			mouse::set_ideal_angular_accel(0);
-			if (right_or_left == MUKI_RIGHT) {
-				mouse::set_ideal_angular_velocity(0.2);
-			} else {
-				mouse::set_ideal_angular_velocity(-0.2);
-			}
-			break;
-		}
-
-//フェイルセーフが掛かっていればそこで抜ける
+	while (1) {
+		//フェイルセーフが掛かっていればそこで抜ける
 		if (mouse::get_fail_flag()) {
 			return;
+		}
+
+		// 角速度が0を跨いだら抜ける。
+		if ((mouse::get_ideal_angular_velocity() * sign_turn) < 0) {
+			break;
 		}
 	}
 
