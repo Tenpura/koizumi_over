@@ -1807,13 +1807,13 @@ const float ff_gain_accel = 1.0;	// モータを加速させるために必要なFF項のゲイン
 const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 
 #elif (MOUSE_NAME == KOIZUMI_OVER)
-const PID gyro_gain = { 15., 12.5, 0.0 };
+const PID gyro_gain = { 10., 17.5, 0.0 };
 PID photo_gain = { 200, 0, 0.005 };
 const PID encoder_gain = { 200, 50, 0 };	//カルマンフィルタでエンコーダーと加速度センサから求めた速度に対するフィルタ
 const PID accel_gain = { 0, 0, 0 };
 
 const float ff_gain_vel = 1.0;	// モータを定常回転させるために必要なFF項のゲイン
-const float ff_gain_accel = 3.0;	// モータを加速させるために必要なFF項のゲイン
+const float ff_gain_accel = 1.0;	// モータを加速させるために必要なFF項のゲイン
 const float ff_gain_mu = 0.00035;	// 摩擦力 のFFゲイン
 #endif /* MOUSE_NAME */
 
@@ -1956,7 +1956,7 @@ void control::cal_delta() {
 	before_p_delta = gyro_delta.P;	//積分用
 	gyro_delta.P = (mouse::get_ideal_angular_velocity()
 			- gyro::get_angular_velocity());
-	gyro_delta.P -= wall_delta;		//壁制御量を目標角速度に追加
+	// gyro_delta.P -= wall_delta;		//壁制御量を目標角速度に追加
 	gyro_delta.I += (gyro_delta.P * CONTORL_PERIOD);
 	gyro_delta.D = (gyro_delta.P - before_p_delta) / CONTROL_PERIOD;
 

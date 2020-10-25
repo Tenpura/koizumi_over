@@ -98,7 +98,7 @@ static const uint16_t buf_count = 1;	//バッファ式ログのバッファ数。
 #define PI()		3.1415		//π　円周率
 
 #define ABS(x)		((x) < 0 ? -(x) : (x))	//絶対値
-#define	SIGN(x)	((x) < 0 ? -1 : 1 )		//符合
+#define	SIGN(x)		((x) < 0 ? -1 : 1 )		//符合
 #define	MAX(a,b)	((a) > (b) ? (a) : (b))	//最大値
 #define	MIN(a,b)	((a) < (b) ? (a) : (b))	//最小値
 

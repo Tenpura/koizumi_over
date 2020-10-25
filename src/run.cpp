@@ -2075,7 +2075,7 @@ void run::slalom(const SLALOM_TYPE slalom_type, const signed char right_or_left,
 
 
 	//スラロームの目標角は相対的な角度なので、最初の角度を記録しておく
-	float init_angle = mouse::get_angle_degree();
+	float init_angle = mouse::get_ideal_angle_degree();
 	control::reset_delta(sen_gyro);
 
 	float correct = 0;			//補正項
